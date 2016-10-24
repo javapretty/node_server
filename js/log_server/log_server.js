@@ -9,12 +9,20 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 
-//加载配置文件
+//配置管理器
 var config = new Config();
-config.init();
-//连接log数据库
-init_db_connect();
+//定时器
+var timer = new Timer();
+
+function init(node_info) {
+	print('log_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	config.init();
+	timer.init(Node_Type.LOG_SERVER);	
+	//连接log数据库
+	init_db_connect();
+}
 
 function on_msg(msg) {
 	print('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);

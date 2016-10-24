@@ -27,7 +27,7 @@ public:
 	static Node_Manager *instance(void);
 
 	//初始化
-	int init(const Node_Info &node);
+	int init(const Node_Info &node_info);
 	//主动关闭
 	int self_close(void);
 
@@ -87,24 +87,24 @@ private:
 private:
 	static Node_Manager *instance_;
 
-	Drop_List drop_list_; 				//逻辑层发起的掉线cid列表
+	Drop_List drop_list_; 			//逻辑层发起的掉线cid列表
 
-	sem_t tick_sem_;							//定时器通知信号量
-	Int_List tick_list_;					//定时器列表
+	sem_t tick_sem_;					//定时器通知信号量
+	Int_List tick_list_;				//定时器列表
 
-	Time_Value tick_time_;				//节点tick时间
-	Time_Value node_info_tick_;	//节点信息tick
+	Time_Value tick_time_;			//节点tick时间
+	Time_Value node_info_tick_;		//节点信息tick
 
 	Server_Pool server_pool_;
 	Connector_Pool connector_pool_;
 
-	Node_Info node_info_;				//节点信息
-	Endpoint_Map endpoint_map_;	//通信端信息
+	Node_Info node_info_;			//节点信息
+	Endpoint_Map endpoint_map_;		//通信端信息
 
 	bool msg_count_;
 	Msg_Count_Map msg_count_map_;
-	int total_recv_bytes;				//总共接收的字节
-	int total_send_bytes;				//总共发送的字节
+	int total_recv_bytes;			//总共接收的字节
+	int total_send_bytes;			//总共发送的字节
 };
 
 #define NODE_MANAGER Node_Manager::instance()

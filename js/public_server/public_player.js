@@ -48,11 +48,11 @@ Public_Player.prototype.tick = function(now) {
 }
 
 Public_Player.prototype.send_success_msg = function(msg_id, msg) {
-	send_msg(Endpoint.PUBLIC_GATE_SERVER, this.gate_cid, msg_id, Msg_Type.NODE_S2C, this.player_cid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, this.gate_cid, msg_id, Msg_Type.NODE_S2C, this.player_cid, msg);
 }
 
 Public_Player.prototype.send_error_msg = function(error_code) {
 	var msg = new s2c_4();
 	msg.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_GATE_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.player_cid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.player_cid, msg);
 }

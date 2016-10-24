@@ -13,6 +13,7 @@
 #include "include/libplatform/libplatform.h"
 #include "Thread.h"
 #include "List.h"
+#include "Node_Define.h"
 
 using namespace v8;
 
@@ -34,7 +35,7 @@ public:
 	virtual void run_handler(void);
 	virtual int process_list(void);
 
-	int init(const char *script_path);
+	int init(const Node_Info &node_info);
 	int fini(void);
 
 	inline void push_timer(int timer_id) { timer_list_.push_back(timer_id); }
@@ -50,7 +51,7 @@ private:
 	Platform* platform_;
 	Isolate* isolate_;
 	Global<Context> context_;
-	std::string script_path_;
+	Node_Info node_info_;		//节点信息
 	Int_List timer_list_;		//定时器编号
 };
 

@@ -14,6 +14,75 @@
 #include "Node_Manager.h"
 #include "V8_Wrap.h"
 
+std::string get_struct_name(int msg_type, int msg_id) {
+	std::ostringstream stream;
+	switch(msg_type) {
+	case C2S:
+	case NODE_C2S:
+		stream << "c2s_" << msg_id;
+		break;
+	case S2C:
+	case NODE_S2C:
+		stream << "s2c_" << msg_id;
+		break;
+	case NODE_MSG:
+		stream << "node_" << msg_id;
+		break;
+	default: {
+		break;
+	}
+	}
+	return stream.str();
+}
+
+Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info) {
+	EscapableHandleScope handle_scope(isolate);
+
+	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
+	Local<Object> node_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, node_info.node_type)).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_id", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, node_info.node_id)).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_name", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, node_info.node_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+
+	int vec_size = node_info.server_list.size();
+	Local<Array> server_array = Array::New(isolate, vec_size);
+	for(uint16_t i = 0; i < vec_size; ++i) {
+		Local<Object> server_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+		Endpoint_Info server_info = node_info.server_list[i];
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.endpoint_type)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_id", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.endpoint_id)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_name", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, server_info.endpoint_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_ip", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, server_info.server_ip.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_port", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.server_port)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "protocol_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.protocol_type)).FromJust();
+		
+		server_array->Set(isolate->GetCurrentContext(), i, server_obj).FromJust();
+	}
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_list", NewStringType::kNormal).ToLocalChecked(),
+			server_array).FromJust();
+
+	return handle_scope.Escape(node_obj);
+}
+
 Local<Context> create_context(Isolate* isolate) {
 	Local<ObjectTemplate> global = ObjectTemplate::New(isolate);
 	global->Set(String::NewFromUtf8(isolate, "require", NewStringType::kNormal).ToLocalChecked(),
@@ -153,27 +222,6 @@ void register_timer(const FunctionCallbackInfo<Value>& args) {
 	int first_tick = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	NODE_TIMER->register_handler(timer_id, interval, first_tick);
 	LOG_INFO("register_timer, timer_id:%d, interval:%d", timer_id, interval);
-}
-
-std::string get_struct_name(int msg_type, int msg_id) {
-	std::ostringstream stream;
-	switch(msg_type) {
-	case C2S:
-	case NODE_C2S:
-		stream << "c2s_" << msg_id;
-		break;
-	case S2C:
-	case NODE_S2C:
-		stream << "s2c_" << msg_id;
-		break;
-	case NODE_MSG:
-		stream << "node_" << msg_id;
-		break;
-	default: {
-		break;
-	}
-	}
-	return stream.str();
 }
 
 void send_msg(const FunctionCallbackInfo<Value>& args) {

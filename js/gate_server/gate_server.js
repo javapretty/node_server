@@ -9,15 +9,27 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 require('gate_server/gate_player.js');
 
 //cid--gate_player
 var cid_gate_player_map = new Map();
 //account--gate_player
 var account_gate_player_map = new Map();
-//加载配置文件
+//配置管理器
 var config = new Config();
-config.init();
+//定时器
+var timer = new Timer();
+
+function init(node_info) {
+	print('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	config.init();
+	timer.init(Node_Type.GATE_SERVER);
+
+	var msg = new node_0();
+	msg.node_info = node_info;
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);	
+}
 
 function on_msg(msg) {
 	print('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);

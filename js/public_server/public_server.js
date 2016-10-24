@@ -27,14 +27,18 @@ var role_name_public_player_map = new Map();
 var guild_manager = new Guild();
 //排行榜管理器
 var rank_manager = new Rank();
-//加载配置文件
+//配置管理器
 var config = new Config();
-config.init();
-//初始化定时器
+//定时器
 var timer = new Timer();
-timer.init(Node_Type.PUBLIC_SERVER);
-//加载public服务器公共数据
-load_public_data();
+
+function init(node_info) {
+	print('public_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	config.init();
+	timer.init(Node_Type.PUBLIC_SERVER);	
+	//加载公共数据
+	load_public_data();
+}
 
 function on_msg(msg) {
 	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
@@ -124,7 +128,7 @@ function process_public_node_msg(msg) {
 			}
 			public_player.set_gate_cid(msg.cid, msg.extra, msg.role_id);
 		} else {
-			close_session(Endpoint.PUBLIC_GATE_SERVER, msg.extra, Error_Code.RET_OK);
+			close_session(Endpoint.PUBLIC_SERVER, msg.extra, Error_Code.RET_OK);
 		}
 		break;
 	}

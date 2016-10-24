@@ -80,7 +80,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 	}
 
 	//启动V8线程，需要在网络线程启动后
-	V8_MANAGER->init(node_info.script_path.c_str());
+	V8_MANAGER->init(node_info);
 	V8_MANAGER->thr_create();
 
 	//启动定时器线程,需在V8线程启动后

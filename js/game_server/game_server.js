@@ -24,12 +24,20 @@ var role_name_game_player_map = new Map();
 var login_map = new Map();
 //cid---now_sec cid=util.get_cid(gate_cid,player_cid)
 var logout_map = new Map();
-//加载配置文件
+//配置管理器
 var config = new Config();
-config.init();
-//初始化定时器
+//定时器
 var timer = new Timer();
-timer.init(Node_Type.GAME_SERVER);
+
+function init(node_info) {
+	print('game_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	config.init();
+	timer.init(Node_Type.GAME_SERVER);
+
+	var msg = new node_0();
+	msg.node_info = node_info;
+	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+}
 
 function on_msg(msg) {
 	print('game_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
@@ -90,7 +98,7 @@ function process_game_node_msg(msg) {
 		load_player_data(msg);
 		break;
 	case Msg.NODE_GATE_GAME_PLAYER_LOGOUT:
-		close_session(Endpoint.GAME_GATE_SERVER, msg.extra, Error_Code.RET_OK);
+		close_session(Endpoint.GAME_SERVER, msg.extra, Error_Code.RET_OK);
 		break;
 	case Msg.NODE_PUBLIC_GAME_GUILD_INFO: {
 		var game_player = role_id_game_player_map.get(msg.role_id);
@@ -108,7 +116,7 @@ function process_game_node_msg(msg) {
 function send_client_error_code(cid, extra, error_code) {
 	var msg_res = new s2c_4();
 	msg_res.error_code = error_code;
-	send_msg(Endpoint.GAME_GATE_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, extra, msg_res);
+	send_msg(Endpoint.GAME_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, extra, msg_res);
 }
 
 function process_error_code(msg) {
@@ -134,7 +142,7 @@ function fetch_role(msg) {
 	var game_player = role_id_game_player_map.get(msg.role_id);
 	if (game_player || login_map.get(cid) || logout_map.get(cid) ) {
 		print('relogin account:', msg.account);
-		return close_session(Endpoint.GAME_GATE_SERVER, msg.extra, Error_Code.DISCONNECT_RELOGIN);
+		return close_session(Endpoint.GAME_SERVER, msg.extra, Error_Code.DISCONNECT_RELOGIN);
 	}
 
 	//登录从数据库加载玩家信息
@@ -158,7 +166,7 @@ function create_role(msg) {
 	var cid = util.get_cid(msg.cid, msg.extra);
 	if (login_map.get(cid)) {
 		print('account in logining status, account:', msg.account, ' role_name:', msg.role_name);
-		return close_session(Endpoint.GAME_GATE_SERVER, msg.extra, Error_Code.DISCONNECT_RELOGIN);	
+		return close_session(Endpoint.GAME_SERVER, msg.extra, Error_Code.DISCONNECT_RELOGIN);	
 	}
 
 	var cid_info = new Cid_Info();

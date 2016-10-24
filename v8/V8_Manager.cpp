@@ -51,8 +51,21 @@ int V8_Manager::process_list(void) {
 	//进入V8执行环境内部
 	Context::Scope context_scope(context);
 	//运行脚本
-	run_script(isolate_, script_path_.c_str());
+	run_script(isolate_, node_info_.script_path.c_str());
 
+	//获取脚本初始化函数
+	Local<String> func_name = String::NewFromUtf8(isolate_, "init", NewStringType::kNormal).ToLocalChecked();
+	Local<Value> func_value;
+	if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
+		fini();
+		LOG_FATAL("can't find function 'init'");
+		return -1;
+	}
+	const int argc = 1;
+	Local<Value> argv[argc] = {get_node_object(isolate_, node_info_)};
+	Local<Function> js_func = Local<Function>::Cast(func_value);
+	js_func->Call(context, context->Global(), argc, argv);
+	
 	Block_Buffer *buffer = nullptr;
 	int timer_id = 0;
 	while (1) {
@@ -67,7 +80,7 @@ int V8_Manager::process_list(void) {
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
 				LOG_ERROR("can't find function 'on_msg'");
-				return -1;
+				continue;
 			}
 			
 			int32_t endpoint_id = 0;
@@ -97,8 +110,6 @@ int V8_Manager::process_list(void) {
 			if (msg_struct != nullptr) {
 				argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_type, msg_id, extra, *buffer);
 			}
-
-			//转换成js函数对象
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);
 
@@ -113,13 +124,12 @@ int V8_Manager::process_list(void) {
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
 				LOG_ERROR("can't find function 'on_tick'");
-				return -1;
+				continue;
 			}
 
 			timer_id = timer_list_.pop_front();
 			const int argc = 1;
 			Local<Value> argv[argc] = {Int32::New(isolate_, timer_id)};
-			//转换成js函数对象
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);
 		}
@@ -132,8 +142,8 @@ int V8_Manager::process_list(void) {
 	return 0;
 }
 
-int V8_Manager::init(const char *script_path) {
-	script_path_ = script_path;
+int V8_Manager::init(const Node_Info &node_info) {
+	node_info_ = node_info;
 	return 0;
 }
 

@@ -1,7 +1,18 @@
 
-function Gate_Info() {
-	this.gate_ip = "";
-	this.gate_port = 0;
+function Endpoint_Info() {
+	this.endpoint_type = 0;
+	this.endpoint_id = 0;
+	this.endpoint_name = "";
+	this.server_ip = "";
+	this.server_port = 0;
+	this.protocol_type = 0;
+}
+
+function Node_Info() {
+	this.node_type = 0;
+	this.node_id = 0;
+	this.node_name = "";
+	this.server_list = new Array();
 }
 
 function Token_Info() {
@@ -137,6 +148,10 @@ function Logout_Info() {
 	this.client_ip = "";
 	this.login_time = 0;
 	this.logout_time = 0;
+}
+
+function node_0() {
+	this.node_info = new Node_Info();
 }
 
 function node_1() {

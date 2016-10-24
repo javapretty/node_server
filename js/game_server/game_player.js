@@ -55,13 +55,13 @@ Game_Player.prototype.tick = function(now) {
 
 Game_Player.prototype.send_success_msg = function(msg_id, msg) {
 	this.is_change = true;
-	send_msg(Endpoint.GAME_GATE_SERVER, this.gate_cid, msg_id, Msg_Type.NODE_S2C, this.player_cid, msg);
+	send_msg(Endpoint.GAME_SERVER, this.gate_cid, msg_id, Msg_Type.NODE_S2C, this.player_cid, msg);
 }
 
 Game_Player.prototype.send_error_msg = function(error_code) {
 	var msg = new s2c_4();
 	msg.error_code = error_code;
-	send_msg(Endpoint.GAME_GATE_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.player_cid, msg);
+	send_msg(Endpoint.GAME_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.player_cid, msg);
 }
 
 Game_Player.prototype.res_role_info = function() {

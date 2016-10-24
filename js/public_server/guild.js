@@ -51,7 +51,7 @@ Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name)
 	msg.role_id = player.player_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
-	send_msg(Endpoint.PUBLIC_GAME_SERVER, player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, Msg_Type.NODE_MSG, player.player_cid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, Msg_Type.NODE_MSG, player.player_cid, msg);
 }
 
 Guild.prototype.member_join_guild = function(player, guild_info) {

@@ -1,4 +1,8 @@
 <root>
+	<node_0>
+		<struct type="Node_Info" name="node_info"/>
+	</node_0>
+	
 	<node_1>
 		<arg type="int16" name="error_code"/>
 	</node_1>
