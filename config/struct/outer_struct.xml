@@ -1,0 +1,103 @@
+<root>
+
+	<c2s_0>
+    	<arg type="int32" name="client_time"/>
+	</c2s_0>
+
+	<s2c_0>
+	  <arg type="int32" name="server_time"/>
+	</s2c_0>
+	
+	<c2s_1>
+		<arg type="string" name="account"/>
+	</c2s_1>
+
+	<s2c_1>
+   	<arg type="string" name="gate_ip"/>
+    	<arg type="int16" name="gate_port"/>
+    	<arg type="string" name="token"/>
+	</s2c_1>
+
+	<c2s_2>
+    	<arg type="string" name="account"/>
+    	<arg type="string" name="token"/>
+	</c2s_2>
+
+	<s2c_2>
+	</s2c_2>
+	
+	<c2s_3>
+		<arg type="string" name="account"/>
+	</c2s_3>
+
+	<s2c_3>
+		<struct type="Role_Info" name="role_info"/>
+	</s2c_3>
+
+	<c2s_4>
+		<arg type="string" name="account"/>
+		<arg type="string" name="role_name"/>
+		<arg type="int8" name="gender"/>
+		<arg type="int8" name="career"/>
+	</c2s_4>
+	
+	<s2c_4>
+		<arg type="int16" name="error_code"/>
+	</s2c_4>
+
+	<c2s_5>
+	</c2s_5>
+
+	<s2c_5>
+		<vector type="Mail_Detail" name="mail_list"/>
+	</s2c_5>
+
+	<c2s_6>
+		<arg type="int32" name="mail_id" desc="收取所有邮件时候id为0"/>
+	</c2s_6>
+
+	<s2c_6>
+		<vector type="int32" name="mail_id_list"/>
+	</s2c_6>
+
+	<c2s_7>
+		<arg type="int32" name="mail_id" desc="删除所有邮件时候id为0"/>
+	</c2s_7>
+
+	<s2c_7>
+		<vector type="int32" name="mail_id_list"/>
+	</s2c_7>
+	
+	<c2s_8>
+	</c2s_8>
+
+	<s2c_8>
+		<vector type="Item_Info" name="item_list"/>
+	</s2c_8>
+
+	<c2s_200>
+	  <arg type="int8" name="rank_type"/>
+	</c2s_200>
+
+	<s2c_200>
+		<arg type="int8" name="rank_type"/>
+		<arg type="int32" name="ranking"/>
+	  <vector type="Rank_Member_Detail" name="rank_list"/>
+	</s2c_200>
+
+	<c2s_201>
+		<arg type="string" name="guild_name"/>
+	</c2s_201>
+
+	<s2c_201>
+	  <struct type="Guild_Info" name="guild_info"/>
+	</s2c_201>
+
+	<c2s_202>
+	</c2s_202>
+
+	<s2c_202>
+	  	<arg type="int64" name="guild_id"/>
+	</s2c_202>
+
+</root>

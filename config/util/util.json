@@ -1,0 +1,5 @@
+{
+	"max_player_level" : 90,
+	"max_vip_level"	: 2,
+	"daily_refresh_time" : 8
+}

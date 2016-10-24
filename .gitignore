@@ -1,0 +1,6 @@
+/Debug/
+/Release/
+/obj/
+/node_server
+/natives_blob.bin
+/snapshot_blob.bin

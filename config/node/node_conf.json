@@ -1,0 +1,348 @@
+{
+	"node" : [
+		{
+			"node_type" : 1,							
+			"node_id" : 1,
+			"node_name" : "db_server",
+			"script_path" : "js/db_server/db_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 1001,
+					"endpoint_name" : "db_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8000,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"mysql_db" : [
+				{
+					"db_id" : 1001,
+					"ip" : "127.0.0.1",
+					"port" : 3306,
+					"user" : "root",
+					"password" : "123456",
+					"pool_name" : "game_pool"
+				}
+			]
+		},
+		
+		{
+			"node_type" : 2,							
+			"node_id" : 2,
+			"node_name" : "log_server",
+			"script_path" : "js/log_server/log_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 2001,
+					"endpoint_name" : "log_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8100,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"mysql_db" : [
+				{
+					"db_id" : 1002,
+					"ip" : "127.0.0.1",
+					"port" : 3306,
+					"user" : "root",
+					"password" : "123456",
+					"pool_name" : "log_pool"
+				}
+			]
+		},
+		
+		{
+			"node_type" : 3,							
+			"node_id" : 3,		
+			"node_name" : "center_server",
+			"script_path" : "js/center_server/center_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 0,
+					"endpoint_id" : 3001,
+					"endpoint_name" : "center_client_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8200,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				},
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 3002,
+					"endpoint_name" : "center_gate_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8201,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			]			
+		},
+		
+		{
+			"node_type" : 4,							
+			"node_id" : 4,	
+			"node_name" : "public_server",
+			"script_path" : "js/public_server/public_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 4001,
+					"endpoint_name" : "public_gate_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8300,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				},
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 4002,
+					"endpoint_name" : "public_game_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8301,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				},
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 4003,
+					"endpoint_name" : "public_http_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8080,					
+    				"protocol_type" : 3,
+    				"receive_timeout" : 60
+				}
+			],
+			"connector" : [
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 4004,
+					"endpoint_name" : "public_log_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8100,
+    				"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 4005,
+					"endpoint_name" : "public_db_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8000,
+    				"protocol_type" : 0,
+    				"receive_timeout" : 0
+				}
+			]				
+		},
+
+		{
+			"node_type" : 5,							
+			"node_id" : 5,		
+			"node_name" : "game_server1",
+			"script_path" : "js/game_server/game_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 5001,
+					"endpoint_name" : "game1_gate_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8400,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"connector" : [
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5002,
+					"endpoint_name" : "game1_log_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8100,
+    				"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5003,
+					"endpoint_name" : "game1_db_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8000,
+    				"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5004,
+					"endpoint_name" : "game1_public_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8301,
+    				"protocol_type" : 0,
+    				"receive_timeout" : 0
+				}
+			]				
+		},
+
+		{
+			"node_type" : 5,							
+			"node_id" : 6,		
+			"node_name" : "game_server2",
+			"script_path" : "js/game_server/game_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 1,
+					"endpoint_id" : 5001,
+					"endpoint_name" : "game2_gate_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8401,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"connector" : [
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5002,
+					"endpoint_name" : "game2_log_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8100,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5003,
+					"endpoint_name" : "game2_db_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8000,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 5004,
+					"endpoint_name" : "game2_public_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8301,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				}
+			]				
+		},
+
+		{
+			"node_type" : 6,							
+			"node_id" : 7,		
+			"node_name" : "gate_server1",
+			"script_path" : "js/gate_server/gate_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 0,
+					"endpoint_id" : 6001,
+					"endpoint_name" : "gate1_client_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8500,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"connector" : [
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6002,
+					"endpoint_name" : "gate1_center_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8201,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6003,
+					"endpoint_name" : "gate1_public_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8300,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6004,
+					"endpoint_name" : "gate1_game1_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8400,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6005,
+					"endpoint_name" : "gate1_game2_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8401,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				}
+			]				
+		},
+
+		{
+			"node_type" : 6,							
+			"node_id" : 8,			
+			"node_name" : "gate_server2",
+			"script_path" : "js/gate_server/gate_server.js",
+			"server" : [
+				{
+					"endpoint_type" : 0,
+					"endpoint_id" : 6001,
+					"endpoint_name" : "gate2_client_server",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8501,					
+    				"protocol_type" : 0,
+    				"receive_timeout" : 60
+				}
+			],
+			"connector" : [
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6002,
+					"endpoint_name" : "gate2_center_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8201,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6003,
+					"endpoint_name" : "gate2_public_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8300,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6004,
+					"endpoint_name" : "gate2_game1_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8400,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				},
+				{
+					"endpoint_type" : 2,
+					"endpoint_id" : 6005,
+					"endpoint_name" : "gate2_game2_connector",
+					"server_ip" : "127.0.0.1",				
+    				"server_port" : 8401,
+					"protocol_type" : 0,
+    				"receive_timeout" : 0
+				}
+			]				
+		}
+	]
+}

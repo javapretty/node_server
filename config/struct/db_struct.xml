@@ -1,0 +1,75 @@
+<root>
+	
+	<Serial_Info>
+		<head table_name="game.serial" index_name="type"/>
+		<arg type="string" name="type"/>
+		<arg type="int32" name="value"/>
+	</Serial_Info>
+	
+	<Game_Player_Info>
+		<head table_name="game.role" index_name="role_id"/>
+		<arg type="int64" name="role_id"/>
+		<arg type="string" name="role_name"/>
+		<arg type="string" name="account"/>
+		<arg type="string" name="client_ip"/>
+		<arg type="int32" name="agent_num"/>
+		<arg type="int32" name="server_num"/>
+		<arg type="int8" name="level"/>
+		<arg type="int32" name="exp"/>
+		<arg type="int8" name="gender"/>
+		<arg type="int8" name="career"/>
+		<arg type="int32" name="create_time"/>
+		<arg type="int32" name="login_time"/>
+		<arg type="int32" name="logout_time"/>
+		<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+		<arg type="int32" name="scene_id"/>
+		<arg type="int32" name="pos_x"/>
+		<arg type="int32" name="pos_y"/>
+		<arg type="int32" name="pos_z"/>
+	</Game_Player_Info>
+
+	<Bag_Info>
+		<head table_name="game.bag" index_name="role_id"/>
+		<arg type="int64" name="role_id"/>
+		<arg type="int32" name="copper"/>
+		<arg type="int32" name="gold"/>
+		<map type="Item_Info" key_type="int32" key_name="item_id" name="item_map"/>
+	</Bag_Info>
+	
+	<Mail_Info>
+		<head table_name="game.mail" index_name="role_id"/>
+		<arg type="int64" name="role_id"/>
+		<arg type="int32" name="total_count"/>
+		<map type="Mail_Detail" key_type="int32" key_name="mail_id" name="mail_map"/>
+	</Mail_Info>
+	
+	<Guild_Info>
+		<head table_name="game.guild" index_name="guild_id"/>
+		<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+		<arg type="int64" name="chief_id"/>
+		<arg type="int32" name="create_time"/>
+		<vector type="Guild_Member_Detail" name="member_list"/>
+	</Guild_Info>
+
+	<Rank_Info>
+		<head table_name="game.rank" index_name="rank_type"/>
+		<arg type="int64" name="rank_type"/>
+		<arg type="int32" name="min_value"/>
+		<arg type="int64" name="min_role_id"/>
+		<map type="Rank_Member_Detail" key_type="int64" key_name="role_id" name="member_map"/>
+	</Rank_Info>
+
+	<Logout_Info>
+		<head table_name="log.logout" index_name="role_id"/>
+		<arg type="int64" name="role_id"/>
+		<arg type="string" name="account"/>
+		<arg type="string" name="role_name"/>
+		<arg type="int8" name="level"/>
+		<arg type="string" name="client_ip"/>
+		<arg type="int32" name="login_time"/>
+		<arg type="int32" name="logout_time"/>
+	</Logout_Info>	
+
+</root>

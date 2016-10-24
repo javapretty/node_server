@@ -1,0 +1,78 @@
+<root>
+	<node_1>
+		<arg type="int16" name="error_code"/>
+	</node_1>
+
+	<node_2>
+		<arg type="string" name="account"/>
+		<arg type="string" name="token"/>
+	</node_2>
+
+	<node_3>
+	</node_3>
+
+	<node_4>
+		<arg type="bool" name="login"/>
+		<arg type="int64" name="role_id"/>
+	</node_4>
+
+	<node_5>
+		<struct type="Public_Player_Info" name="player_info"/>
+	</node_5>
+
+	<node_6>
+		<arg type="int64" name="role_id"/>
+		<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+	</node_6>
+
+	<node_7>
+		<struct type="Logout_Info" name="logout_info"/>
+	</node_7>
+	
+	<node_200>
+		<arg type="string" name="account"/>
+    	<arg type="string" name="role_name"/>
+    	<arg type="int8" name="gender"/>
+    	<arg type="int8" name="career"/>
+	</node_200>
+
+	<node_201>
+		<arg type="string" name="account"/>
+	</node_201>
+
+	<node_202>
+		<arg type="bool" name="logout"/>
+		<struct type="Player_Data" name="player_data"/>
+	</node_202>
+
+	<node_203>
+		<struct type="Player_Data" name="player_data"/>
+	</node_203>
+
+	<node_204>
+		<arg type="string" name="guild_name"/>
+		<arg type="int64" name="chief_id"/>
+	</node_204>
+
+	<node_205>
+		<arg type="int8" name="data_type"/>
+	</node_205>
+
+	<node_206>
+		<arg type="int8" name="data_type"/>
+		<vector type="Guild_Info" name="guild_list"/>
+		<vector type="Rank_Info" name="rank_list"/>
+	</node_206>
+
+	<node_207>
+		<arg type="int8" name="data_type"/>
+		<vector type="int64" name="index_list"/>
+	</node_207>
+
+	<node_208>
+		<arg type="int8" name="data_type"/>
+		<vector type="Guild_Info" name="guild_list"/>
+		<vector type="Rank_Info" name="rank_list"/>
+	</node_208>
+</root>
