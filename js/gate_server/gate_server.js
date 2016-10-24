@@ -31,10 +31,6 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(tick_time) {
-	
-}
-
 function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.REQ_CONNECT_GATE:

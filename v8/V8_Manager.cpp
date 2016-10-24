@@ -54,7 +54,7 @@ int V8_Manager::process_list(void) {
 	run_script(isolate_, script_path_.c_str());
 
 	Block_Buffer *buffer = nullptr;
-	int tick_time = 0;
+	int timer_id = 0;
 	while (1) {
 		bool all_empty = true;
 
@@ -105,20 +105,20 @@ int V8_Manager::process_list(void) {
 			NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
 		}
 		
-		tick_time = NODE_MANAGER->pop_tick();
-		if (tick_time > 0) {
+		if (!timer_list_.empty()) {
 			all_empty = false;
 			
 			//获取js函数
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_tick", NewStringType::kNormal).ToLocalChecked();
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
-				LOG_ERROR("can't find function 'on_msg'");
+				LOG_ERROR("can't find function 'on_tick'");
 				return -1;
 			}
 
+			timer_id = timer_list_.pop_front();
 			const int argc = 1;
-			Local<Value> argv[argc] = {Int32::New(isolate_, tick_time)};
+			Local<Value> argv[argc] = {Int32::New(isolate_, timer_id)};
 			//转换成js函数对象
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);

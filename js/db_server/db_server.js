@@ -47,10 +47,6 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(tick_time) {
-	
-}
-
 function init_db_connect() {
 	for(var i = 0; i < config.node_json['node'].length; i++){
 		if(config.node_json['node'][i]['node_type'] == Node_Type.DB_SERVER){

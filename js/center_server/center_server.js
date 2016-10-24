@@ -9,12 +9,16 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 
 //account--Token_Info
 var account_token_map = new Map();
 //加载配置文件
 var config = new Config();
 config.init();
+//初始化定时器
+var timer = new Timer();
+timer.init(Node_Type.CENTER_SERVER);
 //初始化gate列表
 var gate_list = new Array();
 init_gate_list();
@@ -35,13 +39,11 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(tick_time) {
-	account_token_map.forEach(function(value, key, map) {
-		if (tick_time - value.token_time > 10) {
-			close_session(Endpoint.CENTER_CLIENT_SERVER, value.cid, Error_Code.TOKEN_TIMEOUT);
-			account_token_map.delete(key);	
-		}
-    });
+function on_tick(timer_id) {
+	var timer_handler = timer.get_timer_handler(timer_id);
+	if (timer_handler != null) {
+		timer_handler();
+	}
 }
 
 function init_gate_list() {

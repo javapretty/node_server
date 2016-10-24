@@ -35,8 +35,11 @@ public:
 	virtual int process_list(void);
 
 	inline void push_drop(const Drop_Info &drop_info) { drop_list_.push_back(drop_info); }
-	inline void push_tick(int tick);
-	inline int pop_tick(void);
+	inline void push_tick(int tick) {
+		//释放信号量，让信号量的值加1，相当于V操作
+		sem_post(&tick_sem_);
+		tick_list_.push_back(tick);
+	}
 
 	//从endpoint中取消息buffer
 	Block_Buffer *pop_buffer(void);
@@ -88,7 +91,6 @@ private:
 
 	sem_t tick_sem_;							//定时器通知信号量
 	Int_List tick_list_;					//定时器列表
-	Int_List js_tick_list_;			//js定时器列表
 
 	Time_Value tick_time_;				//节点tick时间
 	Time_Value node_info_tick_;	//节点信息tick
@@ -107,19 +109,4 @@ private:
 
 #define NODE_MANAGER Node_Manager::instance()
 
-/////////////////////////////////////////////////////////////////
-inline void Node_Manager::push_tick(int tick) {
-	//释放信号量，让信号量的值加1，相当于V操作
-	sem_post(&tick_sem_);
-	tick_list_.push_back(tick);
-	js_tick_list_.push_back(tick);
-}
-
-inline int Node_Manager::pop_tick() {
-	if (js_tick_list_.empty()) {
-		return 0;
-	} else {
-		return js_tick_list_.pop_front();
-	}
-}
 #endif /* NODE_MANAGER_H_ */

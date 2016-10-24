@@ -9,6 +9,7 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 require('public_server/public_player.js');
 require('public_server/guild.js');
 require('public_server/rank.js');
@@ -22,15 +23,16 @@ var role_id_public_player_map = new Map();
 //role_name---public_player
 var role_name_public_player_map = new Map();
 
-//加载配置文件
-var config = new Config();
-config.init();
-//上次保存数据时间
-var last_save_time = util.now_sec();
 //公会管理器
 var guild_manager = new Guild();
 //排行榜管理器
 var rank_manager = new Rank();
+//加载配置文件
+var config = new Config();
+config.init();
+//初始化定时器
+var timer = new Timer();
+timer.init(Node_Type.PUBLIC_SERVER);
 //加载public服务器公共数据
 load_public_data();
 
@@ -44,11 +46,10 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(tick_time) {
-	if (tick_time - last_save_time >= 30) {
-		last_save_time += 30;
-		guild_manager.save_data_handler();
-		rank_manager.save_data();
+function on_tick(timer_id) {
+	var timer_handler = timer.get_timer_handler(timer_id);
+	if (timer_handler != null) {
+		timer_handler();
 	}
 }
 

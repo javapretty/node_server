@@ -8,8 +8,9 @@
 #include <sstream>
 #include "Base_Function.h"
 #include "Base_V8.h"
-#include "Struct_Manager.h"
 #include "Msg_Struct.h"
+#include "Struct_Manager.h"
+#include "Node_Timer.h"
 #include "Node_Manager.h"
 #include "V8_Wrap.h"
 
@@ -27,6 +28,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, generate_token));
 	global->Set(String::NewFromUtf8(isolate, "generate_id", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, generate_id));
+	global->Set(String::NewFromUtf8(isolate, "register_timer", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, register_timer));
 	global->Set(String::NewFromUtf8(isolate, "send_msg", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, send_msg));
 	global->Set(String::NewFromUtf8(isolate, "close_session", NewStringType::kNormal).ToLocalChecked(),
@@ -137,6 +140,19 @@ void generate_id(const FunctionCallbackInfo<Value>& args) {
 
 	double id = DB_OPERATOR(db_id)->generate_id(db_id, STRUCT_MANAGER->get_table_struct(table_name), type);
 	args.GetReturnValue().Set(id);
+}
+
+void register_timer(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 3) {
+		LOG_ERROR("register timer args error, length: %d\n", args.Length());
+		return;
+	}
+
+	int timer_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int interval = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int first_tick = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	NODE_TIMER->register_handler(timer_id, interval, first_tick);
+	LOG_INFO("register_timer, timer_id:%d, interval:%d", timer_id, interval);
 }
 
 std::string get_struct_name(int msg_type, int msg_id) {

@@ -9,6 +9,7 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 require('game_server/game_player.js');
 require('game_server/bag.js');
 require('game_server/mail.js');
@@ -26,6 +27,9 @@ var logout_map = new Map();
 //加载配置文件
 var config = new Config();
 config.init();
+//初始化定时器
+var timer = new Timer();
+timer.init(Node_Type.GAME_SERVER);
 
 function on_msg(msg) {
 	print('game_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
@@ -37,8 +41,11 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(tick_time) {
-	
+function on_tick(timer_id) {
+	var timer_handler = timer.get_timer_handler(timer_id);
+	if (timer_handler != null) {
+		timer_handler();
+	}
 }
 
 function process_game_client_msg(msg) {

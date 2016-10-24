@@ -12,6 +12,7 @@
 #include "include/v8.h"
 #include "include/libplatform/libplatform.h"
 #include "Thread.h"
+#include "List.h"
 
 using namespace v8;
 
@@ -27,6 +28,7 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 };
 
 class V8_Manager: public Thread {
+	typedef List<int, Thread_Mutex> Int_List;
 public:
 	static V8_Manager *instance(void);
 	virtual void run_handler(void);
@@ -34,6 +36,8 @@ public:
 
 	int init(const char *script_path);
 	int fini(void);
+
+	inline void push_timer(int timer_id) { timer_list_.push_back(timer_id); }
 
 private:
 	V8_Manager(void);
@@ -47,6 +51,7 @@ private:
 	Isolate* isolate_;
 	Global<Context> context_;
 	std::string script_path_;
+	Int_List timer_list_;		//定时器编号
 };
 
 #define V8_MANAGER V8_Manager::instance()

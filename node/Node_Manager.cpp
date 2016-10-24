@@ -13,12 +13,12 @@
 
 Node_Manager::Node_Manager(void):
 	tick_time_(Time_Value::zero),
-	node_info_tick_(Time_Value::zero),
-  msg_count_(false),
-  total_recv_bytes(0),
-  total_send_bytes(0)
+	msg_count_(false),
+	total_recv_bytes(0),
+	total_send_bytes(0)
 {
 	sem_init(&tick_sem_, 0, 0);
+	node_info_tick_ = Time_Value::gettimeofday() + Time_Value(300, 0);
 }
 
 Node_Manager::~Node_Manager(void) {
@@ -50,8 +50,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 		STRUCT_MANAGER->init_struct(node_misc["db_struct_path"][i].asCString(), DB_STRUCT);
 	}
 	STRUCT_MANAGER->init_db_operator();
-	//启动定时器线程
-	NODE_TIMER->thr_create();
+
 	//启动server线程
 	for (Endpoint_List::iterator iter = node_info_.server_list.begin(); iter != node_info_.server_list.end(); ++iter) {
 		Server *server = server_pool_.pop();
@@ -79,9 +78,13 @@ int Node_Manager::init(const Node_Info &node_info) {
 		endpoint_map_.insert(std::make_pair(iter->endpoint_id, connector));
 		LOG_INFO("%s connect server ip:%s, port:%d, cid:%d", iter->endpoint_name.c_str(), iter->server_ip.c_str(), iter->server_port, cid);
 	}
+
 	//启动V8线程，需要在网络线程启动后
 	V8_MANAGER->init(node_info.script_path.c_str());
 	V8_MANAGER->thr_create();
+
+	//启动定时器线程,需在V8线程启动后
+	NODE_TIMER->thr_create();
 
 	return 0;
 }
@@ -201,10 +204,10 @@ int Node_Manager::drop_list_tick(Time_Value &now) {
 }
 
 int Node_Manager::node_info_tick(Time_Value &now) {
-	if (now - node_info_tick_ < Time_Value(300, 0))
+	if (now < node_info_tick_)
 		return 0;
-	node_info_tick_ = now;
-
+	
+	node_info_tick_ = now + Time_Value(300, 0);
 	get_node_info();
 	print_node_info();
 	print_msg_info();
