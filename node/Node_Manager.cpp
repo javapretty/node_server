@@ -16,9 +16,14 @@ Node_Manager::Node_Manager(void):
 	node_info_tick_(Time_Value::zero),
   msg_count_(false),
   total_recv_bytes(0),
-  total_send_bytes(0) { }
+  total_send_bytes(0)
+{
+	sem_init(&tick_sem_, 0, 0);
+}
 
-Node_Manager::~Node_Manager(void) {}
+Node_Manager::~Node_Manager(void) {
+	sem_destroy(&tick_sem_);
+}
 
 Node_Manager *Node_Manager::instance_;
 
@@ -111,17 +116,13 @@ void Node_Manager::run_handler(void) {
 
 int Node_Manager::process_list(void) {
 	while (1) {
-		bool all_empty = true;
+		//等待信号量，如果信号量的值大于0,将信号量的值减1,立即返回;如果信号量的值为0,则线程阻塞。相当于P操作
+		sem_wait(&tick_sem_);
 
 		//定时器列表
 		if (! tick_list_.empty()) {
-			all_empty = false;
 			tick_list_.pop_front();
 			tick();
-		}
-
-		if (all_empty) {
-			Time_Value::sleep(SLEEP_TIME);
 		}
 	}
 	return 0;
@@ -164,7 +165,6 @@ int Node_Manager::free_pool(void) {
 		iter->second->free_pool();
 	}
 
-	block_pool_.shrink_all();
 	server_pool_.shrink_all();
 	connector_pool_.shrink_all();
 	return 0;
@@ -215,7 +215,6 @@ void Node_Manager::get_node_info(void) { }
 
 void Node_Manager::print_node_info(void) {
 	LOG_INFO("%s server_id:%d", node_info_.node_name.c_str(), node_info_.node_id);
-	LOG_INFO("block_pool_ free = %d, used = %d", block_pool_.free_obj_list_size(), block_pool_.used_obj_list_size());
 	LOG_INFO("server_pool_ free = %d, used = %d", server_pool_.free_obj_list_size(), server_pool_.used_obj_list_size());
 	LOG_INFO("connector_pool_ free = %d, used = %d", connector_pool_.free_obj_list_size(), connector_pool_.used_obj_list_size());
 }

@@ -8,6 +8,7 @@
 #ifndef NODE_MANAGER_H_
 #define NODE_MANAGER_H_
 
+#include <semaphore.h>
 #include "Block_List.h"
 #include "Log.h"
 #include "Endpoint.h"
@@ -15,7 +16,6 @@
 
 class Node_Manager: public Thread {
 public:
-	typedef Object_Pool<Block_Buffer, Thread_Mutex> Block_Pool;
 	typedef Object_Pool<Server, Thread_Mutex> Server_Pool;
 	typedef Object_Pool<Connector, Thread_Mutex> Connector_Pool;
 
@@ -84,19 +84,20 @@ private:
 private:
 	static Node_Manager *instance_;
 
-	Block_Pool block_pool_;
+	Drop_List drop_list_; 				//逻辑层发起的掉线cid列表
+
+	sem_t tick_sem_;							//定时器通知信号量
+	Int_List tick_list_;					//定时器列表
+	Int_List js_tick_list_;			//js定时器列表
+
+	Time_Value tick_time_;				//节点tick时间
+	Time_Value node_info_tick_;	//节点信息tick
+
 	Server_Pool server_pool_;
 	Connector_Pool connector_pool_;
 
-	Drop_List drop_list_; 				//逻辑层发起的掉线cid列表
-	Int_List tick_list_;					//定时器列表
-	Int_List js_tick_list_;				//js定时器列表
-
 	Node_Info node_info_;				//节点信息
-	Endpoint_Map endpoint_map_;			//通信端信息
-
-	Time_Value tick_time_;				//节点tick时间
-	Time_Value node_info_tick_;			//节点信息tick
+	Endpoint_Map endpoint_map_;	//通信端信息
 
 	bool msg_count_;
 	Msg_Count_Map msg_count_map_;
@@ -108,6 +109,8 @@ private:
 
 /////////////////////////////////////////////////////////////////
 inline void Node_Manager::push_tick(int tick) {
+	//释放信号量，让信号量的值加1，相当于V操作
+	sem_post(&tick_sem_);
 	tick_list_.push_back(tick);
 	js_tick_list_.push_back(tick);
 }

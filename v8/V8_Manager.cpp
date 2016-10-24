@@ -125,7 +125,7 @@ int V8_Manager::process_list(void) {
 		}
 
 		if (all_empty) {
-			Time_Value::sleep(SLEEP_TIME);
+			Time_Value::sleep(Time_Value(0, 100));
 		}
 	}
 	
