@@ -14,8 +14,9 @@ require('gate_server/session.js');
 
 //sid idx
 var sid_idx = 0;
-var min_idx = 0;
 var max_idx = 0;
+//sid set
+var sid_set = new Set();
 //game_node--game_endpoint
 var game_node_endpoint_map = new Map();
 //cid--session
@@ -29,6 +30,24 @@ var config = new Config();
 //定时器
 var timer = new Timer();
 
+function get_sid(cid) {
+	var count = 0;
+	do {
+		count++;
+		sid_idx++;
+		if (sid_idx >= max_idx) {
+			sid_idx = max_idx - 1000000;
+		}
+	} while (sid_set.has(sid_idx) && count < 10000)
+
+	if (count >= 10000) {
+		print('get_sid error, cal count:', count, ' cid:', cid); 
+		close_session(Endpoint.GATE_CLIENT_SERVER, cid, Error_Code.DISCONNECT_SELF);
+		return -1;
+	}
+	return sid_idx;
+}
+
 function init(node_info) {
 	print('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
@@ -36,8 +55,7 @@ function init(node_info) {
 
 	gate_node_info = node_info;
 	sid_idx = node_info.node_id % 10000 * 1000000;
-	min_idx = sid_idx;
-	max_idx = min_idx + 999999;
+	max_idx = sid_idx + 1000000;
 	//初始化game node_id对应的endpoint map
 	game_node_endpoint_map.set(Node_Id.GAME_SERVER1, Endpoint.GATE_GAME1_CONNECTOR);
 	game_node_endpoint_map.set(Node_Id.GAME_SERVER2, Endpoint.GATE_GAME2_CONNECTOR);
@@ -62,6 +80,8 @@ function on_msg(msg) {
 function on_drop(drop_cid) {
 	var session = cid_session_map.get(drop_cid);
 	if (session) {
+		sid_set.remove(session.sid);
+		
 		var msg = new node_3();
 		send_msg(session.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, session.sid, msg);
 	}
@@ -131,11 +151,9 @@ function verify_token(msg) {
 	var session = new Session();
 	session.game_endpoint = game_node_endpoint_map.get(msg.game_node);
 	session.cid = msg.sid;
-	if (sid_idx >= max_idx) {
-		sid_idx = min_idx;
-	}
-	session.sid = sid_idx++;
+	session.sid = get_sid(msg.sid);
 	session.account = msg.account;
+	sid_set.add(session.sid);
 	cid_session_map.set(session.cid, session);
 	sid_session_map.set(session.sid, session);
 	account_session_map.set(session.account, session);
