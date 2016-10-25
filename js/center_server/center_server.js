@@ -122,7 +122,7 @@ function game_player_login_logout(msg) {
 		if (msg.login) {
 			sid_set.add(msg.sid);
 		} else {
-			sid_set.remove(msg.sid);
+			sid_set.delete(msg.sid);
 		}		
 	} 
 	else {

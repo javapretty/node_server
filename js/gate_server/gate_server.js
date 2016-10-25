@@ -80,7 +80,7 @@ function on_msg(msg) {
 function on_drop(drop_cid) {
 	var session = cid_session_map.get(drop_cid);
 	if (session) {
-		sid_set.remove(session.sid);
+		sid_set.delete(session.sid);
 		
 		var msg = new node_3();
 		send_msg(session.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, session.sid, msg);
