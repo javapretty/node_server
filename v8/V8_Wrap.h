@@ -36,7 +36,7 @@ void generate_id(const FunctionCallbackInfo<Value>& args);
 void register_timer(const FunctionCallbackInfo<Value>& args);
 //函数说明：发送消息object	参数：1.endpoint_id 2.cid 3.msg_id 4.msg_type 5.sid 6.消息object   返回值：无
 void send_msg(const FunctionCallbackInfo<Value>& args);
-//函数说明：关闭客户端连接  	参数：1.endpoint_id 2.drop_cid 3.drop_code    返回值：无
+//函数说明：关闭客户端连接  	参数：1.endpoint_id 2.drop_cid 3.error_code    返回值：无
 void close_session(const FunctionCallbackInfo<Value>& args);
 
 //函数说明：连接mysql数据库数据		参数：1.db_id 2.ip 3.port	 返回值：连接成功

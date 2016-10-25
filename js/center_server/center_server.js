@@ -30,6 +30,8 @@ function init(node_info) {
 	timer.init(Node_Type.CENTER_SERVER);
 }
 
+function on_drop(cid) { }
+
 function on_msg(msg) {
 	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
@@ -57,10 +59,6 @@ function on_tick(timer_id) {
 	if (timer_handler != null) {
 		timer_handler();
 	}
-}
-
-function on_drop(drop_id) {
-
 }
 
 function select_gate(msg) {

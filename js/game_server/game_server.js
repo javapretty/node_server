@@ -42,6 +42,8 @@ function init(node_info) {
 	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
 }
 
+function on_drop(cid) { }
+
 function on_msg(msg) {
 	print('game_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
@@ -57,10 +59,6 @@ function on_tick(timer_id) {
 	if (timer_handler != null) {
 		timer_handler();
 	}
-}
-
-function on_drop(drop_id) {
-
 }
 
 function process_game_client_msg(msg) {

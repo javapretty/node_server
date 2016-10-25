@@ -65,20 +65,8 @@ function init(node_info) {
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);	
 }
 
-function on_msg(msg) {
-	print('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
-	if (msg.msg_type == Msg_Type.C2S) {
-		process_gate_client_msg(msg);
-	} else if (msg.msg_type == Msg_Type.NODE_S2C) {
-		process_gate_s2c_msg(msg);
-	} else if (msg.msg_type == Msg_Type.NODE_MSG) {
-		process_gate_node_msg(msg);
-	}
-}
-
-function on_drop(drop_id) {
-	var session = cid_session_map.get(drop_id);
+function on_drop(cid) {
+	var session = cid_session_map.get(cid);
 	if (session) {
 		sid_set.delete(session.sid);
 		var msg_3 = new node_3();
@@ -92,6 +80,20 @@ function on_drop(drop_id) {
 		account_session_map.delete(session.account);
 	}
 }
+
+function on_msg(msg) {
+	print('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	
+	if (msg.msg_type == Msg_Type.C2S) {
+		process_gate_client_msg(msg);
+	} else if (msg.msg_type == Msg_Type.NODE_S2C) {
+		process_gate_s2c_msg(msg);
+	} else if (msg.msg_type == Msg_Type.NODE_MSG) {
+		process_gate_node_msg(msg);
+	}
+}
+
+function on_tick(timer_id) {}
 
 function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
@@ -120,9 +122,8 @@ function process_gate_s2c_msg(msg) {
 		msg_res.role_id = msg.role_info.role_id;
 		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
-	
-	if (msg.msg_id == Msg.RES_ERROR_CODE && msg.error_code == Error_Code.PLAYER_KICK_OFF) {
-		print("kickoff player sid:", msg.sid);
+	//玩家下线，清除session信息
+	else if (msg.msg_id == Msg.RES_ERROR_CODE && msg.error_code == Error_Code.PLAYER_KICK_OFF) {
 		var session = sid_session_map.get(msg.sid);
 		cid_session_map.delete(session.cid);
 		sid_session_map.delete(session.sid);

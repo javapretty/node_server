@@ -245,9 +245,7 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	}
 	buffer.write_len(RPC_PKG);
 	NODE_MANAGER->send_buffer(endpoint_id, cid, buffer);
-
-	//LOG_WARN("endpoint_id:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d, struct_name:%s",
-	//		endpoint_id, cid, msg_type, msg_id, sid, struct_name.c_str());
+	NODE_MANAGER->add_send_bytes(buffer.readable_bytes());
 }
 
 void close_session(const FunctionCallbackInfo<Value>& args) {
@@ -260,8 +258,7 @@ void close_session(const FunctionCallbackInfo<Value>& args) {
 	Drop_Info drop_info;
 	drop_info.endpoint_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	drop_info.drop_cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.drop_code = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.drop_time = Time_Value::gettimeofday();
+	drop_info.error_code = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	NODE_MANAGER->push_drop(drop_info);
 }
 

@@ -24,6 +24,8 @@ function init(node_info) {
 	init_db_connect();
 }
 
+function on_drop(cid) { }
+
 function on_msg(msg) {
 	print('db_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
@@ -55,9 +57,7 @@ function on_msg(msg) {
 	}
 }
 
-function on_drop(drop_id) {
-
-}
+function on_tick(timer_id) {}
 
 function init_db_connect() {
 	for(var i = 0; i < config.node_json['node'].length; i++){

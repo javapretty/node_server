@@ -53,7 +53,7 @@ int V8_Manager::process_list(void) {
 	//运行脚本
 	run_script(isolate_, node_info_.script_path.c_str());
 
-	//获取脚本初始化函数
+	//脚本初始化
 	Local<String> func_name = String::NewFromUtf8(isolate_, "init", NewStringType::kNormal).ToLocalChecked();
 	Local<Value> func_value;
 	if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
@@ -67,13 +67,13 @@ int V8_Manager::process_list(void) {
 	js_func->Call(context, context->Global(), argc, argv);
 	
 	Block_Buffer *buffer = nullptr;
-	int timer_id = 0;
 	while (1) {
 		bool all_empty = true;
+
+		//脚本处理cid掉线
 		int drop_cid = NODE_MANAGER->get_drop_cid();
 		if(drop_cid != -1){
 			all_empty = false;
-			//获取js函数
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_drop", NewStringType::kNormal).ToLocalChecked();
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
@@ -82,16 +82,14 @@ int V8_Manager::process_list(void) {
 			}
 			const int argc = 1;
 			Local<Value> argv[argc] = {Int32::New(isolate_, drop_cid)};
-			//转换成js函数对象
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);
 		}
 
+		//脚本处理消息buffer
 		buffer = NODE_MANAGER->pop_buffer();
 		if (buffer) {
 			all_empty = false;
-
-			//获取js函数
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_msg", NewStringType::kNormal).ToLocalChecked();
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
@@ -99,6 +97,7 @@ int V8_Manager::process_list(void) {
 				continue;
 			}
 			
+			NODE_MANAGER->add_recv_bytes(buffer->readable_bytes() - 8);
 			int32_t endpoint_id = 0;
 			int32_t cid = 0;
 			uint8_t compress = 0;
@@ -132,10 +131,9 @@ int V8_Manager::process_list(void) {
 			NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
 		}
 		
+		//脚本处理定时器
 		if (!timer_list_.empty()) {
 			all_empty = false;
-			
-			//获取js函数
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_tick", NewStringType::kNormal).ToLocalChecked();
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
@@ -143,7 +141,7 @@ int V8_Manager::process_list(void) {
 				continue;
 			}
 
-			timer_id = timer_list_.pop_front();
+			int timer_id = timer_list_.pop_front();
 			const int argc = 1;
 			Local<Value> argv[argc] = {Int32::New(isolate_, timer_id)};
 			Local<Function> js_func = Local<Function>::Cast(func_value);

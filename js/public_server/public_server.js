@@ -18,8 +18,6 @@ require('public_server/rank.js');
 var sid_public_player_map = new Map();
 //role_id---public_player
 var role_id_public_player_map = new Map();
-//role_name---public_player
-var role_name_public_player_map = new Map();
 
 //公会管理器
 var guild_manager = new Guild();
@@ -38,6 +36,8 @@ function init(node_info) {
 	load_public_data();
 }
 
+function on_drop(cid) { }
+
 function on_msg(msg) {
 	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
@@ -53,10 +53,6 @@ function on_tick(timer_id) {
 	if (timer_handler != null) {
 		timer_handler();
 	}
-}
-
-function on_drop(drop_id) {
-
 }
 
 function load_public_data() {
@@ -126,7 +122,7 @@ function process_public_node_msg(msg) {
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.set_gate_cid(msg.cid, msg.sid);
+			public_player.gate_login(msg.cid, msg.sid);
 		} else {
 			var public_player = sid_public_player_map.get(msg.sid);
 			if(public_player) {
@@ -137,7 +133,7 @@ function process_public_node_msg(msg) {
 	}
 	case Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN: {
 		//game通知public玩家上线
-		var public_player = role_id_public_player_map.get(msg.player_info.role_id);
+		var public_player = sid_public_player_map.get(msg.sid);
 		if (public_player == null) {
 			public_player = new Public_Player();
 		}
