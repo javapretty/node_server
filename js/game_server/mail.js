@@ -19,7 +19,7 @@ Mail.prototype.save_data = function(msg) {
 }
 
 Mail.prototype.fetch_mail = function() {
-	print('fetch_mail_info, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name, " util.now_msec:", util.now_msec());
+	print('fetch_mail_info, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name);
 	var msg_res = new s2c_5();
 	for (var value of this.mail_info.mail_map.values()) {
   		msg_res.mail_list.push(value);
@@ -28,7 +28,7 @@ Mail.prototype.fetch_mail = function() {
 }
 
 Mail.prototype.pickup_mail = function(msg) {
-	print('pickup_mail, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name, " util.now_msec:", util.now_msec());
+	print('pickup_mail, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name);
 	var msg_res = new s2c_6();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
@@ -52,7 +52,7 @@ Mail.prototype.pickup_mail = function(msg) {
 }
 
 Mail.prototype.delete_mail = function(msg) {
-	print('delete_mail, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name, " util.now_msec:", util.now_msec());
+	print('delete_mail, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name);
 	var msg_res = new s2c_7();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {

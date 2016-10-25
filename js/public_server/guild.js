@@ -51,7 +51,7 @@ Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name)
 	msg.role_id = player.player_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
-	send_msg(Endpoint.PUBLIC_GAME_SERVER, player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, Msg_Type.NODE_MSG, player.player_cid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, Msg_Type.NODE_MSG, player.sid, msg);
 }
 
 Guild.prototype.member_join_guild = function(player, guild_info) {
@@ -66,16 +66,16 @@ Guild.prototype.member_join_guild = function(player, guild_info) {
 }
 
 Guild.prototype.create_guild = function(player, msg) {
-	print('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.player_info.role_id, ' util.now_msec:', util.now_msec());
+	print('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.player_info.role_id);
 
 	var msg_res = new node_204();
 	msg_res.guild_name = msg.guild_name;
 	msg_res.chief_id = player.player_info.role_id;
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_CREATE_GUILD, Msg_Type.NODE_MSG, util.get_cid(msg.cid, msg.extra), msg_res);
+	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_CREATE_GUILD, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
 
 Guild.prototype.db_create_guild = function(msg) {
-	var player = gate_cid_public_player_map.get(msg.extra);
+	var player = sid_public_player_map.get(msg.sid);
 	if (!player || msg.guild_list.length != 1) {
 		print('db_create_guild param error');
 		return;
@@ -91,7 +91,6 @@ Guild.prototype.db_create_guild = function(msg) {
 }
 
 Guild.prototype.dissove_guild = function(player, msg) {
-	print('dissove_guild, util.now_msec:', util.now_msec());
 	var guild_info = this.guild_map.get(player.player_info.guild_id);
 	if(guild_info == null){
 		return player.send_error_msg(Error_Code.GUILD_NOT_EXIST);

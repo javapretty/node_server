@@ -17,7 +17,7 @@ if (typeof Error_Code == "undefined") {
 	Error_Code.CLIENT_PARAM_ERROR 	= 7;		//客户端参数错误
 	Error_Code.CONFIG_ERROR 		= 8;		//配置文件错误
 	Error_Code.ROLE_HAS_EXIST 		= 9;		//角色已存在
-	Error_Code.SAVE_PLAYER_COMPLETE= 10;		//保存玩家完成
+	Error_Code.SAVE_PLAYER_COMPLETE = 10;		//保存玩家完成
 	Error_Code.ROLE_NOT_EXIST 		= 11;		//角色不存在
 	Error_Code.ROLE_OFFLINE 		= 12;		//玩家已离线
 	Error_Code.LEVEL_NOT_ENOUGH 	= 13;		//角色等级不足
@@ -34,8 +34,8 @@ if (typeof Error_Code == "undefined") {
 
 if (typeof Msg_Type == "undefined") {
 	var Msg_Type = {};
-	Msg_Type.C2S			= 1;	//客户端发到服务器的消息
-	Msg_Type.S2C			= 2;	//服务器发到客户端的消息
+	Msg_Type.C2S		= 1;	//客户端发到服务器的消息
+	Msg_Type.S2C		= 2;	//服务器发到客户端的消息
 	Msg_Type.NODE_C2S	= 3;	//客户端经过gate中转发到后端服务器的消息
 	Msg_Type.NODE_S2C	= 4;	//后端服务器经过gate中转发到gate的消息
 	Msg_Type.NODE_MSG	= 5;	//服务器进程节点间通信的消息
@@ -44,11 +44,23 @@ if (typeof Msg_Type == "undefined") {
 if (typeof Node_Type == "undefined") {
 	var Node_Type = {};
 	Node_Type.DB_SERVER		= 1;
-	Node_Type.LOG_SERVER		= 2;
+	Node_Type.LOG_SERVER	= 2;
 	Node_Type.CENTER_SERVER	= 3;
 	Node_Type.PUBLIC_SERVER	= 4;
 	Node_Type.GAME_SERVER	= 5;
 	Node_Type.GATE_SERVER	= 6;
+}
+
+if (typeof Node_Id == "undefined") {
+	var Node_Id = {};
+	Node_Id.DB_SERVER		= 10001;
+	Node_Id.LOG_SERVER	= 20001;
+	Node_Id.CENTER_SERVER	= 30001;
+	Node_Id.PUBLIC_SERVER	= 40001;
+	Node_Id.GAME_SERVER1	= 50001;
+	Node_Id.GAME_SERVER2	= 50002;
+	Node_Id.GATE_SERVER1	= 60001;
+	Node_Id.GATE_SERVER2	= 60002;
 }
 
 if (typeof Endpoint == "undefined") {
@@ -58,21 +70,21 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.LOG_SERVER				= 2001;
 		
 	Endpoint.CENTER_CLIENT_SERVER	= 3001;
-	Endpoint.CENTER_GATE_SERVER		= 3002;
+	Endpoint.CENTER_SERVER			= 3002;
 	
-	Endpoint.PUBLIC_GATE_SERVER		= 4001;
-	Endpoint.PUBLIC_GAME_SERVER		= 4002;
-	Endpoint.PUBLIC_HTTP_SERVER		= 4003;
-	Endpoint.PUBLIC_LOG_CONNECTOR	= 4004;
-	Endpoint.PUBLIC_DB_CONNECTOR	= 4005;
+	Endpoint.PUBLIC_SERVER			= 4001;
+	Endpoint.PUBLIC_HTTP_SERVER		= 4002;
+	Endpoint.PUBLIC_LOG_CONNECTOR	= 4003;
+	Endpoint.PUBLIC_DB_CONNECTOR	= 4004;
 	
-	Endpoint.GAME_GATE_SERVER		= 5001;
-	Endpoint.GAME_LOG_CONNECTOR		= 5002;
-	Endpoint.GAME_DB_CONNECTOR		= 5003;
-	Endpoint.GAME_PUBLIC_CONNECTOR	= 5004;
+	Endpoint.GAME_SERVER			= 5001;
+	Endpoint.GAME_CENTER_CONNECTOR 	= 5002;
+	Endpoint.GAME_LOG_CONNECTOR		= 5003;
+	Endpoint.GAME_DB_CONNECTOR		= 5004;
+	Endpoint.GAME_PUBLIC_CONNECTOR	= 5005;
 	
 	Endpoint.GATE_CLIENT_SERVER 	= 6001;
-	Endpoint.GATE_CENTER_CONNECTOR = 6002;
+	Endpoint.GATE_CENTER_CONNECTOR 	= 6002;
 	Endpoint.GATE_PUBLIC_CONNECTOR	= 6003;
 	Endpoint.GATE_GAME1_CONNECTOR	= 6004;
 	Endpoint.GATE_GAME2_CONNECTOR	= 6005;
@@ -88,7 +100,7 @@ if (typeof Public_Data_Type == "undefined") {
 
 if (typeof Rank_Type == "undefined") {
 	var Rank_Type = {};
-	Rank_Type.LEVEL_RANK		= 1;	//等级排行
+	Rank_Type.LEVEL_RANK	= 1;	//等级排行
 	Rank_Type.COMBAT_RANK 	= 2;	//战力排行
 }
 

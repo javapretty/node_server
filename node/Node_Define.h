@@ -34,10 +34,10 @@ struct Drop_Info {
 typedef std::vector<Endpoint_Info> Endpoint_List;
 struct Node_Info {
 	int node_type;					//节点类型
-	int node_id;						//节点id,控制进程启动顺序
+	int node_id;					//节点id
 	std::string node_name;			//节点名称
 	std::string script_path;		//启动的js脚本路径
-	Endpoint_List server_list;		//服务器线程列表
+	Endpoint_List server_list;	//服务器线程列表
 	Endpoint_List connector_list;	//链接器线程列表
 };
 

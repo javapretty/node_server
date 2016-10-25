@@ -1,20 +1,26 @@
 <root>
 
-	<Gate_Info>
-		<arg type="string" name="gate_ip"/>
-		<arg type="int16" name="gate_port"/>
-	</Gate_Info>
+	<Endpoint_Info>
+		<arg type="int8" name="endpoint_type"/>
+		<arg type="int32" name="endpoint_id"/>
+		<arg type="string" name="endpoint_name"/>
+		<arg type="string" name="server_ip"/>
+		<arg type="int16" name="server_port"/>
+		<arg type="int8" name="protocol_type"/>
+	</Endpoint_Info>
+	
+	<Node_Info>
+		<arg type="int8" name="node_type"/>
+		<arg type="int32" name="node_id"/>
+		<arg type="string" name="node_name"/>
+		<vector type="Endpoint_Info" name="server_list"/>
+	</Node_Info>
 
 	<Token_Info>
 		<arg type="int32" name="cid"/>
 		<arg type="string" name="token"/>
 		<arg type="int32" name="token_time"/>
 	</Token_Info>
-	
-	<Cid_Info>
-		<arg type="int32" name="gate_cid"/>
-		<arg type="int32" name="player_cid"/>
-	</Cid_Info>
 	
 	<Role_Info>
     	<arg type="int64" name="role_id"/>

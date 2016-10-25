@@ -25,7 +25,8 @@ if (typeof Msg == "undefined") {
 	Msg.RES_FETCH_RANK = 200; //获取排行榜
 	Msg.RES_CREATE_GUILD = 201; //创建公会
 	Msg.RES_DISSOVE_GUILD = 202; //解散公会
-	Msg.NODE_ERROR_CODE = 1; //服务器节点发送错误号
+	Msg.NODE_CENTER_NODE_INFO = 0; //同步进程节点信息到center
+	Msg.NODE_ERROR_CODE = 1; //进程节点发送错误号
 	Msg.NODE_GATE_CENTER_VERIFY_TOKEN = 2; //gate通知center校验token
 	Msg.NODE_GATE_GAME_PLAYER_LOGOUT = 3; //gate通知game玩家下线
 	Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT = 4; //gate通知public玩家上线

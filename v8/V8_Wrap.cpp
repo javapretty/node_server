@@ -8,10 +8,80 @@
 #include <sstream>
 #include "Base_Function.h"
 #include "Base_V8.h"
-#include "Struct_Manager.h"
 #include "Msg_Struct.h"
+#include "Struct_Manager.h"
+#include "Node_Timer.h"
 #include "Node_Manager.h"
 #include "V8_Wrap.h"
+
+std::string get_struct_name(int msg_type, int msg_id) {
+	std::ostringstream stream;
+	switch(msg_type) {
+	case C2S:
+	case NODE_C2S:
+		stream << "c2s_" << msg_id;
+		break;
+	case S2C:
+	case NODE_S2C:
+		stream << "s2c_" << msg_id;
+		break;
+	case NODE_MSG:
+		stream << "node_" << msg_id;
+		break;
+	default: {
+		break;
+	}
+	}
+	return stream.str();
+}
+
+Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info) {
+	EscapableHandleScope handle_scope(isolate);
+
+	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
+	Local<Object> node_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, node_info.node_type)).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_id", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, node_info.node_id)).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_name", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, node_info.node_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+
+	int vec_size = node_info.server_list.size();
+	Local<Array> server_array = Array::New(isolate, vec_size);
+	for(uint16_t i = 0; i < vec_size; ++i) {
+		Local<Object> server_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+		Endpoint_Info server_info = node_info.server_list[i];
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.endpoint_type)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_id", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.endpoint_id)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "endpoint_name", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, server_info.endpoint_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_ip", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, server_info.server_ip.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_port", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.server_port)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "protocol_type", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.protocol_type)).FromJust();
+		
+		server_array->Set(isolate->GetCurrentContext(), i, server_obj).FromJust();
+	}
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "server_list", NewStringType::kNormal).ToLocalChecked(),
+			server_array).FromJust();
+
+	return handle_scope.Escape(node_obj);
+}
 
 Local<Context> create_context(Isolate* isolate) {
 	Local<ObjectTemplate> global = ObjectTemplate::New(isolate);
@@ -27,6 +97,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, generate_token));
 	global->Set(String::NewFromUtf8(isolate, "generate_id", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, generate_id));
+	global->Set(String::NewFromUtf8(isolate, "register_timer", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, register_timer));
 	global->Set(String::NewFromUtf8(isolate, "send_msg", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, send_msg));
 	global->Set(String::NewFromUtf8(isolate, "close_session", NewStringType::kNormal).ToLocalChecked(),
@@ -139,25 +211,17 @@ void generate_id(const FunctionCallbackInfo<Value>& args) {
 	args.GetReturnValue().Set(id);
 }
 
-std::string get_struct_name(int msg_type, int msg_id) {
-	std::ostringstream stream;
-	switch(msg_type) {
-	case C2S:
-	case NODE_C2S:
-		stream << "c2s_" << msg_id;
-		break;
-	case S2C:
-	case NODE_S2C:
-		stream << "s2c_" << msg_id;
-		break;
-	case NODE_MSG:
-		stream << "node_" << msg_id;
-		break;
-	default: {
-		break;
+void register_timer(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 3) {
+		LOG_ERROR("register timer args error, length: %d\n", args.Length());
+		return;
 	}
-	}
-	return stream.str();
+
+	int timer_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int interval = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int first_tick = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	NODE_TIMER->register_handler(timer_id, interval, first_tick);
+	LOG_INFO("register_timer, timer_id:%d, interval:%d", timer_id, interval);
 }
 
 void send_msg(const FunctionCallbackInfo<Value>& args) {
@@ -165,14 +229,14 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	int cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_id = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_type = args[3]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	int extra = args[4]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	uint32_t sid = args[4]->Uint32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	Block_Buffer buffer;
 	buffer.write_uint16(0);
 	buffer.write_uint8(msg_id);
 	if (msg_type != S2C) {
 		buffer.write_uint8(msg_type);
-		buffer.write_int32(extra);
+		buffer.write_uint32(sid);
 	}
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
@@ -182,8 +246,8 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	buffer.write_len(RPC_PKG);
 	NODE_MANAGER->send_buffer(endpoint_id, cid, buffer);
 
-	//LOG_WARN("endpoint_id:%d, cid:%d, msg_type:%d, msg_id:%d, extra:%d, struct_name:%s",
-	//		endpoint_id, cid, msg_type, msg_id, extra, struct_name.c_str());
+	//LOG_WARN("endpoint_id:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d, struct_name:%s",
+	//		endpoint_id, cid, msg_type, msg_id, sid, struct_name.c_str());
 }
 
 void close_session(const FunctionCallbackInfo<Value>& args) {

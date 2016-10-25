@@ -8,6 +8,7 @@
 #ifndef NODE_MANAGER_H_
 #define NODE_MANAGER_H_
 
+#include <semaphore.h>
 #include "Block_List.h"
 #include "Log.h"
 #include "Endpoint.h"
@@ -15,7 +16,6 @@
 
 class Node_Manager: public Thread {
 public:
-	typedef Object_Pool<Block_Buffer, Thread_Mutex> Block_Pool;
 	typedef Object_Pool<Server, Thread_Mutex> Server_Pool;
 	typedef Object_Pool<Connector, Thread_Mutex> Connector_Pool;
 
@@ -27,7 +27,7 @@ public:
 	static Node_Manager *instance(void);
 
 	//初始化
-	int init(const Node_Info &node);
+	int init(const Node_Info &node_info);
 	//主动关闭
 	int self_close(void);
 
@@ -35,9 +35,12 @@ public:
 	virtual int process_list(void);
 
 	inline void push_drop(const Drop_Info &drop_info) { drop_list_.push_back(drop_info); }
-	inline void push_tick(int tick);
-	inline int pop_tick(void);
 	inline int get_drop_list();
+	inline void push_tick(int tick) {
+		//释放信号量，让信号量的值加1，相当于V操作
+		sem_post(&tick_sem_);
+		tick_list_.push_back(tick);
+	}
 
 	//从endpoint中取消息buffer
 	Block_Buffer *pop_buffer(void);
@@ -85,41 +88,27 @@ private:
 private:
 	static Node_Manager *instance_;
 
-	Block_Pool block_pool_;
+	Drop_List drop_list_; 			//逻辑层发起的掉线cid列表
+
+	sem_t tick_sem_;					//定时器通知信号量
+	Int_List tick_list_;				//定时器列表
+
+	Time_Value tick_time_;			//节点tick时间
+	Time_Value node_info_tick_;		//节点信息tick
+
 	Server_Pool server_pool_;
 	Connector_Pool connector_pool_;
 
-	Drop_List drop_list_; 				//逻辑层发起的掉线cid列表
-	Int_List tick_list_;					//定时器列表
-	Int_List js_tick_list_;				//js定时器列表
-
-	Node_Info node_info_;				//节点信息
-	Endpoint_Map endpoint_map_;			//通信端信息
-
-	Time_Value tick_time_;				//节点tick时间
-	Time_Value node_info_tick_;			//节点信息tick
+	Node_Info node_info_;			//节点信息
+	Endpoint_Map endpoint_map_;		//通信端信息
 
 	bool msg_count_;
 	Msg_Count_Map msg_count_map_;
-	int total_recv_bytes;				//总共接收的字节
-	int total_send_bytes;				//总共发送的字节
+	int total_recv_bytes;			//总共接收的字节
+	int total_send_bytes;			//总共发送的字节
 };
 
 #define NODE_MANAGER Node_Manager::instance()
-
-/////////////////////////////////////////////////////////////////
-inline void Node_Manager::push_tick(int tick) {
-	tick_list_.push_back(tick);
-	js_tick_list_.push_back(tick);
-}
-
-inline int Node_Manager::pop_tick() {
-	if (js_tick_list_.empty()) {
-		return 0;
-	} else {
-		return js_tick_list_.pop_front();
-	}
-}
 
 int Node_Manager::get_drop_list() {
 	int drop_cid = -1;
@@ -136,3 +125,4 @@ int Node_Manager::get_drop_list() {
 }
 
 #endif /* NODE_MANAGER_H_ */
+

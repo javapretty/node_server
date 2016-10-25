@@ -9,60 +9,53 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
+require('timer.js');
 
 //account--Token_Info
 var account_token_map = new Map();
-//加载配置文件
-var config = new Config();
-config.init();
-//初始化gate列表
+//gate列表
 var gate_list = new Array();
-init_gate_list();
+//game列表
+var game_list = new Array();
+//配置管理器
+var config = new Config();
+//定时器
+var timer = new Timer();
+
+function init(node_info) {
+	print('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	config.init();
+	timer.init(Node_Type.CENTER_SERVER);
+}
 
 function on_msg(msg) {
-	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
+	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
 	case Msg.REQ_SELECT_GATE:
 		select_gate(msg);
+		break;	
+	case Msg.NODE_CENTER_NODE_INFO:
+		set_node_info(msg);
 		break;		
 	case Msg.NODE_GATE_CENTER_VERIFY_TOKEN:
 		verify_token(msg);
 		break;
 	default:
-		print('route_server process_msg, msg_id: not exist', msg.msg_id);
+		print('center_server on_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
 
-function on_tick(tick_time) {
-	account_token_map.forEach(function(value, key, map) {
-		if (tick_time - value.token_time > 10) {
-			close_session(Endpoint.CENTER_CLIENT_SERVER, value.cid, Error_Code.TOKEN_TIMEOUT);
-			account_token_map.delete(key);	
-		}
-    });
+function on_tick(timer_id) {
+	var timer_handler = timer.get_timer_handler(timer_id);
+	if (timer_handler != null) {
+		timer_handler();
+	}
 }
 
 function on_drop(drop_cid) {
 
-}
-
-function init_gate_list() {
-	var node_json = config.node_json["node"];
-	for (var i = 0; i < node_json.length; ++i) {
-		if (node_json[i].node_type == Node_Type.GATE_SERVER) {
-			var server_json = node_json[i]["server"];
-			for (var j = 0; j < server_json.length; ++j) {
-				if (server_json[j].endpoint_id == Endpoint.GATE_CLIENT_SERVER) {
-					var gate_info = new Gate_Info();
-					gate_info.gate_ip = server_json[j].server_ip;
-					gate_info.gate_port = server_json[j].server_port;
-					gate_list.push(gate_info);
-				}
-			}	
-		}
-	}
 }
 
 function select_gate(msg) {
@@ -82,10 +75,19 @@ function select_gate(msg) {
 	account_token_map.set(msg.account, token_info);
 	
 	var msg_res = new s2c_1();
-	msg_res.gate_ip = gate_info.gate_ip;
-	msg_res.gate_port = gate_info.gate_port;
+	msg_res.gate_ip = gate_info.server_list[0].server_ip;
+	msg_res.gate_port = gate_info.server_list[0].server_port;
 	msg_res.token = token_info.token;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_SELECT_GATE, Msg_Type.S2C, 0, msg_res);
+}
+
+function set_node_info(msg) {
+	if (msg.node_info.node_type == Node_Type.GATE_SERVER) {
+		gate_list.push(msg.node_info);
+	}
+	else if (msg.node_info.node_type == Node_Type.GAME_SERVER) {
+		game_list.push(msg.node_info);
+	}
 }
 
 function verify_token(msg) {
@@ -93,7 +95,7 @@ function verify_token(msg) {
 	if (!token_info || token_info.token != msg.token) {		
 		var msg_res = new node_1();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
-		return send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, msg.extra, msg_res);
+		return send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
 
 	if (token_info) {
@@ -101,7 +103,11 @@ function verify_token(msg) {
 		account_token_map.delete(msg.account);
 	}
 
+	var index = hash(msg.account) % (game_list.length);
+	var game_info = game_list[index];
 	var msg_res = new node_2();
 	msg_res.account = msg.account;
-	send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.extra, msg_res);
+	msg_res.game_node = game_info.node_id;
+	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
+

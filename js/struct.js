@@ -1,18 +1,24 @@
 
-function Gate_Info() {
-	this.gate_ip = "";
-	this.gate_port = 0;
+function Endpoint_Info() {
+	this.endpoint_type = 0;
+	this.endpoint_id = 0;
+	this.endpoint_name = "";
+	this.server_ip = "";
+	this.server_port = 0;
+	this.protocol_type = 0;
+}
+
+function Node_Info() {
+	this.node_type = 0;
+	this.node_id = 0;
+	this.node_name = "";
+	this.server_list = new Array();
 }
 
 function Token_Info() {
 	this.cid = 0;
 	this.token = "";
 	this.token_time = 0;
-}
-
-function Cid_Info() {
-	this.gate_cid = 0;
-	this.player_cid = 0;
 }
 
 function Role_Info() {
@@ -139,6 +145,10 @@ function Logout_Info() {
 	this.logout_time = 0;
 }
 
+function node_0() {
+	this.node_info = new Node_Info();
+}
+
 function node_1() {
 	this.error_code = 0;
 }
@@ -146,6 +156,7 @@ function node_1() {
 function node_2() {
 	this.account = "";
 	this.token = "";
+	this.game_node = 0;
 }
 
 function node_3() {
