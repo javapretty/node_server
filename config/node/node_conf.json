@@ -13,7 +13,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8000,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			],
 			"mysql_db" : [
@@ -41,7 +41,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8100,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			],
 			"mysql_db" : [
@@ -78,7 +78,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8201,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			]			
 		},
@@ -96,7 +96,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8300,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				},
 				{
 					"endpoint_type" : 1,
@@ -105,7 +105,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8080,					
     				"protocol_type" : 3,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			],
 			"connector" : [
@@ -143,7 +143,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8400,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			],
 			"connector" : [
@@ -199,7 +199,7 @@
 					"server_ip" : "127.0.0.1",				
     				"server_port" : 8401,					
     				"protocol_type" : 0,
-    				"receive_timeout" : 60
+    				"receive_timeout" : 0
 				}
 			],
 			"connector" : [
