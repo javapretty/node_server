@@ -57,6 +57,22 @@ int V8_Manager::process_list(void) {
 	int tick_time = 0;
 	while (1) {
 		bool all_empty = true;
+		int drop_cid = NODE_MANAGER->get_drop_list();
+		if(drop_cid != -1){
+			all_empty = false;
+			//获取js函数
+			Local<String> func_name = String::NewFromUtf8(isolate_, "on_drop", NewStringType::kNormal).ToLocalChecked();
+			Local<Value> func_value;
+			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
+				LOG_ERROR("can't find function 'on_drop'");
+				return -1;
+			}
+			const int argc = 1;
+			Local<Value> argv[argc] = {Int32::New(isolate_, drop_cid)};
+			//转换成js函数对象
+			Local<Function> js_func = Local<Function>::Cast(func_value);
+			js_func->Call(context, context->Global(), argc, argv);
+		}
 
 		buffer = NODE_MANAGER->pop_buffer();
 		if (buffer) {

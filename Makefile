@@ -1,3 +1,8 @@
+##############################################################################
+#                                                                            #
+#        默认为release模式编译，debug模式请使用参数'MODE=DEBUG'              #
+#                                                                            #
+##############################################################################
 
 ###在这里添加源文件目录
 SRCDIR=	./\
@@ -46,7 +51,7 @@ SRCS=$(wildcard $(addsuffix *.cpp, $(SRCDIR)))
 
 OBJECTS:=$(addprefix $(OBJDIR), $(subst ./,,$(SRCS:.cpp=.o)))
 
-.PHONY:all mkobjdir clean  
+.PHONY:all mkobjdir clean config
 
 all:mkobjdir $(BIN_TARGET)
 
@@ -71,6 +76,20 @@ endif
 
 mkobjdir:
 	@test -d $(OBJDIR) || (mkdir $(OBJDIR) && mkdir $(OBJDIR)bin $(addprefix $(OBJDIR), $(subst ./,,$(SRCDIR))))
+
+config:
+	@tar -zvx -f doc/nodelib.tar.gz -C doc
+	@mv doc/nodelib/libnodelib.so /usr/local/lib64/
+	@cp -rf doc/nodelib/* /usr/local/include/nodelib
+	@rm -rf doc/nodelib/
+	@echo "install nodelib file success"
+	@tar -zvx -f doc/v8.tar.gz -C doc
+	@cp -rf doc/v8/include/* /usr/local/include/include
+	@cp -rf doc/v8/*.so /usr/local/lib64
+	@cp -rf doc/v8/*.a /usr/local/lib64
+	@cp -rf doc/v8/*.bin ./
+	@rm -rf doc/v8/
+	@ldconfig
 
 clean:
 	-rm -rf $(OBJDIR)

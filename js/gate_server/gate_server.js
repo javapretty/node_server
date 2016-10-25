@@ -35,6 +35,15 @@ function on_tick(tick_time) {
 	
 }
 
+function on_drop(drop_cid) {
+	var gate_player = cid_gate_player_map.get(drop_cid);
+	print("DROP_PLAYER'ROLE_NAME IS ", gate_player.account);
+	if (!gate_player) {
+		send_msg(gate_player.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
+		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
+	}
+}
+
 function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.REQ_CONNECT_GATE:

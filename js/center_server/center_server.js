@@ -44,6 +44,10 @@ function on_tick(tick_time) {
     });
 }
 
+function on_drop(drop_cid) {
+
+}
+
 function init_gate_list() {
 	var node_json = config.node_json["node"];
 	for (var i = 0; i < node_json.length; ++i) {

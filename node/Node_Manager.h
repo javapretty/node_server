@@ -37,6 +37,7 @@ public:
 	inline void push_drop(const Drop_Info &drop_info) { drop_list_.push_back(drop_info); }
 	inline void push_tick(int tick);
 	inline int pop_tick(void);
+	inline int get_drop_list();
 
 	//从endpoint中取消息buffer
 	Block_Buffer *pop_buffer(void);
@@ -119,4 +120,19 @@ inline int Node_Manager::pop_tick() {
 		return js_tick_list_.pop_front();
 	}
 }
+
+int Node_Manager::get_drop_list() {
+	int drop_cid = -1;
+	for(Endpoint_Map::iterator iter = endpoint_map_.begin();
+			iter != endpoint_map_.end(); iter++){
+		if(iter->second->endpoint_info().endpoint_type == CLIENT_SERVER) {
+			if(!iter->second->drop_list().empty()) {
+				drop_cid = iter->second->drop_list().front();
+				iter->second->drop_list().pop_front();
+			}
+		}
+	}
+	return drop_cid;
+}
+
 #endif /* NODE_MANAGER_H_ */
