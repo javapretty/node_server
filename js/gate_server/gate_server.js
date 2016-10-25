@@ -60,12 +60,18 @@ function on_msg(msg) {
 }
 
 function on_drop(drop_cid) {
-	var session = cid_session_map.get(msg.cid);
+	var session = cid_session_map.get(drop_cid);
 	if (session) {
-		var msg_g = new 
-		send_msg(gate_player.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
-		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
+		var msg_3 = new node_3();
+		send_msg(session.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg_3);
+		
+		var msg_4 = new node_4();
+		msg_4.login = false;
+		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg_4);
 	}
+	cid_session_map.delete(session.cid);
+	sid_session_map.delete(session.sid);
+	account_session_map.delete(session.account);
 }
 
 function process_gate_client_msg(msg) {
@@ -95,6 +101,15 @@ function process_gate_s2c_msg(msg) {
 		msg_res.role_id = msg.role_info.role_id;
 		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
+	
+	if (msg.msg_id == Msg.RES_ERROR_CODE && msg.error_code == Error_Code.PLAYER_KICK_OFF) {
+		print("kickoff player sid:", msg.sid);
+		var session = sid_session_map.get(msg.sid);
+		cid_session_map.delete(session.cid);
+		sid_session_map.delete(session.sid);
+		account_session_map.delete(session.account);
+		close_session(Endpoint.GATE_CLIENT_SERVER, session.cid, Error_Code.PLAYER_KICK_OFF);
+	}
 }
 
 function process_gate_node_msg(msg) {
@@ -102,6 +117,14 @@ function process_gate_node_msg(msg) {
 	case Msg.NODE_ERROR_CODE: {
 		if (msg.error_code == Error_Code.TOKEN_NOT_EXIST) {
 			send_msg(Endpoint.GATE_CLIENT_SERVER, msg.sid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+		}
+		else if (msg.error_code == Error_Code.PLAYER_KICK_OFF) {
+			print("kickoff player sid:", msg.sid);
+			var session = sid_session_map.get(msg.sid);
+			cid_session_map.delete(session.cid);
+			sid_session_map.delete(session.sid);
+			account_session_map.delete(session.account);
+			close_session(Endpoint.GATE_CLIENT_SERVER, session.cid, Error_Code.PLAYER_KICK_OFF);
 		}
 		break;
 	}

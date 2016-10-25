@@ -18,7 +18,6 @@
 
 	<node_4>
 		<arg type="bool" name="login"/>
-		<arg type="int64" name="role_id"/>
 	</node_4>
 
 	<node_5>

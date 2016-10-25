@@ -16,13 +16,11 @@ Public_Player.prototype.set_gate_cid = function(gate_cid, sid, role_id) {
 	
 	this.gate_cid = gate_cid;
 	this.sid = sid;
-	this.player_info.role_id = role_id;
 	sid_public_player_map.set(this.sid, this);
-	role_id_public_player_map.set(this.player_info.role_id, this);
 }
 
 //玩家上线，加载数据
-Public_Player.prototype.load_player_data = function(game_cid, sid, player_info) {
+Public_Player.prototype.login = function(game_cid, sid, player_info) {
 	print('********public_player login from game, game_cid:', game_cid, ' sid:', sid, ' role_id:', player_info.role_id);
 
 	this.game_cid = game_cid;
@@ -34,10 +32,10 @@ Public_Player.prototype.load_player_data = function(game_cid, sid, player_info) 
 	
 	rank_manager.update_rank(Rank_Type.LEVEL_RANK, this);
 }
-	
+
 //玩家离线，保存数据
-Public_Player.prototype.save_player_data = function() {
-	print('********public_player save_data, role_id:', this.player_info.role_id, ' sid:', this.sid, " role_name:", this.player_info.role_name);
+Public_Player.prototype.logout = function() {
+	print('********public_player logout, role_id:', this.player_info.role_id, ' sid:', this.sid, " role_name:", this.player_info.role_name);
 	sid_public_player_map.delete(this.sid);
 	role_id_public_player_map.delete(this.player_info.role_id);
 	role_name_public_player_map.delete(this.player_info.role_name);

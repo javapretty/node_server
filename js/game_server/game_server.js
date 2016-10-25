@@ -81,6 +81,7 @@ function process_game_client_msg(msg) {
 		break;
 	case Msg.REQ_FETCH_BAG:
 		game_player.bag.fetch_bag();
+		remove_session(msg.sid);
 		break;
 	default:
 		print('process_game_client_msg, msg_id not exist:', msg.msg_id);
@@ -97,7 +98,10 @@ function process_game_node_msg(msg) {
 		load_player_data(msg);
 		break;
 	case Msg.NODE_GATE_GAME_PLAYER_LOGOUT:
-		close_session(Endpoint.GAME_SERVER, msg.sid, Error_Code.RET_OK);
+		var game_player = sid_game_player_map.get(msg.sid);
+		if (game_player) {
+			game_player.logout();
+		}
 		break;
 	case Msg.NODE_PUBLIC_GAME_GUILD_INFO: {
 		var game_player = role_id_game_player_map.get(msg.role_id);
@@ -140,7 +144,7 @@ function fetch_role(msg) {
 	var game_player = role_id_game_player_map.get(msg.role_id);
 	if (game_player || login_map.get(msg.sid) || logout_map.get(msg.sid) ) {
 		print('relogin account:', msg.account);
-		return close_session(Endpoint.GAME_SERVER, msg.sid, Error_Code.DISCONNECT_RELOGIN);
+		return remove_session(msg.sid);
 	}
 
 	//登录从数据库加载玩家信息
@@ -160,7 +164,7 @@ function create_role(msg) {
 
 	if (login_map.get(msg.sid)) {
 		print('account in logining status, account:', msg.account, ' role_name:', msg.role_name);
-		return close_session(Endpoint.GAME_SERVER, msg.sid, Error_Code.DISCONNECT_RELOGIN);
+		return remove_session(msg.sid);
 	}
 
 	login_map.set(msg.sid, msg.cid);
@@ -175,6 +179,22 @@ function create_role(msg) {
 
 function load_player_data(msg) {
 	var game_player = new Game_Player();
-	game_player.load_player_data(login_map.get(msg.sid), msg.sid, msg);
+	game_player.login(login_map.get(msg.sid), msg.sid, msg);
 	login_map.delete(msg.sid);
 }
+
+function remove_session(sid) {
+	print("remove session ", sid);
+	var game_player = sid_game_player_map.get(sid);
+	if (!game_player) {
+		print('remove session game_player not exist, sid:', sid);
+		return;
+	}
+	send_client_error_code(game_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
+
+	var msg_4 = new node_4();
+	msg_4.login = false;
+	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, 0, msg_4);
+	game_player.logout();
+}
+

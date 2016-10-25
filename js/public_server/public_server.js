@@ -118,13 +118,16 @@ function process_public_node_msg(msg) {
 	case Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT: {
 		//gate通知public玩家上线,下线
 		if (msg.login) {
-			var public_player = role_id_public_player_map.get(msg.role_id);
+			var public_player = sid_public_player_map.get(msg.sid);
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.set_gate_cid(msg.cid, msg.sid, msg.role_id);
+			public_player.set_gate_cid(msg.cid, msg.sid);
 		} else {
-			close_session(Endpoint.PUBLIC_SERVER, msg.sid, Error_Code.RET_OK);
+			var public_player = sid_public_player_map.get(msg.sid);
+			if(public_player) {
+				public_player.logout();
+			}
 		}
 		break;
 	}
@@ -134,7 +137,7 @@ function process_public_node_msg(msg) {
 		if (public_player == null) {
 			public_player = new Public_Player();
 		}
-		public_player.load_player_data(msg.cid, msg.sid, msg.player_info);
+		public_player.login(msg.cid, msg.sid, msg.player_info);
 		break;
 	}
 	default:
@@ -142,3 +145,23 @@ function process_public_node_msg(msg) {
 		break;
 	}
 }
+
+function send_client_error_code(cid, sid, error_code) {
+	var msg_res = new s2c_4();
+	msg_res.error_code = error_code;
+	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
+}
+
+function remove_session(sid) {
+	var public_player = sid_public_player_map.get(sid);
+	if (!game_player) {
+		print('remove session game_player not exist, sid:', sid);
+		return;
+	}
+	send_client_error_code(public_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
+
+	var msg_3 = new node_3();
+	send_msg(Endpoint.PUBLIC_SERVER, public_player.game_cid, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, 0, msg_3);
+	public_player.save_player_data();
+}
+

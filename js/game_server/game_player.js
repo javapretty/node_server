@@ -15,8 +15,8 @@ function Game_Player() {
 }
 
 //玩家上线，加载数据
-Game_Player.prototype.load_player_data = function(gate_cid, sid, msg) {
-	print('********game_player load_data, role_id:', msg.player_data.player_info.role_id, ' role_name:', msg.player_data.player_info.role_name, ' sid:', sid);
+Game_Player.prototype.login = function(gate_cid, sid, msg) {
+	print('********game_player login, role_id:', msg.player_data.player_info.role_id, ' role_name:', msg.player_data.player_info.role_name, ' sid:', sid);
 	this.gate_cid = gate_cid;
 	this.sid = sid;
 	this.player_info = msg.player_data.player_info;
@@ -31,8 +31,8 @@ Game_Player.prototype.load_player_data = function(gate_cid, sid, msg) {
 }
 
 //玩家离线，保存数据
-Game_Player.prototype.save_player_data = function() {
-	print('********game_player save_data,role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, ' sid:', this.sid);
+Game_Player.prototype.logout = function() {
+	print('********game_player logout, role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, ' sid:', this.sid);
 	this.player_info.logout_time = util.now_sec();
 	
 	this.sync_player_data_to_db(true);

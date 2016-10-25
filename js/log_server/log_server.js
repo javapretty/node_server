@@ -53,13 +53,14 @@ function init_db_connect() {
 
 function log_player_logout(msg) {
 	var logout_info = new Logout_Info();
-    logout_info.role_id = msg.role_id;
-   	logout_info.role_name = msg.role_name;
-    logout_info.account = msg.account;
-    logout_info.level = msg.level;
-    logout_info.client_ip = msg.client_ip;
-    logout_info.login_time = msg.login_time;
-    logout_info.logout_time = msg.logout_time;
+    logout_info.role_id = msg.logout_info.role_id;
+   	logout_info.role_name = msg.logout_info.role_name;
+    logout_info.account = msg.logout_info.account;
+    logout_info.level = msg.logout_info.level;
+    logout_info.client_ip = msg.logout_info.client_ip;
+    logout_info.login_time = msg.logout_info.login_time;
+    logout_info.logout_time = msg.logout_info.logout_time;
 
+	print("save ", logout_info.role_id, " to logout db");
 	save_db_data(DB_Id.LOG, "log.logout", logout_info);
 }

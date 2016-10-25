@@ -164,7 +164,6 @@ function node_3() {
 
 function node_4() {
 	this.login = 0;
-	this.role_id = 0;
 }
 
 function node_5() {
