@@ -22,11 +22,6 @@
 		<arg type="int32" name="token_time"/>
 	</Token_Info>
 	
-	<Cid_Info>
-		<arg type="int32" name="gate_cid"/>
-		<arg type="int32" name="player_cid"/>
-	</Cid_Info>
-	
 	<Role_Info>
     	<arg type="int64" name="role_id"/>
     	<arg type="string" name="role_name"/>

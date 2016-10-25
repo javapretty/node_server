@@ -9,30 +9,26 @@ require('message.js');
 require('struct.js');
 require('config.js');
 require('util.js');
-require('timer.js');
 
 //配置管理器
 var config = new Config();
-//定时器
-var timer = new Timer();
 
 function init(node_info) {
 	print('log_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
-	timer.init(Node_Type.LOG_SERVER);	
 	//连接log数据库
 	init_db_connect();
 }
 
 function on_msg(msg) {
-	print('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
+	print('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
 	case Msg.NODE_LOG_PLAYER_LOGOUT:
 		log_player_logout(msg);
 		break;
 	default:
-		print('log_server process_msg, msg_id: not exist', msg.msg_id);
+		print('log_server on_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }

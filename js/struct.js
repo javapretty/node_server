@@ -21,11 +21,6 @@ function Token_Info() {
 	this.token_time = 0;
 }
 
-function Cid_Info() {
-	this.gate_cid = 0;
-	this.player_cid = 0;
-}
-
 function Role_Info() {
 	this.role_id = 0;
 	this.role_name = "";
@@ -161,6 +156,7 @@ function node_1() {
 function node_2() {
 	this.account = "";
 	this.token = "";
+	this.game_node = 0;
 }
 
 function node_3() {

@@ -89,7 +89,7 @@ int V8_Manager::process_list(void) {
 			uint8_t client_msg = 0;
 			uint8_t msg_id = 0;
 			uint8_t msg_type = 0;
-			int32_t extra = 0;
+			uint32_t sid = 0;
 			buffer->read_int32(endpoint_id);
 			buffer->read_int32(cid);
 			buffer->read_uint8(compress);
@@ -99,7 +99,7 @@ int V8_Manager::process_list(void) {
 				msg_type = C2S;
 			} else {
 				buffer->read_uint8(msg_type);
-				buffer->read_int32(extra);
+				buffer->read_uint32(sid);
 			}
 			NODE_MANAGER->add_msg_count(msg_id);
 
@@ -108,7 +108,7 @@ int V8_Manager::process_list(void) {
 			std::string struct_name = get_struct_name(msg_type, msg_id);
 			Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 			if (msg_struct != nullptr) {
-				argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_type, msg_id, extra, *buffer);
+				argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_id, msg_type, sid, *buffer);
 			}
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);

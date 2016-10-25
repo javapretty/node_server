@@ -14,10 +14,8 @@ require('public_server/public_player.js');
 require('public_server/guild.js');
 require('public_server/rank.js');
 
-//gate_cid----public_player  gate_cid=util.get_cid(gate_cid, player_cid)
-var gate_cid_public_player_map = new Map();
-//game_cid----public_player  game_cid=util.get_cid(game_cid, player_cid)
-var game_cid_public_player_map = new Map();
+//sid----public_player
+var sid_public_player_map = new Map();
 //role_id---public_player
 var role_id_public_player_map = new Map();
 //role_name---public_player
@@ -41,7 +39,7 @@ function init(node_info) {
 }
 
 function on_msg(msg) {
-	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
+	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	if (msg.msg_type == Msg_Type.NODE_C2S) {
 		process_public_client_msg(msg);
@@ -63,12 +61,10 @@ function load_public_data() {
 	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_LOAD_DATA, Msg_Type.NODE_MSG, 0, msg);
 }
 
-function process_public_client_msg(msg) {	
-	var cid = util.get_cid(msg.cid, msg.extra);
-	var public_player = gate_cid_public_player_map.get(cid);
+function process_public_client_msg(msg) {
+	var public_player = sid_public_player_map.get(msg.sid);
 	if (!public_player) {
-		print('process_public_client_msg public_player not exist, gate_cid:', msg.cid, ' player_cid:', msg.extra, ' msg_id:', msg.msg_id);
-		return;
+		return print('process_public_client_msg, public_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
 	}
 	
 	switch(msg.msg_id) {
@@ -91,7 +87,7 @@ function process_public_node_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.NODE_ERROR_CODE: {
 		if (msg.error_code == Error_Code.GUILD_HAS_EXIST) {
-			var player = gate_cid_public_player_map.get(msg.extra);
+			var player = sid_public_player_map.get(msg.sid);
 			if (player) {
 				player.send_error_msg(msg.error_code);
 			}
@@ -126,9 +122,9 @@ function process_public_node_msg(msg) {
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.set_gate_cid(msg.cid, msg.extra, msg.role_id);
+			public_player.set_gate_cid(msg.cid, msg.sid, msg.role_id);
 		} else {
-			close_session(Endpoint.PUBLIC_SERVER, msg.extra, Error_Code.RET_OK);
+			close_session(Endpoint.PUBLIC_SERVER, msg.sid, Error_Code.RET_OK);
 		}
 		break;
 	}
@@ -138,7 +134,7 @@ function process_public_node_msg(msg) {
 		if (public_player == null) {
 			public_player = new Public_Player();
 		}
-		public_player.load_player_data(msg.cid, msg.extra, msg.player_info);
+		public_player.load_player_data(msg.cid, msg.sid, msg.player_info);
 		break;
 	}
 	default:

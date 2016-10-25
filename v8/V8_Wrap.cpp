@@ -229,14 +229,14 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	int cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_id = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_type = args[3]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	int extra = args[4]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	uint32_t sid = args[4]->Uint32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	Block_Buffer buffer;
 	buffer.write_uint16(0);
 	buffer.write_uint8(msg_id);
 	if (msg_type != S2C) {
 		buffer.write_uint8(msg_type);
-		buffer.write_int32(extra);
+		buffer.write_uint32(sid);
 	}
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
@@ -246,8 +246,8 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	buffer.write_len(RPC_PKG);
 	NODE_MANAGER->send_buffer(endpoint_id, cid, buffer);
 
-	//LOG_WARN("endpoint_id:%d, cid:%d, msg_type:%d, msg_id:%d, extra:%d, struct_name:%s",
-	//		endpoint_id, cid, msg_type, msg_id, extra, struct_name.c_str());
+	//LOG_WARN("endpoint_id:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d, struct_name:%s",
+	//		endpoint_id, cid, msg_type, msg_id, sid, struct_name.c_str());
 }
 
 void close_session(const FunctionCallbackInfo<Value>& args) {

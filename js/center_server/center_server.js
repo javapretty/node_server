@@ -29,7 +29,7 @@ function init(node_info) {
 }
 
 function on_msg(msg) {
-	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' extra:', msg.extra);
+	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
 	case Msg.REQ_SELECT_GATE:
@@ -42,7 +42,7 @@ function on_msg(msg) {
 		verify_token(msg);
 		break;
 	default:
-		print('route_server process_msg, msg_id: not exist', msg.msg_id);
+		print('center_server on_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -91,7 +91,7 @@ function verify_token(msg) {
 	if (!token_info || token_info.token != msg.token) {		
 		var msg_res = new node_1();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
-		return send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, msg.extra, msg_res);
+		return send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
 
 	if (token_info) {
@@ -99,7 +99,10 @@ function verify_token(msg) {
 		account_token_map.delete(msg.account);
 	}
 
+	var index = hash(msg.account) % (game_list.length);
+	var game_info = game_list[index];
 	var msg_res = new node_2();
 	msg_res.account = msg.account;
-	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.extra, msg_res);
+	msg_res.game_node = game_info.node_id;
+	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
