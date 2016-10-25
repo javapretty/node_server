@@ -59,7 +59,7 @@ function on_tick(timer_id) {
 	}
 }
 
-function on_drop(drop_cid) {
+function on_drop(drop_id) {
 
 }
 

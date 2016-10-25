@@ -59,6 +59,10 @@ function on_tick(timer_id) {
 	}
 }
 
+function on_drop(drop_id) {
+
+}
+
 function process_game_client_msg(msg) {
 	if (msg.msg_id == Msg.REQ_FETCH_ROLE) {
 		return fetch_role(msg);
@@ -84,7 +88,6 @@ function process_game_client_msg(msg) {
 		break;
 	case Msg.REQ_FETCH_BAG:
 		game_player.bag.fetch_bag();
-		remove_session(msg.sid);
 		break;
 	default:
 		print('process_game_client_msg, msg_id not exist:', msg.msg_id);
@@ -197,7 +200,7 @@ function remove_session(sid) {
 
 	var msg_4 = new node_4();
 	msg_4.login = false;
-	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, 0, msg_4);
+	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, sid, msg_4);
 	game_player.logout();
 }
 

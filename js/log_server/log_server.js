@@ -33,6 +33,10 @@ function on_msg(msg) {
 	}
 }
 
+function on_drop(drop_id) {
+
+}
+
 function init_db_connect() {
 	for(var i = 0; i < config.node_json['node'].length; i++){
 		if(config.node_json['node'][i]['node_type'] == Node_Type.LOG_SERVER){
@@ -61,6 +65,6 @@ function log_player_logout(msg) {
     logout_info.login_time = msg.logout_info.login_time;
     logout_info.logout_time = msg.logout_info.logout_time;
 
-	print("save ", logout_info.role_id, " to logout db");
+	print("save role_id:", logout_info.role_id, " to logout db");
 	save_db_data(DB_Id.LOG, "log.logout", logout_info);
 }

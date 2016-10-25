@@ -55,6 +55,10 @@ function on_tick(timer_id) {
 	}
 }
 
+function on_drop(drop_id) {
+
+}
+
 function load_public_data() {
 	var msg = new node_205();
 	msg.data_type = Public_Data_Type.ALL_DATA;
@@ -161,7 +165,7 @@ function remove_session(sid) {
 	send_client_error_code(public_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
 
 	var msg_3 = new node_3();
-	send_msg(Endpoint.PUBLIC_SERVER, public_player.game_cid, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, 0, msg_3);
+	send_msg(Endpoint.PUBLIC_SERVER, public_player.game_cid, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, sid, msg_3);
 	public_player.save_player_data();
 }
 
