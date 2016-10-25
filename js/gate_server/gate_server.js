@@ -30,24 +30,6 @@ var config = new Config();
 //定时器
 var timer = new Timer();
 
-function get_sid(cid) {
-	var count = 0;
-	do {
-		count++;
-		sid_idx++;
-		if (sid_idx >= max_idx) {
-			sid_idx = max_idx - 1000000;
-		}
-	} while (sid_set.has(sid_idx) && count < 10000)
-
-	if (count >= 10000) {
-		print('get_sid error, cal count:', count, ' cid:', cid); 
-		close_session(Endpoint.GATE_CLIENT_SERVER, cid, Error_Code.DISCONNECT_SELF);
-		return -1;
-	}
-	return sid_idx;
-}
-
 function init(node_info) {
 	print('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
@@ -62,7 +44,7 @@ function init(node_info) {
 
 	var msg = new node_0();
 	msg.node_info = node_info;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);	
+	send_msg_to_center(Msg.NODE_CENTER_NODE_INFO, 0, msg);	
 }
 
 function on_drop(cid) {
@@ -74,7 +56,8 @@ function on_drop(cid) {
 		
 		var msg_4 = new node_4();
 		msg_4.login = false;
-		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg_4);
+		send_msg_to_public(Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, session.sid, msg_4);
+		
 		cid_session_map.delete(session.cid);
 		sid_session_map.delete(session.sid);
 		account_session_map.delete(session.account);
@@ -94,6 +77,36 @@ function on_msg(msg) {
 }
 
 function on_tick(timer_id) {}
+
+function get_sid(cid) {
+	var count = 0;
+	do {
+		count++;
+		sid_idx++;
+		if (sid_idx >= max_idx) {
+			sid_idx = max_idx - 1000000;
+		}
+	} while (sid_set.has(sid_idx) && count < 10000)
+
+	if (count >= 10000) {
+		print('get_sid error, cal count:', count, ' cid:', cid); 
+		close_session(Endpoint.GATE_CLIENT_SERVER, cid, Error_Code.DISCONNECT_SELF);
+		return -1;
+	}
+	return sid_idx;
+}
+
+function send_msg_to_client(cid, msg_id, msg) {
+	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, msg_id, Msg_Type.S2C, 0, msg);
+}
+
+function send_msg_to_center(msg_id, sid, msg) {
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_msg_to_public(msg_id, sid, msg) {
+	send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
 
 function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
@@ -119,16 +132,17 @@ function process_gate_s2c_msg(msg) {
 	if (msg.msg_id == Msg.RES_ROLE_INFO) {
 		var msg_res = new node_4();
 		msg_res.login = true;
-		msg_res.role_id = msg.role_info.role_id;
-		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, msg.sid, msg_res);
+		send_msg_to_public(Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, msg.sid, msg_res);
 	}
 	//玩家下线，清除session信息
 	else if (msg.msg_id == Msg.RES_ERROR_CODE && msg.error_code == Error_Code.PLAYER_KICK_OFF) {
-		var session = sid_session_map.get(msg.sid);
 		cid_session_map.delete(session.cid);
 		sid_session_map.delete(session.sid);
 		account_session_map.delete(session.account);
 		close_session(Endpoint.GATE_CLIENT_SERVER, session.cid, Error_Code.PLAYER_KICK_OFF);
+		var msg_res = new node_4();
+		msg_res.login = false;
+		send_msg_to_public(Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, msg.sid, msg_res);
 	}
 }
 
@@ -160,7 +174,7 @@ function connect_gate(msg) {
 	var msg_res = new node_2();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
+	send_msg_to_center(Msg.NODE_GATE_CENTER_VERIFY_TOKEN, msg.cid, msg_res);
 }
 
 function verify_token(msg) {
@@ -176,7 +190,7 @@ function verify_token(msg) {
 
 	var msg_res = new s2c_2();
 	msg_res.account = msg.account;
-	send_msg(Endpoint.GATE_CLIENT_SERVER, msg.sid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, msg_res);
+	send_msg_to_client(msg.sid, Msg.RES_CONNECT_GATE, msg_res);
 }
 
 function transmit_msg(msg) {

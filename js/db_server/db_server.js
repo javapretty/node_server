@@ -88,7 +88,11 @@ function init_db_connect() {
 	}
 }
 
-function send_error_code(cid, sid, error_code) {
+function send_db_msg(cid, msg_id, sid, msg) {
+	send_msg(Endpoint.DB_SERVER, cid, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_error_msg(cid, sid, error_code) {
 	var msg_res = new node_1();
 	msg_res.error_code = error_code;
 	send_msg(Endpoint.DB_SERVER, cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, sid, msg_res);
@@ -98,7 +102,7 @@ function create_player(msg) {
 	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
 	if (role_id > 0) {
 		print('create player, has exist, account:',msg.account);
-		send_error_code(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
+		send_error_msg(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
 	} else {
 		role_id = generate_id(DB_Id.GAME, "game.serial", "role_id");
 		var msg_res = new node_203();
@@ -113,7 +117,7 @@ function create_player(msg) {
 		msg_res.player_data.mail_info.role_id = role_id;
 		//将玩家数据写到数据库
 		save_db_data(DB_Id.GAME, "Player_Data", msg_res.player_data);
-		send_msg(Endpoint.DB_SERVER, msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, Msg_Type.NODE_MSG, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	}
 }
 
@@ -122,16 +126,16 @@ function load_player(msg) {
 	if (role_id > 0) {
 		var msg_res = new node_203();
 		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
-		send_msg(Endpoint.DB_SERVER, msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, Msg_Type.NODE_MSG, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	} else {
-		send_error_code(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
+		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
 	}
 }
 
 function save_player(msg) {
 	save_db_data(DB_Id.GAME, "Player_Data", msg.player_data);
 	if (msg.logout) {
-		send_error_code(msg.cid, msg.sid, Error_Code.SAVE_PLAYER_COMPLETE);
+		send_error_msg(msg.cid, msg.sid, Error_Code.SAVE_PLAYER_COMPLETE);
 	}
 }
 
@@ -139,7 +143,7 @@ function create_guild(msg) {
 	var guild_id = select_table_index(DB_Id.GAME, "game.guild", "guild_name", msg.guild_name);
 	if (guild_id > 0) {
 		print('create guild, has exist, guild_name:',msg.guild_name);
-		send_error_code(msg.cid, msg.sid, Error_Code.GUILD_HAS_EXIST);
+		send_error_msg(msg.cid, msg.sid, Error_Code.GUILD_HAS_EXIST);
 	} else {
 		guild_id = generate_id(DB_Id.GAME, "game.serial", "guild_id");
 		var guild_info = new Guild_Info();
@@ -147,12 +151,12 @@ function create_guild(msg) {
 		guild_info.guild_name = msg.guild_name;
 		guild_info.chief_id = msg.chief_id;
 		guild_info.create_time = util.now_sec();
-		//将公会数据写到数据库
 		save_db_data(DB_Id.GAME, "game.guild", guild_info);
+		
 		var msg_res = new node_208();
 		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
 		msg_res.guild_list.push(guild_info);
-		send_msg(Endpoint.DB_SERVER, msg.cid, Msg.NODE_DB_PUBLIC_DATA, Msg_Type.NODE_MSG, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.NODE_DB_PUBLIC_DATA, msg.sid, msg_res);
 	}
 }
 
@@ -175,7 +179,7 @@ function load_public_data(msg) {
 		print('load_public_data, data_type not exist:', msg.data_type);
 		break;
 	}
-	send_msg(Endpoint.DB_SERVER, msg.cid, Msg.NODE_DB_PUBLIC_DATA, Msg_Type.NODE_MSG, msg.sid, msg_res);
+	send_db_msg(msg.cid, Msg.NODE_DB_PUBLIC_DATA, msg.sid, msg_res);
 }
 
 function save_public_data(msg) {

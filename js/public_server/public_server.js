@@ -55,10 +55,24 @@ function on_tick(timer_id) {
 	}
 }
 
+function send_msg_to_db(msg_id, sid, msg) {
+	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_public_msg(cid, msg_id, sid, msg) {
+	send_msg(Endpoint.PUBLIC_SERVER, cid, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_error_msg(cid, sid, error_code) {
+	var msg_res = new s2c_4();
+	msg_res.error_code = error_code;
+	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
+}
+
 function load_public_data() {
 	var msg = new node_205();
 	msg.data_type = Public_Data_Type.ALL_DATA;
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_LOAD_DATA, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_LOAD_DATA, 0, msg);
 }
 
 function process_public_client_msg(msg) {
@@ -145,23 +159,3 @@ function process_public_node_msg(msg) {
 		break;
 	}
 }
-
-function send_client_error_code(cid, sid, error_code) {
-	var msg_res = new s2c_4();
-	msg_res.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
-}
-
-function remove_session(sid) {
-	var public_player = sid_public_player_map.get(sid);
-	if (!game_player) {
-		print('remove session game_player not exist, sid:', sid);
-		return;
-	}
-	send_client_error_code(public_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
-
-	var msg_3 = new node_3();
-	send_msg(Endpoint.PUBLIC_SERVER, public_player.game_cid, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, sid, msg_3);
-	public_player.save_player_data();
-}
-

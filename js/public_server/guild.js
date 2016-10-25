@@ -25,7 +25,7 @@ Guild.prototype.save_data = function(){
 	for (var value of this.guild_map.values()) {
 		msg.guild_list.push(value);
 	}
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_SAVE_DATA, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_SAVE_DATA, 0, msg);
 	this.is_change = false;
 }
 
@@ -35,7 +35,7 @@ Guild.prototype.drop_guild = function(){
 	var msg = new node_207();
 	msg.data_type = Public_Data_Type.GUILD_DATA;
 	msg.index_list = this.drop_list;
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_DELETE_DATA, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_DELETE_DATA, 0, msg);
 	this.drop_list = [];
 }
 
@@ -51,7 +51,7 @@ Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name)
 	msg.role_id = player.player_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
-	send_msg(Endpoint.PUBLIC_SERVER, player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, Msg_Type.NODE_MSG, player.sid, msg);
+	send_public_msg(player.game_cid, Msg.NODE_PUBLIC_GAME_GUILD_INFO, player.sid, msg);
 }
 
 Guild.prototype.member_join_guild = function(player, guild_info) {
@@ -71,7 +71,7 @@ Guild.prototype.create_guild = function(player, msg) {
 	var msg_res = new node_204();
 	msg_res.guild_name = msg.guild_name;
 	msg_res.chief_id = player.player_info.role_id;
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_CREATE_GUILD, Msg_Type.NODE_MSG, msg.sid, msg_res);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_CREATE_GUILD, msg.sid, msg_res);
 }
 
 Guild.prototype.db_create_guild = function(msg) {

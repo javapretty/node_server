@@ -39,7 +39,7 @@ function init(node_info) {
 
 	var msg = new node_0();
 	msg.node_info = node_info;
-	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+	send_msg_to_center(Msg.NODE_CENTER_NODE_INFO, 0, msg);		
 }
 
 function on_drop(cid) { }
@@ -59,6 +59,28 @@ function on_tick(timer_id) {
 	if (timer_handler != null) {
 		timer_handler();
 	}
+}
+
+function send_msg_to_center(msg_id, sid, msg) {
+	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_msg_to_db(msg_id, sid, msg) {
+	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_msg_to_log(msg_id, sid, msg) {
+	send_msg(Endpoint.GAME_LOG_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_msg_to_public(msg_id, sid, msg) {
+	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_error_msg(cid, sid, error_code) {
+	var msg_res = new s2c_4();
+	msg_res.error_code = error_code;
+	send_msg(Endpoint.GAME_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
 }
 
 function process_game_client_msg(msg) {
@@ -120,19 +142,13 @@ function process_game_node_msg(msg) {
 	}
 }
 
-function send_client_error_code(cid, sid, error_code) {
-	var msg_res = new s2c_4();
-	msg_res.error_code = error_code;
-	send_msg(Endpoint.GAME_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
-}
-
 function process_error_code(msg) {
 	switch (msg.error_code) {
 	case Error_Code.NEED_CREATE_ROLE:
 	case Error_Code.ROLE_HAS_EXIST: {
 		var gate_cid = login_map.get(msg.sid);
 		if (gate_cid != 0) {
-			send_client_error_code(gate_cid, msg.sid, msg.error_code);
+			send_error_msg(gate_cid, msg.sid, msg.error_code);
 			login_map.delete(msg.sid);
 		}
 		break;
@@ -157,13 +173,13 @@ function fetch_role(msg) {
 
 	var msg_res = new node_201();
 	msg_res.account = msg.account;
-	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, Msg.NODE_GAME_DB_LOAD_PLAYER, Msg_Type.NODE_MSG, msg.sid, msg_res);
+	send_msg_to_db(Msg.NODE_GAME_DB_LOAD_PLAYER, msg.sid, msg_res);
 }
 
 function create_role(msg) {
 	if (msg.account.length <= 0 || msg.role_name.length <= 0) {
 		print('create_role parameter invalid, account:', msg.account, ' role_name:', msg.role_name);
-		return send_client_error_code(msg.cid, msg.sid, Error_Code.CLIENT_PARAM_ERROR);
+		return send_error_msg(msg.cid, msg.sid, Error_Code.CLIENT_PARAM_ERROR);
 	}
 
 	if (login_map.get(msg.sid)) {
@@ -178,7 +194,7 @@ function create_role(msg) {
 	msg_res.role_name = msg.role_name;
 	msg_res.gender = msg.gender;
 	msg_res.career = msg.career;
-	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, Msg.NODE_GAME_DB_CREATE_PLAYER, Msg_Type.NODE_MSG, msg.sid, msg_res);
+	send_msg_to_db(Msg.NODE_GAME_DB_CREATE_PLAYER, msg.sid, msg_res);
 }
 
 function load_player_data(msg) {
@@ -188,17 +204,11 @@ function load_player_data(msg) {
 }
 
 function remove_session(sid) {
-	print("remove session ", sid);
 	var game_player = sid_game_player_map.get(sid);
 	if (!game_player) {
 		print('remove session game_player not exist, sid:', sid);
 		return;
 	}
-	send_client_error_code(game_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
-
-	var msg_4 = new node_4();
-	msg_4.login = false;
-	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, sid, msg_4);
 	game_player.logout();
 }
 

@@ -39,6 +39,7 @@ Game_Player.prototype.logout = function() {
 	this.sync_player_data_to_db(true);
 	this.sync_login_to_center(false);
 	this.sync_logout_to_log();
+	this.send_error_msg(Error_Code.PLAYER_KICK_OFF);
 	logout_map.set(this.player_info.account, this.player_info.logout_time);
 	sid_game_player_map.delete(this.sid);
 	role_id_game_player_map.delete(this.player_info.role_id);
@@ -86,14 +87,14 @@ Game_Player.prototype.sync_login_to_public = function() {
 	msg.player_info.level = this.player_info.level;
 	msg.player_info.gender = this.player_info.gender;
 	msg.player_info.career = this.player_info.career;
-	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_public(Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN, this.sid, msg);
 }
 
 Game_Player.prototype.sync_login_to_center = function(login) {
 	var msg = new node_6();
 	msg.login = login;
 	msg.game_node = game_node_info.node_id;
-	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_center(Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT, this.sid, msg);
 }
 
 Game_Player.prototype.sync_player_data_to_db = function(logout) {
@@ -103,7 +104,7 @@ Game_Player.prototype.sync_player_data_to_db = function(logout) {
 	msg.player_data.player_info = this.player_info;
 	this.mail.save_data(msg);
 	this.bag.save_data(msg);
-	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, Msg.NODE_GAME_DB_SAVE_PLAYER, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_db(Msg.NODE_GAME_DB_SAVE_PLAYER, this.sid, msg);
 	this.is_change = false;
 }
 
@@ -116,7 +117,7 @@ Game_Player.prototype.sync_logout_to_log = function() {
 	msg.logout_info.client_ip = this.player_info.client_ip;
 	msg.logout_info.login_time = this.player_info.login_time;
 	msg.logout_info.logout_time = this.player_info.logout_time;
-	send_msg(Endpoint.GAME_LOG_CONNECTOR, 0, Msg.NODE_LOG_PLAYER_LOGOUT, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_log(Msg.NODE_LOG_PLAYER_LOGOUT, this.sid, msg);
 }
 
 Game_Player.prototype.add_exp = function(exp) {

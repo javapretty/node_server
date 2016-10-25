@@ -23,7 +23,7 @@ Rank.prototype.save_data = function() {
 	for (var value of this.rank_map.values()) {
 		msg.rank_list.push(value);
 	}
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_SAVE_DATA, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_SAVE_DATA, 0, msg);
 }
 
 Rank.prototype.fetch_rank = function(player, msg) {
