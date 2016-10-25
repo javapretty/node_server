@@ -14,6 +14,8 @@ require('game_server/game_player.js');
 require('game_server/bag.js');
 require('game_server/mail.js');
 
+//game进程节点信息
+var game_node_info = null;
 //sid----game_player
 var sid_game_player_map = new Map();
 //role_id---game_player
@@ -33,6 +35,7 @@ function init(node_info) {
 	print('game_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.GAME_SERVER);
+	game_node_info = node_info;
 
 	var msg = new node_0();
 	msg.node_info = node_info;

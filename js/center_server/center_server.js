@@ -13,6 +13,8 @@ require('timer.js');
 
 //account--Token_Info
 var account_token_map = new Map();
+//game_node--sid_set
+var game_sid_map = new Map();
 //gate列表
 var gate_list = new Array();
 //game列表
@@ -40,6 +42,9 @@ function on_msg(msg) {
 		break;		
 	case Msg.NODE_GATE_CENTER_VERIFY_TOKEN:
 		verify_token(msg);
+		break;
+	case Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT:
+		game_player_login_logout(msg);
 		break;
 	default:
 		print('center_server on_msg, msg_id not exist:', msg.msg_id);
@@ -111,3 +116,20 @@ function verify_token(msg) {
 	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
 
+function game_player_login_logout(msg) {
+	var sid_set = game_sid_map.get(msg.game_node);
+	if (sid_set) {
+		if (msg.login) {
+			sid_set.add(msg.sid);
+		} else {
+			sid_set.remove(msg.sid);
+		}		
+	} 
+	else {
+		if (msg.login) {
+			sid_set = new Set();
+			sid_set.add(msg.sid);
+			game_sid_map.set(msg.game_node, sid_set);
+		}
+	}
+}

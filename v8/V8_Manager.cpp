@@ -70,7 +70,7 @@ int V8_Manager::process_list(void) {
 	int timer_id = 0;
 	while (1) {
 		bool all_empty = true;
-		int drop_cid = NODE_MANAGER->get_drop_list();
+		int drop_cid = NODE_MANAGER->get_drop_cid();
 		if(drop_cid != -1){
 			all_empty = false;
 			//获取js函数

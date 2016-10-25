@@ -23,8 +23,9 @@ Game_Player.prototype.load_player_data = function(gate_cid, sid, msg) {
 	this.mail.load_data(this, msg);
 	this.bag.load_data(this, msg);
 	
-	this.res_role_info();
+	this.sync_login_to_client();
 	this.sync_login_to_public();
+	this.sync_login_to_center(true);
 	sid_game_player_map.set(this.sid, this);
 	role_id_game_player_map.set(this.player_info.role_id, this);
 	role_name_game_player_map.set(this.player_info.role_name, this);
@@ -36,6 +37,7 @@ Game_Player.prototype.save_player_data = function() {
 	this.player_info.logout_time = util.now_sec();
 	
 	this.sync_player_data_to_db(true);
+	this.sync_login_to_center(false);
 	this.sync_logout_to_log();
 	logout_map.set(this.player_info.account, this.player_info.logout_time);
 	sid_game_player_map.delete(this.sid);
@@ -64,7 +66,7 @@ Game_Player.prototype.send_error_msg = function(error_code) {
 	send_msg(Endpoint.GAME_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
-Game_Player.prototype.res_role_info = function() {
+Game_Player.prototype.sync_login_to_client = function() {
 	var msg = new s2c_3();
 	msg.role_info.role_id = this.player_info.role_id;
 	msg.role_info.account = this.player_info.account;
@@ -87,6 +89,13 @@ Game_Player.prototype.sync_login_to_public = function() {
 	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN, Msg_Type.NODE_MSG, this.sid, msg);
 }
 
+Game_Player.prototype.sync_login_to_center = function(login) {
+	var msg = new node_6();
+	msg.login = login;
+	msg.game_node = game_node_info.node_id;
+	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, this.sid, msg);
+}
+
 Game_Player.prototype.sync_player_data_to_db = function(logout) {
 	print('***************sync_player_data_to_db, logout:', logout, ' role_id:', this.player_info.role_id, ' role_name:', this.player_info.role_name);
 	var msg = new node_202();
@@ -99,7 +108,7 @@ Game_Player.prototype.sync_player_data_to_db = function(logout) {
 }
 
 Game_Player.prototype.sync_logout_to_log = function() {
-	var msg = new node_7();
+	var msg = new node_210();
 	msg.logout_info.role_id = this.player_info.role_id;
 	msg.logout_info.role_name = this.player_info.role_name;
 	msg.logout_info.account = this.player_info.account;

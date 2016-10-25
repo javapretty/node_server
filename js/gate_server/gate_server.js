@@ -60,11 +60,10 @@ function on_msg(msg) {
 }
 
 function on_drop(drop_cid) {
-	var session = cid_session_map.get(msg.cid);
+	var session = cid_session_map.get(drop_cid);
 	if (session) {
-		var msg_g = new 
-		send_msg(gate_player.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
-		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_C2S, 0, msg);
+		var msg = new node_3();
+		send_msg(session.game_endpoint, 0, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_C2S, session.sid, msg);
 	}
 }
 
