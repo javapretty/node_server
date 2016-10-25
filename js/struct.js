@@ -171,13 +171,14 @@ function node_5() {
 }
 
 function node_6() {
-	this.role_id = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
+	this.login = 0;
+	this.game_node = 0;
 }
 
 function node_7() {
-	this.logout_info = new Logout_Info();
+	this.role_id = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
 }
 
 function node_200() {
@@ -224,6 +225,10 @@ function node_208() {
 	this.data_type = 0;
 	this.guild_list = new Array();
 	this.rank_list = new Array();
+}
+
+function node_210() {
+	this.logout_info = new Logout_Info();
 }
 
 function c2s_0() {

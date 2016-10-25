@@ -35,7 +35,7 @@ public:
 	virtual int process_list(void);
 
 	inline void push_drop(const Drop_Info &drop_info) { drop_list_.push_back(drop_info); }
-	inline int get_drop_list();
+	inline int get_drop_cid();
 	inline void push_tick(int tick) {
 		//释放信号量，让信号量的值加1，相当于V操作
 		sem_post(&tick_sem_);
@@ -110,11 +110,12 @@ private:
 
 #define NODE_MANAGER Node_Manager::instance()
 
-int Node_Manager::get_drop_list() {
+int Node_Manager::get_drop_cid() {
 	int drop_cid = -1;
 	for(Endpoint_Map::iterator iter = endpoint_map_.begin();
 			iter != endpoint_map_.end(); iter++){
-		if(iter->second->endpoint_info().endpoint_type == CLIENT_SERVER) {
+		int endpoint_type = iter->second->endpoint_info().endpoint_type;
+		if(endpoint_type == CLIENT_SERVER || endpoint_type == SERVER) {
 			if(!iter->second->drop_list().empty()) {
 				drop_cid = iter->second->drop_list().front();
 				iter->second->drop_list().pop_front();
