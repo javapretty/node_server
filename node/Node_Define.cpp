@@ -17,6 +17,12 @@ void Node_Conf::init(void) {
 		node_info.node_name = node_conf[i]["node_name"].asString();
 		node_info.script_path = node_conf[i]["script_path"].asString();
 
+		const Json::Value &plugin_conf = node_conf[i]["plugin"];
+		for (uint j = 0; j < plugin_conf.size();++j) {
+			std::string plugin_path = plugin_conf[j]["path"].asString();
+			node_info.plugin_list.push_back(plugin_path);
+		}
+
 		const Json::Value &server_conf = node_conf[i]["server"];
 		for (uint j = 0; j < server_conf.size();++j) {
 			Endpoint_Info endpoint_info;

@@ -12,6 +12,7 @@
 #include "Node_Timer.h"
 #include "Node_Manager.h"
 #include "V8_Wrap.h"
+#include "V8_Manager.h"
 
 std::string get_struct_name(int msg_type, int msg_id) {
 	std::ostringstream stream;
@@ -125,6 +126,17 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, save_db_data));
 	global->Set(String::NewFromUtf8(isolate, "delete_db_data", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, delete_db_data));
+
+	for(V8_Manager::Plugin_Handle_Map::iterator iter = V8_MANAGER->plugin_handle_map().begin();
+			iter != V8_MANAGER->plugin_handle_map().end(); iter++){
+		void *handle = iter->second;
+		void (*init_func)(Local<ObjectTemplate>&, Isolate*);
+		init_func = (void (*)(Local<ObjectTemplate>&, Isolate*))dlsym(handle, "init");
+		if(init_func == NULL) {
+			LOG_FATAL("plugin %s can't find init function, dlerror:%s", iter->first, dlerror());
+		}
+		init_func(global, isolate);
+	}
 
 	return Context::New(isolate, NULL, global);
 }

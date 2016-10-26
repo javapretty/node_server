@@ -34,6 +34,7 @@ LIB=-lnodelib\
 	-ljsoncpp\
 	-lboost_filesystem\
 	-lboost_thread-mt\
+	-ldl
 
 CC=g++
 

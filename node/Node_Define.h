@@ -37,6 +37,7 @@ struct Node_Info {
 	int node_id;					//节点id
 	std::string node_name;			//节点名称
 	std::string script_path;		//启动的js脚本路径
+	std::vector<std::string> plugin_list; //插件列表
 	Endpoint_List server_list;	//服务器线程列表
 	Endpoint_List connector_list;	//链接器线程列表
 };
