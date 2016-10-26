@@ -11,10 +11,10 @@ function Guild() {
 }
 
 Guild.prototype.load_data = function(msg) {
-	print('load guild data, size:', msg.guild_list.length);	
+	log_info('load guild data, size:', msg.guild_list.length);	
 	for(var i = 0; i < msg.guild_list.length; i++) {
 		var guild_info = msg.guild_list[i];
-		print('guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name);
+		log_info('guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name);
 		this.guild_map.set(guild_info.guild_id, guild_info);
 	}
 }
@@ -66,8 +66,7 @@ Guild.prototype.member_join_guild = function(player, guild_info) {
 }
 
 Guild.prototype.create_guild = function(player, msg) {
-	print('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.player_info.role_id);
-
+	log_debug('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.player_info.role_id);
 	var msg_res = new node_204();
 	msg_res.guild_name = msg.guild_name;
 	msg_res.chief_id = player.player_info.role_id;
@@ -77,13 +76,13 @@ Guild.prototype.create_guild = function(player, msg) {
 Guild.prototype.db_create_guild = function(msg) {
 	var player = sid_public_player_map.get(msg.sid);
 	if (!player || msg.guild_list.length != 1) {
-		print('db_create_guild param error');
+		log_error('db_create_guild param error');
 		return;
 	}
 
 	var msg_res = new s2c_201();
 	msg_res.guild_info = msg.guild_list[0];
-	print('db_create_guild, guild_id:', msg_res.guild_info.guild_id, ' guild_name:', msg_res.guild_info.guild_name, ' chief_id:', msg_res.guild_info.chief_id);
+	log_debug('db_create_guild, guild_id:', msg_res.guild_info.guild_id, ' guild_name:', msg_res.guild_info.guild_name, ' chief_id:', msg_res.guild_info.chief_id);
 	this.member_join_guild(player, msg_res.guild_info);
 	this.guild_map.set(msg_res.guild_info.guild_id, msg_res.guild_info);
 	this.sync_guild_info_to_game(player, msg_res.guild_info.guild_id, msg_res.guild_info.guild_name);

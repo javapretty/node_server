@@ -25,7 +25,7 @@ var config = new Config();
 var timer = new Timer();
 
 function init(node_info) {
-	print('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	log_info('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.CENTER_SERVER);
 }
@@ -33,7 +33,7 @@ function init(node_info) {
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	print('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
 	case Msg.REQ_SELECT_GATE:
@@ -49,7 +49,7 @@ function on_msg(msg) {
 		game_login_logout(msg);
 		break;
 	default:
-		print('center_server on_msg, msg_id not exist:', msg.msg_id);
+		log_error('center_server on_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -71,9 +71,9 @@ function remove_session(account, cid, error_code) {
 }
 
 function select_gate(msg) {
-	print('select gate, account:', msg.account);
+	log_info('select gate, account:', msg.account);
 	if (account_token_map.get(msg.account)) {
-		print('account in center_server:', msg.account);
+		log_error('account in center_server:', msg.account);
 		return remove_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
@@ -104,6 +104,7 @@ function set_node_info(msg) {
 function verify_token(msg) {
 	var token_info = account_token_map.get(msg.account);
 	if (!token_info || token_info.token != msg.token) {		
+		log_error('verify_token, token error, account:', msg.account, ' token:', msg.token);
 		var msg_res = new s2c_4();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
 		return send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);

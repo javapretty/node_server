@@ -6,7 +6,6 @@
  */
 
 #include <sstream>
-#include "Base_Function.h"
 #include "Base_V8.h"
 #include "Msg_Struct.h"
 #include "Struct_Manager.h"
@@ -89,14 +88,22 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, require));
 	global->Set(String::NewFromUtf8(isolate, "read_json", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, read_json));
-	global->Set(String::NewFromUtf8(isolate, "print", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, print));
 	global->Set(String::NewFromUtf8(isolate, "hash", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, hash));
 	global->Set(String::NewFromUtf8(isolate, "generate_token", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, generate_token));
-	global->Set(String::NewFromUtf8(isolate, "generate_id", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, generate_id));
+	global->Set(String::NewFromUtf8(isolate, "log_trace", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, log_trace));
+	global->Set(String::NewFromUtf8(isolate, "log_debug", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, log_debug));
+	global->Set(String::NewFromUtf8(isolate, "log_info", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, log_info));
+	global->Set(String::NewFromUtf8(isolate, "log_warn", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, log_warn));
+	global->Set(String::NewFromUtf8(isolate, "log_error", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, log_error));
+
+
 	global->Set(String::NewFromUtf8(isolate, "register_timer", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, register_timer));
 	global->Set(String::NewFromUtf8(isolate, "send_msg", NewStringType::kNormal).ToLocalChecked(),
@@ -104,6 +111,12 @@ Local<Context> create_context(Isolate* isolate) {
 	global->Set(String::NewFromUtf8(isolate, "close_session", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, close_session));
 
+	global->Set(String::NewFromUtf8(isolate, "connect_mysql", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, connect_mysql));
+	global->Set(String::NewFromUtf8(isolate, "connect_mongo", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, connect_mongo));
+	global->Set(String::NewFromUtf8(isolate, "generate_table_index", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, generate_table_index));
 	global->Set(String::NewFromUtf8(isolate, "select_table_index", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, select_table_index));
 	global->Set(String::NewFromUtf8(isolate, "load_db_data", NewStringType::kNormal).ToLocalChecked(),
@@ -112,103 +125,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, save_db_data));
 	global->Set(String::NewFromUtf8(isolate, "delete_db_data", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, delete_db_data));
-	global->Set(String::NewFromUtf8(isolate, "connect_to_mysql", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, connect_to_mysql));
-	global->Set(String::NewFromUtf8(isolate, "connect_to_mongo", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, connect_to_mongo));
 
 	return Context::New(isolate, NULL, global);
-}
-
-void read_json(const FunctionCallbackInfo<Value>& args) {
-  if (args.Length() != 1) {
-	  LOG_FATAL("read_json fatal, args length: %d\n", args.Length());
-	  args.GetReturnValue().SetNull();
-    return;
-  	}
-  String::Utf8Value file(args[0]);
-  if (*file == nullptr) {
-	  LOG_FATAL("read_json fatal, file is null\n");
-	  	args.GetReturnValue().SetNull();
-    return;
-  	}
-
-  Local<String> source;
-  if (!read_file(args.GetIsolate(), *file).ToLocal(&source)) {
-	  LOG_ERROR("read_file:%s fail\n", *file);
-	  	args.GetReturnValue().SetNull();
-    return;
-  	}
-  args.GetReturnValue().Set(source);
-}
-
-void require(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 1) {
-		LOG_ERROR("require args error, length: %d\n", args.Length());
-		return ;
-	}
-
-	String::Utf8Value str(args[0]);
-	char file_path[128];
-	sprintf(file_path, "js/%s", *str);
-	run_script(args.GetIsolate(), file_path);
-}
-
-void print(const FunctionCallbackInfo<Value>& args) {
-	std::ostringstream msg_stream;
-  for (int i = 0; i < args.Length(); i++) {
-	  HandleScope handle_scope(args.GetIsolate());
-    String::Utf8Value str(args[i]);
-    msg_stream << to_string(str);
-  }
-  LOG_DEBUG("%s", msg_stream.str().c_str());
-}
-
-void hash(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 1) {
-		LOG_ERROR("hash args error, length: %d\n", args.Length());
-		return ;
-	}
-
-	String::Utf8Value str(args[0]);
-	std::string hash_str = to_string(str);
-	if (hash_str == "") {
-		args.GetReturnValue().Set(0);
-	} else {
-		args.GetReturnValue().Set(elf_hash(hash_str.c_str()));
-	}
-}
-
-void generate_token(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 1) {
-		LOG_ERROR("generate_token args error, length: %d\n", args.Length());
-		return ;
-	}
-
-	String::Utf8Value str(args[0]);
-	std::string token_str = to_string(str);
-	if (token_str == "") {
-		args.GetReturnValue().Set(String::NewFromUtf8(args.GetIsolate(), "", NewStringType::kNormal).ToLocalChecked());
-	} else {
-		args.GetReturnValue().Set(String::NewFromUtf8(args.GetIsolate(), make_token(token_str.c_str()).c_str(), NewStringType::kNormal).ToLocalChecked());
-	}
-}
-
-void generate_id(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 3) {
-		LOG_ERROR("generate_id args error, length: %d\n", args.Length());
-		return ;
-	}
-	int db_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-
-	String::Utf8Value table_str(args[1]);
-	std::string table_name = to_string(table_str);
-
-	String::Utf8Value type_str(args[2]);
-	std::string type = to_string(type_str);
-
-	double id = DB_OPERATOR(db_id)->generate_id(db_id, STRUCT_MANAGER->get_table_struct(table_name), type);
-	args.GetReturnValue().Set(id);
 }
 
 void register_timer(const FunctionCallbackInfo<Value>& args) {
@@ -262,7 +180,7 @@ void close_session(const FunctionCallbackInfo<Value>& args) {
 	NODE_MANAGER->push_drop(drop_info);
 }
 
-void connect_to_mysql(const FunctionCallbackInfo<Value>& args) {
+void connect_mysql(const FunctionCallbackInfo<Value>& args) {
 	int db_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	String::Utf8Value ip_str(args[1]->ToString(args.GetIsolate()->GetCurrentContext()).ToLocalChecked());
@@ -283,7 +201,7 @@ void connect_to_mysql(const FunctionCallbackInfo<Value>& args) {
 	args.GetReturnValue().Set(ret);
 }
 
-void connect_to_mongo(const FunctionCallbackInfo<Value>& args) {
+void connect_mongo(const FunctionCallbackInfo<Value>& args) {
 	int db_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	String::Utf8Value ip_str(args[1]->ToString(args.GetIsolate()->GetCurrentContext()).ToLocalChecked());
@@ -297,6 +215,23 @@ void connect_to_mongo(const FunctionCallbackInfo<Value>& args) {
 
 	bool ret = DB_OPERATOR(db_id)->connect_to_db(db_id, ip, port, user, password, pool_name);
 	args.GetReturnValue().Set(ret);
+}
+
+void generate_table_index(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 3) {
+		LOG_ERROR("generate_table_index args error, length: %d\n", args.Length());
+		return ;
+	}
+	int db_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+
+	String::Utf8Value table_str(args[1]);
+	std::string table_name = to_string(table_str);
+
+	String::Utf8Value type_str(args[2]);
+	std::string type = to_string(type_str);
+
+	double id = DB_OPERATOR(db_id)->generate_table_index(db_id, STRUCT_MANAGER->get_table_struct(table_name), type);
+	args.GetReturnValue().Set(id);
 }
 
 void select_table_index(const FunctionCallbackInfo<Value>& args) {

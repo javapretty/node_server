@@ -29,7 +29,7 @@ var config = new Config();
 var timer = new Timer();
 
 function init(node_info) {
-	print('public_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	log_info('public_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.PUBLIC_SERVER);	
 	//加载公共数据
@@ -39,7 +39,7 @@ function init(node_info) {
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	log_debug('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	if (msg.msg_type == Msg_Type.NODE_C2S) {
 		process_public_client_msg(msg);
@@ -78,7 +78,7 @@ function load_public_data() {
 function process_public_client_msg(msg) {
 	var public_player = sid_public_player_map.get(msg.sid);
 	if (!public_player) {
-		return print('process_public_client_msg, public_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
+		return log_error('process_public_client_msg, public_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
 	}
 	
 	switch(msg.msg_id) {
@@ -92,7 +92,7 @@ function process_public_client_msg(msg) {
 		guild_manager.dissove_guild(public_player, msg);
 		break;
 	default:
-		print('process_public_client_msg, msg_id not exist:', msg.msg_id);
+		log_error('process_public_client_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -156,7 +156,7 @@ function process_public_node_msg(msg) {
 		break;
 	}
 	default:
-		print('proceess_public_node_msg, msg_id not exist:', msg.msg_id);
+		log_error('proceess_public_node_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }

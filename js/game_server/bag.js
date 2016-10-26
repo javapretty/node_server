@@ -19,7 +19,7 @@ Bag.prototype.save_data = function(msg) {
 }
 
 Bag.prototype.fetch_bag = function() {
-	print('fetch_bag_info, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name);
+	log_debug('fetch_bag_info, role_id:', this.game_player.player_info.role_id, " role_name:", this.game_player.player_info.role_name);
 	var msg_res = new s2c_8();
 	for (var value of this.bag_info.item_map.values()) {
   		msg_res.item_list.push(value);

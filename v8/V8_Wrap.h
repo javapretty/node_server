@@ -15,23 +15,11 @@ using namespace v8;
 
 //获得消息结构体名称
 std::string get_struct_name(int msg_type, int msg_id);
-//获得Node_Info js对象
+//获得Node_Info V8对象
 Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info);
 
 //创建v8运行环境
 Local<Context> create_context(Isolate* isolate);
-//函数说明：引用js文件   参数：1.文件路径   返回值：无
-void require(const FunctionCallbackInfo<Value>& args);
-//函数说明：读取json配置文件   参数：1.文件路径   返回值：文件内容字符串对象
-void read_json(const FunctionCallbackInfo<Value>& args);
-//函数说明：打印日志 参数：可变参数列表   返回值：无
-void print(const FunctionCallbackInfo<Value>& args);
-//函数说明：hash运算   参数：进行hash运算的字符串 返回值：hash值
-void hash(const FunctionCallbackInfo<Value>& args);
-//函数说明：生成token  参数：1.帐号名    返回值：token
-void generate_token(const FunctionCallbackInfo<Value>& args);
-//函数说明：生成id	参数：1.db_id 2.table_name 3. type 返回值：id
-void generate_id(const FunctionCallbackInfo<Value>& args);
 //函数说明：注册定时器到c++层		参数：1.定时器id 2.定时器间隔(毫秒单位) 3.从注册定时器到下次定时器到期中间间隔秒数	返回值：无
 void register_timer(const FunctionCallbackInfo<Value>& args);
 //函数说明：发送消息object	参数：1.endpoint_id 2.cid 3.msg_id 4.msg_type 5.sid 6.消息object   返回值：无
@@ -39,10 +27,12 @@ void send_msg(const FunctionCallbackInfo<Value>& args);
 //函数说明：关闭客户端连接  	参数：1.endpoint_id 2.drop_cid 3.error_code    返回值：无
 void close_session(const FunctionCallbackInfo<Value>& args);
 
-//函数说明：连接mysql数据库数据		参数：1.db_id 2.ip 3.port	 返回值：连接成功
-void connect_to_mongo(const FunctionCallbackInfo<Value>& args);
 //函数说明：连接mysql数据库数据		参数：1.db_id 2.ip 3.port 4.user 5.password 6.pool_name	返回值：连接成功
-void connect_to_mysql(const FunctionCallbackInfo<Value>& args);
+void connect_mysql(const FunctionCallbackInfo<Value>& args);
+//函数说明：连接mongo数据库数据		参数：1.db_id 2.ip 3.port	 返回值：连接成功
+void connect_mongo(const FunctionCallbackInfo<Value>& args);
+//函数说明：生成表索引	参数：1.db_id 2.table_name 3. type 返回值：id
+void generate_table_index(const FunctionCallbackInfo<Value>& args);
 //函数说明：获取表索引	参数：1.db_id 2.table_name 3.query_name 4.query_value 返回值：数据库索引
 void select_table_index(const FunctionCallbackInfo<Value>& args);
 //函数说明：读取数据库数据		参数：1.db_id, 2.table_name 3.key_index  返回值：数据object

@@ -17,7 +17,7 @@ var config = new Config();
 var timer = new Timer();
 
 function init(node_info) {
-	print('log_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	log_info('log_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.LOG_SERVER);	
 	//连接log数据库
@@ -27,14 +27,14 @@ function init(node_info) {
 function on_drop(drop_id) {}
 
 function on_msg(msg) {
-	print('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	log_debug('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
 	case Msg.NODE_LOG_PLAYER_LOGOUT:
 		log_player_logout(msg);
 		break;
 	default:
-		print('log_server on_msg, msg_id not exist:', msg.msg_id);
+		log_error('log_server on_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -47,10 +47,10 @@ function init_db_connect() {
 			var mysql_conf = config.node_json['node'][i]['mysql_db'];
 			if(mysql_conf != null){
 				for(var j = 0; j < mysql_conf.length; j++){
-					var ret = connect_to_mysql(mysql_conf[j]['db_id'], mysql_conf[j]['ip'], mysql_conf[j]['port'], mysql_conf[j]['user'],
+					var ret = connect_mysql(mysql_conf[j]['db_id'], mysql_conf[j]['ip'], mysql_conf[j]['port'], mysql_conf[j]['user'],
 						mysql_conf[j]['password'], mysql_conf[j]['pool_name']);
 					if(!ret) {
-						print("connect to db ", mysql_conf['db_id'], ' error');
+						log_error("connect to db ", mysql_conf['db_id'], ' error');
 						return;
 					}	
 				}

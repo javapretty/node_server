@@ -32,7 +32,7 @@ var config = new Config();
 var timer = new Timer();
 
 function init(node_info) {
-	print('game_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	log_info('game_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.GAME_SERVER);
 	game_node_info = node_info;
@@ -45,7 +45,7 @@ function init(node_info) {
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	print('game_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	log_debug('game_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	if (msg.msg_type == Msg_Type.NODE_C2S) {
 		process_game_client_msg(msg);
@@ -86,7 +86,7 @@ function send_error_msg(cid, sid, error_code) {
 function remove_session(sid) {
 	var game_player = sid_game_player_map.get(sid);
 	if (!game_player) {
-		print('remove session game_player not exist, sid:', sid);
+		log_error('remove session game_player not exist, sid:', sid);
 		return;
 	}
 	game_player.logout();
@@ -103,8 +103,7 @@ function process_game_client_msg(msg) {
 
 	var game_player = sid_game_player_map.get(msg.sid);
 	if (!game_player) {
-		print('process_game_client_msg, game_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
-		return;
+		return log_error('process_game_client_msg, game_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
 	}
 	
 	switch(msg.msg_id) {
@@ -121,7 +120,7 @@ function process_game_client_msg(msg) {
 		game_player.bag.fetch_bag();
 		break;
 	default:
-		print('process_game_client_msg, msg_id not exist:', msg.msg_id);
+		log_error('process_game_client_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -149,7 +148,7 @@ function process_game_node_msg(msg) {
 		break;
 	}
 	default:
-		print('process_game_node_msg, msg_id not exist:', msg.msg_id);
+		log_error('process_game_node_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
@@ -175,12 +174,12 @@ function process_error_code(msg) {
 function fetch_role(msg) {
 	var game_player = role_id_game_player_map.get(msg.role_id);
 	if (game_player || login_map.get(msg.sid) || logout_map.get(msg.sid) ) {
-		print('relogin account:', msg.account);
+		log_error('relogin account:', msg.account);
 		return remove_session(msg.sid);
 	}
 
 	//登录从数据库加载玩家信息
-	print('load player info from db, account:', msg.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
+	log_info('load player info from db, account:', msg.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
 	login_map.set(msg.sid, msg.cid);
 
 	var msg_res = new node_201();
@@ -190,12 +189,12 @@ function fetch_role(msg) {
 
 function create_role(msg) {
 	if (msg.account.length <= 0 || msg.role_name.length <= 0) {
-		print('create_role parameter invalid, account:', msg.account, ' role_name:', msg.role_name);
+		log_error('create_role parameter invalid, account:', msg.account, ' role_name:', msg.role_name);
 		return send_error_msg(msg.cid, msg.sid, Error_Code.CLIENT_PARAM_ERROR);
 	}
 
 	if (login_map.get(msg.sid)) {
-		print('account in logining status, account:', msg.account, ' role_name:', msg.role_name);
+		log_error('account in logining status, account:', msg.account, ' role_name:', msg.role_name);
 		return remove_session(msg.sid);
 	}
 

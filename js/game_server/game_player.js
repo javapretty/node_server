@@ -16,7 +16,7 @@ function Game_Player() {
 
 //玩家上线，加载数据
 Game_Player.prototype.login = function(gate_cid, sid, msg) {
-	print('********game_player login, role_id:', msg.player_data.player_info.role_id, ' role_name:', msg.player_data.player_info.role_name, ' sid:', sid);
+	log_info('********game_player login, role_id:', msg.player_data.player_info.role_id, ' role_name:', msg.player_data.player_info.role_name, ' sid:', sid);
 	this.gate_cid = gate_cid;
 	this.sid = sid;
 	this.player_info = msg.player_data.player_info;
@@ -34,7 +34,7 @@ Game_Player.prototype.login = function(gate_cid, sid, msg) {
 
 //玩家离线，保存数据
 Game_Player.prototype.logout = function() {
-	print('********game_player logout, role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, ' sid:', this.sid);
+	log_info('********game_player logout, role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, ' sid:', this.sid);
 	this.player_info.logout_time = util.now_sec();
 	
 	this.sync_player_data_to_db(true);
@@ -106,7 +106,7 @@ Game_Player.prototype.sync_login_logout_to_center = function(login) {
 }
 
 Game_Player.prototype.sync_player_data_to_db = function(logout) {
-	print('********sync_player_data_to_db, logout:', logout, ' role_id:', this.player_info.role_id, ' role_name:', this.player_info.role_name);
+	log_info('********sync_player_data_to_db, logout:', logout, ' role_id:', this.player_info.role_id, ' role_name:', this.player_info.role_name);
 	var msg = new node_202();
 	msg.logout = logout;
 	msg.player_data.player_info = this.player_info;
@@ -152,6 +152,6 @@ Game_Player.prototype.set_guild_info = function(msg) {
 	this.player_info.guild_id = msg.guild_id;
 	this.player_info.guild_name = msg.guild_name;
 	this.is_change = true;
-	print('set_guild_info, role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, 
+	log_info('set_guild_info, role_id:', this.player_info.role_id, " role_name:", this.player_info.role_name, 
 	" guild_id:", this.player_info.guild_id, " guild_name:", this.player_info.guild_name);
 }

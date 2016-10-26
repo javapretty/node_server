@@ -31,7 +31,7 @@ var config = new Config();
 var timer = new Timer();
 
 function init(node_info) {
-	print('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+	log_info('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.GATE_SERVER);
 
@@ -61,7 +61,7 @@ function on_drop(cid) {
 }
 
 function on_msg(msg) {
-	print('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
+	log_debug('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	if (msg.msg_type == Msg_Type.C2S) {
 		process_gate_client_msg(msg);
@@ -85,7 +85,7 @@ function get_sid(cid) {
 	} while (sid_set.has(sid_idx) && count < 10000)
 
 	if (count >= 10000) {
-		print('get_sid error, cal count:', count, ' cid:', cid); 
+		log_error('get_sid error, cal count:', count, ' cid:', cid); 
 		remove_session(cid, Error_Code.DISCONNECT_SELF);
 		return -1;
 	}
@@ -138,7 +138,7 @@ function process_gate_client_msg(msg) {
 function process_gate_s2c_msg(msg) {
 	var session = sid_session_map.get(msg.sid);
 	if (!session) {
-		return print('session not in gate server,sid:',msg.sid,' msg_id:',msg.msg_id);
+		return log_info('session not in gate server,sid:',msg.sid,' msg_id:',msg.msg_id);
 	}
 
 	//消息转到client
@@ -154,15 +154,15 @@ function process_gate_node_msg(msg) {
 		game_login_logout(msg);
 		break;
 	default:
-		print('process_gate_node_msg, msg_id not exist:', msg.msg_id);
+		log_error('process_gate_node_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
 
 function connect_gate(msg) {
-	print('connect_gate, account:', msg.account, ' token:', msg.token);
+	log_debug('connect_gate, account:', msg.account, ' token:', msg.token);
 	if (account_session_map.get(msg.account)) {
-		print('account in gate server, ', msg.account);
+		log_error('account in gate server, ', msg.account);
 		return remove_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
 	}
 	
@@ -205,7 +205,7 @@ function game_login_logout(msg) {
 function transmit_msg(msg) {
 	var session = cid_session_map.get(msg.cid);
 	if (!session) {
-		print('session not in gate server,cid:',msg.cid,' msg_id:',msg.msg_id);
+		log_error('session not in gate server,cid:',msg.cid,' msg_id:',msg.msg_id);
 		return remove_session(msg.cid, Error_Code.DISCONNECT_NOLOGIN);
 	}
 	

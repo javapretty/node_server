@@ -127,7 +127,7 @@ int Master_Server::fork_process(int node_type, int node_id, const char *node_nam
 		process_info.node_id = node_id;
 		process_info.node_name = node_name;
 		node_map_.insert(std::make_pair(pid, process_info));
-		LOG_WARN("fork new process, pid:%d, node_type:%d, node_id:%d, node_name:%s", pid, node_type, node_id, node_name);
+		LOG_INFO("fork new process, pid:%d, node_type:%d, node_id:%d, node_name:%s", pid, node_type, node_id, node_name);
 	}
 
 	return pid;

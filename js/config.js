@@ -25,7 +25,7 @@ function Config() {
 			this.util_json = JSON.parse(util_str);
 			
 		} catch (err) {
-			print(err.message);
+			log_info(err.message);
 		}
 	}
 }
