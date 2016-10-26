@@ -104,7 +104,7 @@ function create_player(msg) {
 		log_warn('create player, player has exist, account:',msg.account);
 		send_error_msg(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
 	} else {
-		role_id = generate_table_index(DB_Id.GAME, "game.serial", "role_id");
+		role_id = generate_table_index(DB_Id.GAME, "game.idx", "role_id");
 		var msg_res = new node_203();
 		msg_res.player_data.player_info.role_id = role_id;
 		msg_res.player_data.player_info.account = msg.account;
@@ -145,7 +145,7 @@ function create_guild(msg) {
 		log_warn('create guild, guild has exist, guild_name:',msg.guild_name);
 		send_error_msg(msg.cid, msg.sid, Error_Code.GUILD_HAS_EXIST);
 	} else {
-		guild_id = generate_table_index(DB_Id.GAME, "game.serial", "guild_id");
+		guild_id = generate_table_index(DB_Id.GAME, "game.idx", "guild_id");
 		var guild_info = new Guild_Info();
 		guild_info.guild_id = guild_id;
 		guild_info.guild_name = msg.guild_name;

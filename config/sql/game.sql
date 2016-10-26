@@ -2,8 +2,8 @@ CREATE DATABASE IF NOT EXISTS `game` DEFAULT CHARACTER SET utf8;
 
 USE `game`;
 
-DROP TABLE IF EXISTS `serial`;
-CREATE TABLE `serial` (
+DROP TABLE IF EXISTS `idx`;
+CREATE TABLE `idx` (
   type varchar(120) NOT NULL,
   value int(11) NOT NULL default '0',
   PRIMARY KEY (`type`)

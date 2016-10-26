@@ -1,10 +1,10 @@
 <root>
 	
-	<Serial_Info>
-		<head table_name="game.serial" index_name="type"/>
+	<Idx_Info>
+		<head table_name="game.idx" index_name="type"/>
 		<arg type="string" name="type"/>
 		<arg type="int32" name="value"/>
-	</Serial_Info>
+	</Idx_Info>
 	
 	<Game_Player_Info>
 		<head table_name="game.role" index_name="role_id"/>

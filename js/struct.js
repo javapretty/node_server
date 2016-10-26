@@ -80,7 +80,7 @@ function Player_Data() {
 	this.bag_info = new Bag_Info();
 }
 
-function Serial_Info() {
+function Idx_Info() {
 	this.type = "";
 	this.value = 0;
 }
