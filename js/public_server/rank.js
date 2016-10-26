@@ -28,6 +28,10 @@ Rank.prototype.save_data = function() {
 
 Rank.prototype.fetch_rank = function(player, msg) {
 	var rank_info = this.rank_map.get(msg.rank_type);
+	if (rank_info == null) {
+		return log_error('fetch_rank, rank_type error:', msg.rank_type, ' sid:', msg.sid);
+	}
+	
 	var msg_res = new s2c_200();
 	msg_res.rank_type = msg.rank_type;
 	for (var value of rank_info.member_map.values()) {
