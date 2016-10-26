@@ -184,14 +184,16 @@ int Node_Manager::drop_list_tick(Time_Value &now) {
 	Drop_Info drop_info;
 	while (! drop_list_.empty()) {
 		drop_info = drop_list_.front();
-		//关闭通信层连接
-		if (drop_info.error_code != 0) {
-			Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
-			if (iter != endpoint_map_.end()) {
-				iter->second->network().push_drop(drop_info.drop_cid);
+		if (now - drop_info.drop_time >= Time_Value(2, 0)) {
+			//关闭通信层连接
+			if (drop_info.error_code != 0) {
+				Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
+				if (iter != endpoint_map_.end()) {
+					iter->second->network().push_drop(drop_info.drop_cid);
+				}
 			}
+			drop_list_.pop_front();
 		}
-		drop_list_.pop_front();
 	}
 	return 0;
 }

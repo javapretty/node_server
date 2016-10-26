@@ -135,7 +135,7 @@ function load_player(msg) {
 function save_player(msg) {
 	save_db_data(DB_Id.GAME, "Player_Data", msg.player_data);
 	if (msg.logout) {
-		send_error_msg(msg.cid, msg.sid, Error_Code.SAVE_PLAYER_COMPLETE);
+		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
 	}
 }
 

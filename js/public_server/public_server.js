@@ -129,29 +129,30 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT: {
-		//gate通知public玩家上线,下线
+	case Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT: {
+		//gate通知public玩家上线
+		var public_player = sid_public_player_map.get(msg.sid);
+		if (public_player == null) {
+			public_player = new Public_Player();
+		}
+		public_player.gate_login(msg.cid, msg.sid);
+		break;
+	}
+	case Msg.NODE_GAME_PUBLIC_LOGIN_LOGOUT: {
+		//game通知public玩家上线下线
 		if (msg.login) {
 			var public_player = sid_public_player_map.get(msg.sid);
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.gate_login(msg.cid, msg.sid);
-		} else {
+			public_player.login(msg.cid, msg.sid, msg.player_info);	
+		} 
+		else {
 			var public_player = sid_public_player_map.get(msg.sid);
-			if(public_player) {
+			if (public_player) {
 				public_player.logout();
 			}
 		}
-		break;
-	}
-	case Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN: {
-		//game通知public玩家上线
-		var public_player = sid_public_player_map.get(msg.sid);
-		if (public_player == null) {
-			public_player = new Public_Player();
-		}
-		public_player.login(msg.cid, msg.sid, msg.player_info);
 		break;
 	}
 	default:

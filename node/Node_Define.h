@@ -26,8 +26,9 @@ struct Drop_Info {
 	int endpoint_id;
 	int drop_cid;
 	int error_code;
+	Time_Value drop_time;
 
-	Drop_Info(void) : endpoint_id(0), drop_cid(-1), error_code(0) {}
+	Drop_Info(void) : endpoint_id(0), drop_cid(-1), error_code(0), drop_time(Time_Value::gettimeofday()) {}
 };
 
 typedef std::vector<Endpoint_Info> Endpoint_List;

@@ -45,8 +45,8 @@ function on_msg(msg) {
 	case Msg.NODE_GATE_CENTER_VERIFY_TOKEN:
 		verify_token(msg);
 		break;
-	case Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT:
-		game_player_login_logout(msg);
+	case Msg.NODE_GAME_CENTER_LOGIN_LOGOUT:
+		game_login_logout(msg);
 		break;
 	default:
 		print('center_server on_msg, msg_id not exist:', msg.msg_id);
@@ -61,12 +61,20 @@ function on_tick(timer_id) {
 	}
 }
 
+function remove_session(account, cid, error_code) {
+	account_token_map.delete(account);
+	var msg = new s2c_4();
+	msg.error_code = error_code;
+	send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+	//关闭网络层链接
+	close_session(Endpoint.GATE_CLIENT_SERVER, cid, error_code);	
+}
+
 function select_gate(msg) {
 	print('select gate, account:', msg.account);
 	if (account_token_map.get(msg.account)) {
 		print('account in center_server:', msg.account);
-		close_session(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Error_Code.DISCONNECT_RELOGIN);
-		return;	
+		return remove_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
 	var index = hash(msg.account) % (gate_list.length);
@@ -96,14 +104,9 @@ function set_node_info(msg) {
 function verify_token(msg) {
 	var token_info = account_token_map.get(msg.account);
 	if (!token_info || token_info.token != msg.token) {		
-		var msg_res = new node_1();
+		var msg_res = new s2c_4();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
-		return send_msg(Endpoint.CENTER_GATE_SERVER, msg.cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
-	}
-
-	if (token_info) {
-		close_session(Endpoint.CENTER_CLIENT_SERVER, token_info.cid, Error_Code.TOKEN_TIMEOUT);
-		account_token_map.delete(msg.account);
+		return send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
 	}
 
 	var index = hash(msg.account) % (game_list.length);
@@ -114,7 +117,7 @@ function verify_token(msg) {
 	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
 
-function game_player_login_logout(msg) {
+function game_login_logout(msg) {
 	var sid_set = game_sid_map.get(msg.game_node);
 	if (sid_set) {
 		if (msg.login) {

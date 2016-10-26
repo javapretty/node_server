@@ -160,6 +160,8 @@ function node_2() {
 }
 
 function node_3() {
+	this.login = 0;
+	this.player_info = new Public_Player_Info();
 }
 
 function node_4() {
@@ -167,18 +169,11 @@ function node_4() {
 }
 
 function node_5() {
-	this.player_info = new Public_Player_Info();
-}
-
-function node_6() {
 	this.login = 0;
 	this.game_node = 0;
 }
 
-function node_7() {
-	this.role_id = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
+function node_6() {
 }
 
 function node_200() {
@@ -225,6 +220,12 @@ function node_208() {
 	this.data_type = 0;
 	this.guild_list = new Array();
 	this.rank_list = new Array();
+}
+
+function node_209() {
+	this.role_id = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
 }
 
 function node_210() {

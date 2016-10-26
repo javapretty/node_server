@@ -47,7 +47,7 @@ function Timer() {
 		var now = util.now_sec();
 		account_token_map.forEach(function(value, key, map) {
 			if (now - value.token_time >= 10) {
-				account_token_map.delete(key);	
+				remove_session(key, value.cid, Error_Code.TOKEN_TIMEOUT);	
 			}
 		});
 	}

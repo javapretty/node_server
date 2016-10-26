@@ -61,10 +61,6 @@ function on_tick(timer_id) {
 	}
 }
 
-function send_msg_to_center(msg_id, sid, msg) {
-	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
-}
-
 function send_msg_to_db(msg_id, sid, msg) {
 	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
 }
@@ -77,10 +73,25 @@ function send_msg_to_public(msg_id, sid, msg) {
 	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
 }
 
+function send_msg_to_center(msg_id, sid, msg) {
+	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
 function send_error_msg(cid, sid, error_code) {
 	var msg_res = new s2c_4();
 	msg_res.error_code = error_code;
 	send_msg(Endpoint.GAME_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
+}
+
+function remove_session(sid) {
+	var game_player = sid_game_player_map.get(sid);
+	if (!game_player) {
+		print('remove session game_player not exist, sid:', sid);
+		return;
+	}
+	game_player.logout();
+	//game_server主动踢玩家下线时候，需要同步消息到gate
+	game_player.sync_login_logout_to_gate(false);
 }
 
 function process_game_client_msg(msg) {
@@ -123,9 +134,10 @@ function process_game_node_msg(msg) {
 	case Msg.NODE_DB_GAME_PLAYER_INFO:
 		load_player_data(msg);
 		break;
-	case Msg.NODE_GATE_GAME_PLAYER_LOGOUT:
+	case Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT:
 		var game_player = sid_game_player_map.get(msg.sid);
 		if (game_player) {
+			//gate通知玩家下线时候，不需要同步消息到gate
 			game_player.logout();
 		}
 		break;
@@ -153,7 +165,7 @@ function process_error_code(msg) {
 		}
 		break;
 	}
-	case Error_Code.SAVE_PLAYER_COMPLETE:{
+	case Error_Code.PLAYER_SAVE_COMPLETE:{
 		logout_map.delete(msg.sid);
 		break;
 	}
@@ -202,14 +214,3 @@ function load_player_data(msg) {
 	game_player.login(login_map.get(msg.sid), msg.sid, msg);
 	login_map.delete(msg.sid);
 }
-
-function remove_session(sid) {
-	var game_player = sid_game_player_map.get(sid);
-	if (!game_player) {
-		print('remove session game_player not exist, sid:', sid);
-		return;
-	}
-	game_player.logout();
-	send_error_msg(game_player.gate_cid, game_player.sid, Error_Code.PLAYER_KICK_OFF);
-}
-

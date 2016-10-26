@@ -47,7 +47,7 @@ Guild.prototype.save_data_handler = function() {
 }
 
 Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
-	var msg = new node_7();
+	var msg = new node_209();
 	msg.role_id = player.player_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
