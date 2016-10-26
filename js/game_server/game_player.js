@@ -39,7 +39,6 @@ Game_Player.prototype.logout = function() {
 	this.sync_player_data_to_db(true);
 	this.sync_login_to_center(false);
 	this.sync_logout_to_log();
-	this.send_error_msg(Error_Code.PLAYER_KICK_OFF);
 	logout_map.set(this.player_info.account, this.player_info.logout_time);
 	sid_game_player_map.delete(this.sid);
 	role_id_game_player_map.delete(this.player_info.role_id);

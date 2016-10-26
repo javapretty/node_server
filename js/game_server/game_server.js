@@ -210,5 +210,6 @@ function remove_session(sid) {
 		return;
 	}
 	game_player.logout();
+	send_error_msg(game_player.gate_cid, game_player.sid, Error_Code.PLAYER_KICK_OFF);
 }
 
