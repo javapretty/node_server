@@ -28,11 +28,10 @@ if (typeof Msg == "undefined") {
 	Msg.NODE_CENTER_NODE_INFO = 0; //同步进程节点信息到center
 	Msg.NODE_ERROR_CODE = 1; //进程节点发送错误号
 	Msg.NODE_GATE_CENTER_VERIFY_TOKEN = 2; //gate通知center校验token
-	Msg.NODE_GATE_GAME_PLAYER_LOGOUT = 3; //gate通知game玩家下线
-	Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT = 4; //gate通知public玩家上线下线
-	Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN = 5; //game通知public玩家上线
-	Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT = 6; //game通知center玩家上线下线
-	Msg.NODE_PUBLIC_GAME_GUILD_INFO = 7; //public通知game玩家公会信息
+	Msg.NODE_GAME_PUBLIC_LOGIN_LOGOUT = 3; //game通知public玩家上线下线
+	Msg.NODE_GAME_GATE_LOGIN_LOGOUT = 4; //game通知gate玩家上线下线
+	Msg.NODE_GAME_CENTER_LOGIN_LOGOUT = 5; //game通知center玩家上线下线
+	Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT = 6; //gate通知public玩家上线
 	Msg.NODE_GAME_DB_CREATE_PLAYER = 200; //创建玩家
 	Msg.NODE_GAME_DB_LOAD_PLAYER = 201; //加载玩家信息
 	Msg.NODE_GAME_DB_SAVE_PLAYER = 202; //保存玩家信息
@@ -42,5 +41,6 @@ if (typeof Msg == "undefined") {
 	Msg.NODE_PUBLIC_DB_SAVE_DATA = 206; //保存public数据
 	Msg.NODE_PUBLIC_DB_DELETE_DATA = 207; //删除public数据
 	Msg.NODE_DB_PUBLIC_DATA = 208; //db返回public数据
+	Msg.NODE_PUBLIC_GAME_GUILD_INFO = 209; //public通知game公会信息
 	Msg.NODE_LOG_PLAYER_LOGOUT = 210; //玩家登出日志
 }

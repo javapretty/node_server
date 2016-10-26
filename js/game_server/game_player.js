@@ -24,8 +24,9 @@ Game_Player.prototype.login = function(gate_cid, sid, msg) {
 	this.bag.load_data(this, msg);
 	
 	this.sync_login_to_client();
-	this.sync_login_to_public();
-	this.sync_login_to_center(true);
+	this.sync_login_logout_to_public(true);
+	this.sync_login_logout_to_gate(true);
+	this.sync_login_logout_to_center(true);
 	sid_game_player_map.set(this.sid, this);
 	role_id_game_player_map.set(this.player_info.role_id, this);
 	role_name_game_player_map.set(this.player_info.role_name, this);
@@ -37,8 +38,9 @@ Game_Player.prototype.logout = function() {
 	this.player_info.logout_time = util.now_sec();
 	
 	this.sync_player_data_to_db(true);
-	this.sync_login_to_center(false);
 	this.sync_logout_to_log();
+	this.sync_login_logout_to_public(false);
+	this.sync_login_logout_to_center(false);
 	logout_map.set(this.player_info.account, this.player_info.logout_time);
 	sid_game_player_map.delete(this.sid);
 	role_id_game_player_map.delete(this.player_info.role_id);
@@ -78,32 +80,39 @@ Game_Player.prototype.sync_login_to_client = function() {
 	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
 }
 
-Game_Player.prototype.sync_login_to_public = function() {
-	var msg = new node_5();
+Game_Player.prototype.sync_login_logout_to_public = function(login) {
+	var msg = new node_3();
+	msg.login = login;
 	msg.player_info.role_id = this.player_info.role_id;
 	msg.player_info.account = this.player_info.account;
 	msg.player_info.role_name = this.player_info.role_name;
 	msg.player_info.level = this.player_info.level;
 	msg.player_info.gender = this.player_info.gender;
 	msg.player_info.career = this.player_info.career;
-	send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_public(Msg.NODE_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, msg);
 }
 
-Game_Player.prototype.sync_login_to_center = function(login) {
-	var msg = new node_6();
+Game_Player.prototype.sync_login_logout_to_gate = function(login) {
+	var msg = new node_4();
+	msg.login = login;
+	send_msg(Endpoint.GAME_SERVER, this.gate_cid, Msg.NODE_GAME_GATE_LOGIN_LOGOUT, Msg_Type.NODE_MSG, this.sid, msg);
+}
+
+Game_Player.prototype.sync_login_logout_to_center = function(login) {
+	var msg = new node_5();
 	msg.login = login;
 	msg.game_node = game_node_info.node_id;
-	send_msg(Endpoint.GAME_CENTER_CONNECTOR, 0, Msg.NODE_GAME_CENTER_PLAYER_LOGIN_LOGOUT, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_center(Msg.NODE_GAME_CENTER_LOGIN_LOGOUT, this.sid, msg);
 }
 
 Game_Player.prototype.sync_player_data_to_db = function(logout) {
-	print('***************sync_player_data_to_db, logout:', logout, ' role_id:', this.player_info.role_id, ' role_name:', this.player_info.role_name);
+	print('********sync_player_data_to_db, logout:', logout, ' role_id:', this.player_info.role_id, ' role_name:', this.player_info.role_name);
 	var msg = new node_202();
 	msg.logout = logout;
 	msg.player_data.player_info = this.player_info;
 	this.mail.save_data(msg);
 	this.bag.save_data(msg);
-	send_msg(Endpoint.GAME_DB_CONNECTOR, 0, Msg.NODE_GAME_DB_SAVE_PLAYER, Msg_Type.NODE_MSG, this.sid, msg);
+	send_msg_to_db(Msg.NODE_GAME_DB_SAVE_PLAYER, this.sid, msg);
 	this.is_change = false;
 }
 
@@ -116,7 +125,7 @@ Game_Player.prototype.sync_logout_to_log = function() {
 	msg.logout_info.client_ip = this.player_info.client_ip;
 	msg.logout_info.login_time = this.player_info.login_time;
 	msg.logout_info.logout_time = this.player_info.logout_time;
-	send_msg(Endpoint.GAME_LOG_CONNECTOR, 0, Msg.NODE_LOG_PLAYER_LOGOUT, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_log(Msg.NODE_LOG_PLAYER_LOGOUT, this.sid, msg);
 }
 
 Game_Player.prototype.add_exp = function(exp) {

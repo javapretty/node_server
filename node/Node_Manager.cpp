@@ -104,7 +104,6 @@ int Node_Manager::self_close(void) {
 		}
 	}
 
-	//关闭连接 todo
 	int i = 0;
 	while (++i < 60) {
 		sleep(1);
@@ -182,22 +181,18 @@ int Node_Manager::tick(void) {
 }
 
 int Node_Manager::drop_list_tick(Time_Value &now) {
-	//todo 处理网络层主动掉线cid
 	Drop_Info drop_info;
 	while (! drop_list_.empty()) {
 		drop_info = drop_list_.front();
-		if (now - drop_info.drop_time > Time_Value(2, 0)) {
-			drop_list_.pop_front();
-
+		if (now - drop_info.drop_time >= Time_Value(2, 0)) {
 			//关闭通信层连接
-			if (drop_info.drop_code != 0) {
+			if (drop_info.error_code != 0) {
 				Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
 				if (iter != endpoint_map_.end()) {
 					iter->second->network().push_drop(drop_info.drop_cid);
 				}
 			}
-		} else {
-			break;
+			drop_list_.pop_front();
 		}
 	}
 	return 0;

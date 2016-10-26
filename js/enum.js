@@ -7,30 +7,30 @@
 if (typeof Error_Code == "undefined") {
 	var Error_Code = {};
 
-	Error_Code.RET_OK				= 0;		//成功返回
-	Error_Code.NEED_CREATE_ROLE		= 1;		//需要创建角色
-	Error_Code.DISCONNECT_SELF 		= 2;		//服务主动关闭
-	Error_Code.DISCONNECT_RELOGIN	= 3;		//账号重登录
-	Error_Code.DISCONNECT_NOLOGIN 	= 4;		//账号没有登录
-	Error_Code.TOKEN_NOT_EXIST		= 5;		//token不存在
-	Error_Code.TOKEN_TIMEOUT		= 6;		//token到期
-	Error_Code.CLIENT_PARAM_ERROR 	= 7;		//客户端参数错误
-	Error_Code.CONFIG_ERROR 		= 8;		//配置文件错误
-	Error_Code.ROLE_HAS_EXIST 		= 9;		//角色已存在
-	Error_Code.SAVE_PLAYER_COMPLETE = 10;		//保存玩家完成
-	Error_Code.ROLE_NOT_EXIST 		= 11;		//角色不存在
-	Error_Code.ROLE_OFFLINE 		= 12;		//玩家已离线
-	Error_Code.LEVEL_NOT_ENOUGH 	= 13;		//角色等级不足
+	Error_Code.RET_OK								= 0;		//成功返回
+	Error_Code.NEED_CREATE_ROLE			= 1;		//需要创建角色
+	Error_Code.DISCONNECT_SELF 			= 2;		//服务主动关闭
+	Error_Code.DISCONNECT_RELOGIN		= 3;		//账号重登录
+	Error_Code.DISCONNECT_NOLOGIN 		= 4;		//账号没有登录
+	Error_Code.TOKEN_NOT_EXIST				= 5;		//token不存在
+	Error_Code.TOKEN_TIMEOUT				= 6;		//token到期
+	Error_Code.CLIENT_PARAM_ERROR 		= 7;		//客户端参数错误
+	Error_Code.CONFIG_ERROR 				= 8;		//配置文件错误
+	Error_Code.ROLE_HAS_EXIST 				= 9;	//角色已存在
+	Error_Code.ROLE_NOT_EXIST 				= 10;	//角色不存在
+	Error_Code.PLAYER_SAVE_COMPLETE	= 11;	//保存玩家完成
+	Error_Code.PLAYER_KICK_OFF 			= 12;	//玩家被踢下线
+	Error_Code.PLAYER_OFFLINE 				= 13;	//玩家已离线
+	Error_Code.LEVEL_NOT_ENOUGH 			= 14;	//角色等级不足
 	
-	Error_Code.BAG_FULL				= 14;		//背包已满
-	Error_Code.ITEM_NOT_EXIST		= 15;		//物品不存在
-	Error_Code.ITEM_NOT_ENOUGH		= 16;		//物品不足
-	Error_Code.COPPER_NOT_ENOUGH	= 17;		//铜钱不足
-	Error_Code.GOLD_NOT_ENOUGH		= 18;		//元宝不足
+	Error_Code.BAG_FULL							= 15;	//背包已满
+	Error_Code.ITEM_NOT_EXIST				= 16;	//物品不存在
+	Error_Code.ITEM_NOT_ENOUGH				= 17;	//物品不足
+	Error_Code.COPPER_NOT_ENOUGH			= 18;	//铜钱不足
+	Error_Code.GOLD_NOT_ENOUGH				= 19;	//元宝不足
 	
-	Error_Code.GUILD_HAS_EXIST		= 19;		//公会已存在
-	Error_Code.GUILD_NOT_EXIST		= 20;		//公会不存在
-	Error_Code.PLAYER_KICK_OFF 		= 21;		//玩家被踢下线
+	Error_Code.GUILD_HAS_EXIST				= 20;	//公会已存在
+	Error_Code.GUILD_NOT_EXIST				= 21;	//公会不存在
 }
 
 if (typeof Msg_Type == "undefined") {

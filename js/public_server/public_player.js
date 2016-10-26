@@ -11,8 +11,8 @@ function Public_Player() {
 	this.player_info = new Public_Player_Info();
 }
 
-Public_Player.prototype.set_gate_cid = function(gate_cid, sid, role_id) {
-	print('********public_player login from gate, gate_cid:', gate_cid, ' sid:', sid, ' role_id:', role_id);
+Public_Player.prototype.gate_login = function(gate_cid, sid) {
+	print('********public_player login from gate, gate_cid:', gate_cid, ' sid:', sid);
 	
 	this.gate_cid = gate_cid;
 	this.sid = sid;
@@ -28,7 +28,6 @@ Public_Player.prototype.login = function(game_cid, sid, player_info) {
 	this.player_info = player_info;
 	sid_public_player_map.set(this.sid, this);
 	role_id_public_player_map.set(this.player_info.role_id, this);
-	role_name_public_player_map.set(this.player_info.role_name, this);
 	
 	rank_manager.update_rank(Rank_Type.LEVEL_RANK, this);
 }
@@ -38,7 +37,6 @@ Public_Player.prototype.logout = function() {
 	print('********public_player logout, role_id:', this.player_info.role_id, ' sid:', this.sid, " role_name:", this.player_info.role_name);
 	sid_public_player_map.delete(this.sid);
 	role_id_public_player_map.delete(this.player_info.role_id);
-	role_name_public_player_map.delete(this.player_info.role_name);
 }
 
 Public_Player.prototype.tick = function(now) {

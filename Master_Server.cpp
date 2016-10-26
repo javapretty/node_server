@@ -1,5 +1,5 @@
 /*
- *		Node_Server.cpp
+ *		Master_Server.cpp
  *
  *  Created on: Sep 19, 2016
  *      Author: zhangyalei
@@ -14,28 +14,28 @@
 #include "Epoll_Watcher.h"
 #include "Node_Manager.h"
 #include "Node_Config.h"
-#include "Node_Server.h"
+#include "Master_Server.h"
 
-Node_Server::Node_Server(void) : wait_watcher_(0), node_map_(64), core_map_(64) { }
+Master_Server::Master_Server(void) : wait_watcher_(0), node_map_(64), core_map_(64) { }
 
-Node_Server::~Node_Server(void) { }
+Master_Server::~Master_Server(void) { }
 
-Node_Server *Node_Server::instance_;
+Master_Server *Master_Server::instance_;
 
-struct option Node_Server::long_options[] = {
+struct option Master_Server::long_options[] = {
 		{"node_type",			required_argument,	0,	't'},
 		{"node_id",			required_argument,	0,	'i'},
 		{"server_name",		required_argument,	0,	's'},
 		{0, 0, 0, 0}
 };
 
-Node_Server *Node_Server::instance(void) {
+Master_Server *Master_Server::instance(void) {
     if (! instance_)
-        instance_ = new Node_Server();
+        instance_ = new Master_Server();
     return instance_;
 }
 
-int Node_Server::init(int argc, char *argv[]) {
+int Master_Server::init(int argc, char *argv[]) {
 	if ((wait_watcher_ = new Epoll_Watcher) == 0) {
 		LOG_FATAL("new Epoll_Watcher fatal");
 	}
@@ -48,14 +48,14 @@ int Node_Server::init(int argc, char *argv[]) {
 	return 0;
 }
 
-int Node_Server::start(int argc, char *argv[]) {
+int Master_Server::start(int argc, char *argv[]) {
 	signal(SIGCHLD, sigcld_handle);
 	parse_cmd_arguments(argc, argv);
 	wait_watcher_->loop();
 	return 0;
 }
 
-int Node_Server::parse_cmd_arguments(int argc, char *argv[]) {
+int Master_Server::parse_cmd_arguments(int argc, char *argv[]) {
 	int node_type = 0;
 	int node_id = 0;
 	bool daemon_server = false;
@@ -95,7 +95,7 @@ int Node_Server::parse_cmd_arguments(int argc, char *argv[]) {
 	return 0;
 }
 
-int Node_Server::fork_process(int node_type, int node_id, const char *node_name) {
+int Master_Server::fork_process(int node_type, int node_id, const char *node_name) {
 	std::stringstream execname_stream;
 	execname_stream << exec_name_ << " --node_type=" << node_type << " --node_id=" << node_id << " --server_name=" << server_name_;
 	LOG_INFO("exec_str=%s, node_name=%s", execname_stream.str().c_str(), node_name);
@@ -133,14 +133,14 @@ int Node_Server::fork_process(int node_type, int node_id, const char *node_name)
 	return pid;
 }
 
-void Node_Server::run_daemon_server(void) {
+void Master_Server::run_daemon_server(void) {
 	for(Node_List::iterator iter = node_conf_.node_list.begin();
 			iter != node_conf_.node_list.end(); iter++) {
 		fork_process(iter->node_type, iter->node_id, iter->node_name.c_str());
 	}
 }
 
-void Node_Server::run_node_server(int node_id) {
+void Master_Server::run_node_server(int node_id) {
 	for (Node_List::const_iterator iter = node_conf_.node_list.begin();
 			iter != node_conf_.node_list.end(); ++iter) {
 		if (iter->node_id == node_id) {
@@ -151,7 +151,7 @@ void Node_Server::run_node_server(int node_id) {
 	}
 }
 
-void Node_Server::sigcld_handle(int signo) {
+void Master_Server::sigcld_handle(int signo) {
 	LOG_ERROR("node receive signo = %d", signo);
 	signal(SIGCHLD, sigcld_handle);
 	pid_t pid = wait(NULL);
@@ -159,10 +159,10 @@ void Node_Server::sigcld_handle(int signo) {
 		LOG_ERROR("wait error, pid:%d", pid);
 	}
 	sleep(1);
-	NODE_SERVER->restart_process(pid);
+	MASTER_SERVER->restart_process(pid);
 }
 
-void Node_Server::restart_process(int pid) {
+void Master_Server::restart_process(int pid) {
 	Int_Node_Map::iterator iter = node_map_.find(pid);
 	if (iter == node_map_.end()) {
 		LOG_ERROR("cannot find process, pid = %d.", pid);

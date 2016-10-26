@@ -1,12 +1,12 @@
 /*
- *		Node_Server.h
+ *		Master_Server.h
  *
  *  Created on: Sep 19, 2016
  *      Author: zhangyalei
  */
 
-#ifndef NODE_SERVER_H_
-#define NODE_SERVER_H_
+#ifndef MASTER_SERVER_H_
+#define MASTER_SERVER_H_
 
 #include <getopt.h>
 #include <string>
@@ -14,13 +14,13 @@
 #include "Node_Define.h"
 
 class Epoll_Watcher;
-class Node_Server {
+class Master_Server {
 	//pid--Node_Info
 	typedef boost::unordered_map<int, Node_Info> Int_Node_Map;
 	//node_type--core_num
 	typedef boost::unordered_map<int, int> Int_Core_Map;
 public:
-	static Node_Server *instance(void);
+	static Master_Server *instance(void);
 
 	int init(int argc, char *argv[]);
 	int start(int argc, char *argv[]);
@@ -34,13 +34,13 @@ public:
 	void restart_process(int pid);
 
 private:
-	Node_Server(void);
-	~Node_Server(void);
-	Node_Server(const Node_Server &);
-	const Node_Server &operator=(const Node_Server &);
+	Master_Server(void);
+	~Master_Server(void);
+	Master_Server(const Master_Server &);
+	const Master_Server &operator=(const Master_Server &);
 
 private:
-	static Node_Server *instance_;
+	static Master_Server *instance_;
 	static struct option long_options[];
 	Epoll_Watcher *wait_watcher_;
 
@@ -52,6 +52,6 @@ private:
 	Int_Core_Map core_map_;
 };
 
-#define NODE_SERVER Node_Server::instance()
+#define MASTER_SERVER Master_Server::instance()
 
-#endif /* NODE_SERVER_H_ */
+#endif /* MASTER_SERVER_H_ */

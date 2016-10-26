@@ -14,6 +14,8 @@
 	</node_2>
 
 	<node_3>
+		<arg type="bool" name="login"/>
+		<struct type="Public_Player_Info" name="player_info"/>
 	</node_3>
 
 	<node_4>
@@ -21,19 +23,12 @@
 	</node_4>
 
 	<node_5>
-		<struct type="Public_Player_Info" name="player_info"/>
+		<arg type="bool" name="login"/>
+		<arg type="int32" name="game_node"/>
 	</node_5>
 	
 	<node_6>
-		<arg type="bool" name="login"/>
-		<arg type="int32" name="game_node"/>
 	</node_6>
-
-	<node_7>
-		<arg type="int64" name="role_id"/>
-		<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
-	</node_7>
 	
 	<node_200>
 		<arg type="string" name="account"/>
@@ -80,6 +75,12 @@
 		<vector type="Guild_Info" name="guild_list"/>
 		<vector type="Rank_Info" name="rank_list"/>
 	</node_208>
+	
+	<node_209>
+		<arg type="int64" name="role_id"/>
+		<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+	</node_209>
 	
 	<node_210>
 		<struct type="Logout_Info" name="logout_info"/>

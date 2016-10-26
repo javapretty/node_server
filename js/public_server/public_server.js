@@ -18,8 +18,6 @@ require('public_server/rank.js');
 var sid_public_player_map = new Map();
 //role_id---public_player
 var role_id_public_player_map = new Map();
-//role_name---public_player
-var role_name_public_player_map = new Map();
 
 //公会管理器
 var guild_manager = new Guild();
@@ -38,6 +36,8 @@ function init(node_info) {
 	load_public_data();
 }
 
+function on_drop(cid) { }
+
 function on_msg(msg) {
 	print('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
@@ -55,14 +55,24 @@ function on_tick(timer_id) {
 	}
 }
 
-function on_drop(drop_id) {
+function send_msg_to_db(msg_id, sid, msg) {
+	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
 
+function send_public_msg(cid, msg_id, sid, msg) {
+	send_msg(Endpoint.PUBLIC_SERVER, cid, msg_id, Msg_Type.NODE_MSG, sid, msg);
+}
+
+function send_error_msg(cid, sid, error_code) {
+	var msg_res = new s2c_4();
+	msg_res.error_code = error_code;
+	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
 }
 
 function load_public_data() {
 	var msg = new node_205();
 	msg.data_type = Public_Data_Type.ALL_DATA;
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, Msg.NODE_PUBLIC_DB_LOAD_DATA, Msg_Type.NODE_MSG, 0, msg);
+	send_msg_to_db(Msg.NODE_PUBLIC_DB_LOAD_DATA, 0, msg);
 }
 
 function process_public_client_msg(msg) {
@@ -119,29 +129,30 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.NODE_GATE_PUBLIC_PLAYER_LOGIN_LOGOUT: {
-		//gate通知public玩家上线,下线
+	case Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT: {
+		//gate通知public玩家上线
+		var public_player = sid_public_player_map.get(msg.sid);
+		if (public_player == null) {
+			public_player = new Public_Player();
+		}
+		public_player.gate_login(msg.cid, msg.sid);
+		break;
+	}
+	case Msg.NODE_GAME_PUBLIC_LOGIN_LOGOUT: {
+		//game通知public玩家上线下线
 		if (msg.login) {
 			var public_player = sid_public_player_map.get(msg.sid);
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.set_gate_cid(msg.cid, msg.sid);
-		} else {
+			public_player.login(msg.cid, msg.sid, msg.player_info);	
+		} 
+		else {
 			var public_player = sid_public_player_map.get(msg.sid);
-			if(public_player) {
+			if (public_player) {
 				public_player.logout();
 			}
 		}
-		break;
-	}
-	case Msg.NODE_GAME_PUBLIC_PLYAER_LOGIN: {
-		//game通知public玩家上线
-		var public_player = role_id_public_player_map.get(msg.player_info.role_id);
-		if (public_player == null) {
-			public_player = new Public_Player();
-		}
-		public_player.login(msg.cid, msg.sid, msg.player_info);
 		break;
 	}
 	default:
@@ -149,23 +160,3 @@ function process_public_node_msg(msg) {
 		break;
 	}
 }
-
-function send_client_error_code(cid, sid, error_code) {
-	var msg_res = new s2c_4();
-	msg_res.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
-}
-
-function remove_session(sid) {
-	var public_player = sid_public_player_map.get(sid);
-	if (!game_player) {
-		print('remove session game_player not exist, sid:', sid);
-		return;
-	}
-	send_client_error_code(public_player.gate_cid, sid, Error_Code.PLAYER_KICK_OFF);
-
-	var msg_3 = new node_3();
-	send_msg(Endpoint.PUBLIC_SERVER, public_player.game_cid, Msg.NODE_GATE_GAME_PLAYER_LOGOUT, Msg_Type.NODE_MSG, sid, msg_3);
-	public_player.save_player_data();
-}
-

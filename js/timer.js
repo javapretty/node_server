@@ -1,7 +1,7 @@
 /*
-*	ÃèÊö£º¶¨Ê±Æ÷ÏµÍ³
-*	×÷Õß£ºÕÅÑÇÀÚ
-*	Ê±¼ä£º2016/10/24
+*	æè¿°ï¼šå®šæ—¶å™¨ç³»ç»Ÿ
+*	ä½œè€…ï¼šå¼ äºšç£Š
+*	æ—¶é—´ï¼š2016/10/24
 */
 
 function Timer() {
@@ -11,19 +11,19 @@ function Timer() {
 	this.init = function(node_type) {
 		switch(node_type) {
 		case Node_Type.CENTER_SERVER: {
-			//×¢²áÇå³ýtoken¶¨Ê±Æ÷£¬Ê±¼ä¼ä¸ô10s
+			//æ³¨å†Œæ¸…é™¤tokenå®šæ—¶å™¨ï¼Œæ—¶é—´é—´éš”10s
 			this.register_timer(10000, 0, this.center_token_handler);
 			break;
 		}
 		case Node_Type.GAME_SERVER: {
-			//×¢²áÍæ¼Ò¶¨Ê±Æ÷£¬Ê±¼ä¼ä¸ô500ms
+			//æ³¨å†ŒçŽ©å®¶å®šæ—¶å™¨ï¼Œæ—¶é—´é—´éš”500ms
 			this.register_timer(500, 0, this.game_player_handler);
 			break;
 		}
 		case Node_Type.PUBLIC_SERVER: {
-			//×¢²áÍæ¼Ò¶¨Ê±Æ÷£¬Ê±¼ä¼ä¸ô500ms£¬Ã¿´Îµ½ÆÚ±éÀúÔÚÏßÍæ¼Ò½øÐÐ´¦Àí
+			//æ³¨å†ŒçŽ©å®¶å®šæ—¶å™¨ï¼Œæ—¶é—´é—´éš”500msï¼Œæ¯æ¬¡åˆ°æœŸéåŽ†åœ¨çº¿çŽ©å®¶è¿›è¡Œå¤„ç†
 			this.register_timer(500, 0, this.public_player_handler);
-			//×¢²á¹«¹²ÐÅÏ¢±£´æ¶¨Ê±Æ÷£¬Ê±¼ä¼ä¸ô30s
+			//æ³¨å†Œå…¬å…±ä¿¡æ¯ä¿å­˜å®šæ—¶å™¨ï¼Œæ—¶é—´é—´éš”30s
 			this.register_timer(30000, 0, this.public_save_handler);
 			break;
 		}
@@ -32,25 +32,22 @@ function Timer() {
 		}
 	}
 	
-	//×¢²á¶¨Ê±Æ÷
 	this.register_timer = function(interval, next_tick, handler) {
 		register_timer(timer_id, interval, next_tick);
 		timer_map.set(timer_id, handler);
 		timer_id++;
 	}
 
-	//»ñÈ¡¶¨Ê±Æ÷
 	this.get_timer_handler = function(timer_id) {
 		return timer_map.get(timer_id);
 	}
 	
-	/////////////////////////////////¶¨Ê±Æ÷´¦Àíº¯Êý//////////////////////////////////
+	/////////////////////////////////å®šæ—¶å™¨å¤„ç†å‡½æ•°/////////////////////////////////
 	this.center_token_handler = function() {
 		var now = util.now_sec();
 		account_token_map.forEach(function(value, key, map) {
 			if (now - value.token_time >= 10) {
-				close_session(Endpoint.CENTER_CLIENT_SERVER, value.cid, Error_Code.TOKEN_TIMEOUT);
-				account_token_map.delete(key);	
+				remove_session(key, value.cid, Error_Code.TOKEN_TIMEOUT);	
 			}
 		});
 	}
