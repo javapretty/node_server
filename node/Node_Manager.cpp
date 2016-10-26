@@ -5,6 +5,7 @@
  *      Author: zhangyalei
  */
 
+#include "Base_Function.h"
 #include "Node_Timer.h"
 #include "Node_Config.h"
 #include "V8_Manager.h"
@@ -13,7 +14,11 @@
 
 Node_Manager::Node_Manager(void):
 	tick_time_(Time_Value::zero),
+	endpoint_map_(get_hash_table_size(64)),
+	cid_session_map_(10240),
+	sid_session_map_(10240),
 	msg_count_(false),
+	msg_count_map_(512),
 	total_recv_bytes(0),
 	total_send_bytes(0)
 {
@@ -130,35 +135,29 @@ int Node_Manager::process_list(void) {
 	return 0;
 }
 
-Block_Buffer *Node_Manager::pop_buffer(void) {
-	for (Endpoint_Map::iterator iter = endpoint_map_.begin(); iter != endpoint_map_.end(); ++iter) {
-		if (!iter->second->block_list().empty()) {
-			return iter->second->block_list().pop_front();
-		}
-	}
-	return nullptr;
-}
-
-int Node_Manager::push_buffer(int endpoint_id, int cid, Block_Buffer *buffer) {
+int Node_Manager::send_buffer(int endpoint_id, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
 	Endpoint_Map::iterator iter = endpoint_map_.find(endpoint_id);
-	if (iter != endpoint_map_.end()) {
-		iter->second->push_block(cid, buffer);
+	if (iter == endpoint_map_.end()) {
+		LOG_ERROR("endpoint_id %d not exist, cid:%d, msg_id:%d, msg_type:%d, sid:%d", endpoint_id, cid, msg_id, msg_type, sid);
+		return -1;
 	}
-	return 0;
-}
 
-int Node_Manager::send_buffer(int endpoint_id, int cid, Block_Buffer &buffer) {
-	Endpoint_Map::iterator iter = endpoint_map_.find(endpoint_id);
-	if (iter != endpoint_map_.end()) {
-		if (iter->second->endpoint_info().endpoint_type == CONNECTOR) {
-			iter->second->send_block(iter->second->get_cid(), buffer);
-		} else {
-			iter->second->send_block(cid, buffer);
-		}
+	int send_cid = cid;
+	if (iter->second->endpoint_info().endpoint_type == CONNECTOR) {
+		send_cid = iter->second->get_cid();
 	}
-	else {
-		LOG_ERROR("endpoint_id %d not exists", endpoint_id);
+
+	Block_Buffer buf;
+	buf.write_uint16(0);
+	buf.write_uint8(msg_id);
+	if (msg_type != S2C) {
+		buf.write_uint8(msg_type);
+		buf.write_uint32(sid);
 	}
+	buf.copy(buffer);
+	buf.write_len(RPC_PKG);
+	iter->second->send_block(send_cid, buf);
+	add_send_bytes(buf.readable_bytes());
 	return 0;
 }
 
@@ -169,7 +168,45 @@ int Node_Manager::free_pool(void) {
 
 	server_pool_.shrink_all();
 	connector_pool_.shrink_all();
+	session_pool_.shrink_all();
 	return 0;
+}
+
+int Node_Manager::add_session(Session *session) {
+	if (!session) {
+		LOG_ERROR("node_id:%d, node_name:%s add session error", node_info_.node_id, node_info_.node_name.c_str());
+		return -1;
+	}
+	cid_session_map_.insert(std::make_pair(session->cid, session));
+	sid_session_map_.insert(std::make_pair(session->sid, session));
+	return 0;
+}
+
+int Node_Manager::remove_session(int cid) {
+	Session_Map::iterator iter = cid_session_map_.find(cid);
+	if (iter != sid_session_map_.end()) {
+		Session *session = iter->second;
+		cid_session_map_.erase(iter);
+		sid_session_map_.erase(session->sid);
+		session_pool_.push(session);
+	}
+	return 0;
+}
+
+Session *Node_Manager::find_session_by_cid(int cid) {
+	Session_Map::iterator iter = cid_session_map_.find(cid);
+	if (iter != cid_session_map_.end()) {
+		return iter->second;
+	}
+	return nullptr;
+}
+
+Session *Node_Manager::find_session_by_sid(int sid) {
+	Session_Map::iterator iter = sid_session_map_.find(sid);
+	if (iter != sid_session_map_.end()) {
+		return iter->second;
+	}
+	return nullptr;
 }
 
 int Node_Manager::tick(void) {
@@ -186,13 +223,13 @@ int Node_Manager::drop_list_tick(Time_Value &now) {
 		drop_info = drop_list_.front();
 		if (now - drop_info.drop_time >= Time_Value(2, 0)) {
 			//关闭通信层连接
-			if (drop_info.error_code != 0) {
-				Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
-				if (iter != endpoint_map_.end()) {
-					iter->second->network().push_drop(drop_info.drop_cid);
-				}
+			Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
+			if (iter != endpoint_map_.end()) {
+				iter->second->network().push_drop(drop_info.cid);
 			}
-			drop_list_.pop_front();
+
+			//删除session
+			remove_session(drop_info.cid);
 		}
 	}
 	return 0;
@@ -215,6 +252,7 @@ void Node_Manager::print_node_info(void) {
 	LOG_INFO("%s server_id:%d", node_info_.node_name.c_str(), node_info_.node_id);
 	LOG_INFO("server_pool_ free = %d, used = %d", server_pool_.free_obj_list_size(), server_pool_.used_obj_list_size());
 	LOG_INFO("connector_pool_ free = %d, used = %d", connector_pool_.free_obj_list_size(), connector_pool_.used_obj_list_size());
+	LOG_INFO("session_pool_ free = %d, used = %d", session_pool_.free_obj_list_size(), session_pool_.used_obj_list_size());
 }
 
 void Node_Manager::print_msg_info(void) {

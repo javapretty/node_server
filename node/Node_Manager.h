@@ -18,10 +18,12 @@ class Node_Manager: public Thread {
 public:
 	typedef Object_Pool<Server, Thread_Mutex> Server_Pool;
 	typedef Object_Pool<Connector, Thread_Mutex> Connector_Pool;
+	typedef Object_Pool<Session, Thread_Mutex> Session_Pool;
 
 	typedef List<Drop_Info, Thread_Mutex> Drop_List;
 	typedef List<int, Thread_Mutex> Int_List;
 	typedef boost::unordered_map<int, Endpoint *> Endpoint_Map;
+	typedef boost::unordered_map<int, Session *> Session_Map;
 	typedef boost::unordered_map<int, int> Msg_Count_Map;
 public:
 	static Node_Manager *instance(void);
@@ -34,8 +36,9 @@ public:
 	virtual void run_handler(void);
 	virtual int process_list(void);
 
+	inline Node_Info &node_info(void) { return node_info_; }
 	inline void push_drop(const Drop_Info &drop_info) { drop_list_.push_back(drop_info); }
-	inline int get_drop_cid();
+	inline int pop_drop_cid();
 	inline void push_tick(int tick) {
 		//释放信号量，让信号量的值加1，相当于V操作
 		sem_post(&tick_sem_);
@@ -43,13 +46,20 @@ public:
 	}
 
 	//从endpoint中取消息buffer
-	Block_Buffer *pop_buffer(void);
+	inline Block_Buffer *pop_buffer(void);
 	//回收消息buffer
-	int push_buffer(int endpoint_id, int cid, Block_Buffer *buffer);
+	inline int push_buffer(int endpoint_id, int cid, Block_Buffer *buffer);
+
 	//发送消息buffer
-	int send_buffer(int endpoint_id, int cid, Block_Buffer &buffer);
+	int send_buffer(int endpoint_id, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
 	//释放进程pool缓存，后台调用
 	int free_pool(void);
+
+	inline Session *pop_session(void) { return session_pool_.pop(); }
+	int add_session(Session *session);
+	int remove_session(int cid);
+	Session *find_session_by_cid(int cid);
+	Session *find_session_by_sid(int sid);
 
 	//定时器处理
 	int tick(void);
@@ -90,17 +100,21 @@ private:
 
 	Drop_List drop_list_; 			//逻辑层发起的掉线cid列表
 
-	sem_t tick_sem_;					//定时器通知信号量
+	sem_t tick_sem_;						//定时器通知信号量
 	Int_List tick_list_;				//定时器列表
 
 	Time_Value tick_time_;			//节点tick时间
-	Time_Value node_info_tick_;		//节点信息tick
+	Time_Value node_info_tick_;//节点信息tick
 
 	Server_Pool server_pool_;
 	Connector_Pool connector_pool_;
+	Session_Pool session_pool_;
 
-	Node_Info node_info_;			//节点信息
+	Node_Info node_info_;					//节点信息
 	Endpoint_Map endpoint_map_;		//通信端信息
+
+	Session_Map cid_session_map_;	//cid--session_info
+	Session_Map sid_session_map_;	//sid--session_info
 
 	bool msg_count_;
 	Msg_Count_Map msg_count_map_;
@@ -110,7 +124,7 @@ private:
 
 #define NODE_MANAGER Node_Manager::instance()
 
-int Node_Manager::get_drop_cid() {
+int Node_Manager::pop_drop_cid() {
 	int drop_cid = -1;
 	for(Endpoint_Map::iterator iter = endpoint_map_.begin();
 			iter != endpoint_map_.end(); iter++){
@@ -123,6 +137,23 @@ int Node_Manager::get_drop_cid() {
 		}
 	}
 	return drop_cid;
+}
+
+Block_Buffer *Node_Manager::pop_buffer(void) {
+	for (Endpoint_Map::iterator iter = endpoint_map_.begin(); iter != endpoint_map_.end(); ++iter) {
+		if (!iter->second->block_list().empty()) {
+			return iter->second->block_list().pop_front();
+		}
+	}
+	return nullptr;
+}
+
+int Node_Manager::push_buffer(int endpoint_id, int cid, Block_Buffer *buffer) {
+	Endpoint_Map::iterator iter = endpoint_map_.find(endpoint_id);
+	if (iter != endpoint_map_.end()) {
+		iter->second->push_block(cid, buffer);
+	}
+	return 0;
 }
 
 #endif /* NODE_MANAGER_H_ */

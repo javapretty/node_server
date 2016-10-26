@@ -1,5 +1,5 @@
 /*
-*	描述：route_server脚本
+*	描述：center_server脚本
 *	作者：张亚磊
 *	时间：2016/09/22
 */
@@ -67,7 +67,7 @@ function remove_session(account, cid, error_code) {
 	msg.error_code = error_code;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
 	//关闭网络层链接
-	close_session(Endpoint.GATE_CLIENT_SERVER, cid, error_code);	
+	close_session(Endpoint.GATE_CLIENT_SERVER, cid);	
 }
 
 function select_gate(msg) {

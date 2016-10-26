@@ -109,6 +109,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, register_timer));
 	global->Set(String::NewFromUtf8(isolate, "send_msg", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, send_msg));
+	global->Set(String::NewFromUtf8(isolate, "add_session", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, add_session));
 	global->Set(String::NewFromUtf8(isolate, "close_session", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, close_session));
 
@@ -162,33 +164,55 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	uint32_t sid = args[4]->Uint32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	Block_Buffer buffer;
-	buffer.write_uint16(0);
-	buffer.write_uint8(msg_id);
-	if (msg_type != S2C) {
-		buffer.write_uint8(msg_type);
-		buffer.write_uint32(sid);
-	}
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct != nullptr) {
 		msg_struct->build_msg_buffer(args.GetIsolate(), args[5]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
 	}
-	buffer.write_len(RPC_PKG);
-	NODE_MANAGER->send_buffer(endpoint_id, cid, buffer);
-	NODE_MANAGER->add_send_bytes(buffer.readable_bytes());
+	NODE_MANAGER->send_buffer(endpoint_id, cid, msg_id, msg_type, sid, &buffer);
+}
+
+void add_session(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 1 || !args[0]->IsObject()) {
+		LOG_ERROR("add_session args error, length: %d\n", args.Length());
+		return;
+	}
+
+	Session *session = NODE_MANAGER->pop_session();
+	if (!session) {
+		LOG_ERROR("pop session error");
+		return;
+	}
+
+	Local<Object> object = args[0]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked();
+	session->gate_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "gate_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->game_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "game_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->public_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "public_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->cid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "cid", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->sid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "sid", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+
+	NODE_MANAGER->add_session(session);
 }
 
 void close_session(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 3) {
-		LOG_ERROR("close_client args error, length: %d\n", args.Length());
-		args.GetReturnValue().SetNull();
+	if (args.Length() != 2) {
+		LOG_ERROR("close_session args error, length: %d\n", args.Length());
 		return;
 	}
 
 	Drop_Info drop_info;
 	drop_info.endpoint_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.drop_cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.error_code = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	drop_info.cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	NODE_MANAGER->push_drop(drop_info);
 }
 

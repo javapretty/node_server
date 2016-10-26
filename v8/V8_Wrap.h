@@ -24,6 +24,8 @@ Local<Context> create_context(Isolate* isolate);
 void register_timer(const FunctionCallbackInfo<Value>& args);
 //函数说明：发送消息object	参数：1.endpoint_id 2.cid 3.msg_id 4.msg_type 5.sid 6.消息object   返回值：无
 void send_msg(const FunctionCallbackInfo<Value>& args);
+//函数说明：增加客户端连接  	参数：1.session    返回值：无
+void add_session(const FunctionCallbackInfo<Value>& args);
 //函数说明：关闭客户端连接  	参数：1.endpoint_id 2.drop_cid 3.error_code    返回值：无
 void close_session(const FunctionCallbackInfo<Value>& args);
 

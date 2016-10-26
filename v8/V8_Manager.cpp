@@ -11,7 +11,11 @@
 #include "V8_Manager.h"
 #include "Struct_Manager.h"
 
-V8_Manager::V8_Manager(void) : platform_(nullptr), isolate_(nullptr) { }
+V8_Manager::V8_Manager(void) :
+	platform_(nullptr),
+	isolate_(nullptr),
+	plugin_handle_map_(64)
+{ }
 
 V8_Manager::~V8_Manager(void) {
 	fini();
@@ -71,14 +75,15 @@ int V8_Manager::process_list(void) {
 		bool all_empty = true;
 
 		//脚本处理cid掉线
-		int drop_cid = NODE_MANAGER->get_drop_cid();
+		int drop_cid = NODE_MANAGER->pop_drop_cid();
 		if(drop_cid != -1){
 			all_empty = false;
+			NODE_MANAGER->remove_session(drop_cid);
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_drop", NewStringType::kNormal).ToLocalChecked();
 			Local<Value> func_value;
 			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
 				LOG_ERROR("can't find function 'on_drop'");
-				return -1;
+				continue;
 			}
 			const int argc = 1;
 			Local<Value> argv[argc] = {Int32::New(isolate_, drop_cid)};
@@ -90,13 +95,6 @@ int V8_Manager::process_list(void) {
 		buffer = NODE_MANAGER->pop_buffer();
 		if (buffer) {
 			all_empty = false;
-			Local<String> func_name = String::NewFromUtf8(isolate_, "on_msg", NewStringType::kNormal).ToLocalChecked();
-			Local<Value> func_value;
-			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
-				LOG_ERROR("can't find function 'on_msg'");
-				continue;
-			}
-			
 			NODE_MANAGER->add_recv_bytes(buffer->readable_bytes() - 8);
 			int32_t endpoint_id = 0;
 			int32_t cid = 0;
@@ -117,6 +115,52 @@ int V8_Manager::process_list(void) {
 				buffer->read_uint32(sid);
 			}
 			NODE_MANAGER->add_msg_count(msg_id);
+
+			//gate消息直接发送，不经过脚本层转接
+			if (NODE_MANAGER->node_info().node_type == GATE_SERVER
+					&& (msg_type == C2S || msg_type == NODE_S2C)
+					&& msg_id >= 3 && msg_id <= 255) {
+				int buf_endpoint_id = 0;
+				int buf_cid = 0;
+				int buf_msg_id = msg_id;
+				int buf_msg_type = 0;
+				int buf_sid = 0;
+
+				if (msg_type == C2S) {
+					Session *session = NODE_MANAGER->find_session_by_cid(cid);
+					if (!session) {
+						continue;
+					}
+
+					if (msg_id >= 3 && msg_id < 200) {
+						buf_endpoint_id = session->game_endpoint;
+					} else {
+						buf_endpoint_id = session->public_endpoint;
+					}
+					buf_msg_type = NODE_C2S;
+					buf_sid = session->sid;
+				} else if (msg_type == NODE_S2C) {
+					Session *session = NODE_MANAGER->find_session_by_sid(sid);
+					if (!session) {
+						continue;
+					}
+
+					buf_endpoint_id = session->gate_endpoint;
+					buf_cid = session->cid;
+					buf_msg_type = S2C;
+					buf_sid = session->sid;
+				}
+				NODE_MANAGER->send_buffer(buf_endpoint_id, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
+				NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
+				continue;
+			}
+
+			Local<String> func_name = String::NewFromUtf8(isolate_, "on_msg", NewStringType::kNormal).ToLocalChecked();
+			Local<Value> func_value;
+			if (!context->Global()->Get(context, func_name).ToLocal(&func_value) || !func_value->IsFunction()) {
+				LOG_ERROR("can't find function 'on_msg'");
+				continue;
+			}
 
 			const int argc = 1;
 			Local<Value> argv[argc];

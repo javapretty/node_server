@@ -90,6 +90,7 @@ Guild.prototype.db_create_guild = function(msg) {
 }
 
 Guild.prototype.dissove_guild = function(player, msg) {
+	log_debug('dissove_guild, role_id:', player.player_info.role_id, ' role_name:', player.player_info.role_name);
 	var guild_info = this.guild_map.get(player.player_info.guild_id);
 	if(guild_info == null){
 		return player.send_error_msg(Error_Code.GUILD_NOT_EXIST);

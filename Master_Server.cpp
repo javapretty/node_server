@@ -16,7 +16,7 @@
 #include "Node_Config.h"
 #include "Master_Server.h"
 
-Master_Server::Master_Server(void) : wait_watcher_(0), node_map_(64), core_map_(64) { }
+Master_Server::Master_Server(void) : wait_watcher_(0), node_map_(512), core_map_(512) { }
 
 Master_Server::~Master_Server(void) { }
 
@@ -171,7 +171,7 @@ void Master_Server::restart_process(int pid) {
 
 	Int_Core_Map::iterator core_iter = core_map_.find(iter->second.node_type);
 	if (core_iter != core_map_.end()) {
-		if (core_iter->second++ > MAX_CORE_NUM) {
+		if (core_iter->second++ > 2000) {
 			LOG_ERROR("so many core, node_type=%d, core_num=%d", iter->second.node_type, core_iter->second);
 			return;
 		}
