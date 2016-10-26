@@ -9,11 +9,13 @@
 #define V8_MANAGER_H_
 
 #include <string.h>
+#include <dlfcn.h>
 #include "include/v8.h"
 #include "include/libplatform/libplatform.h"
 #include "Thread.h"
 #include "List.h"
 #include "Node_Define.h"
+#include "boost/unordered_map.hpp"
 
 using namespace v8;
 
@@ -31,6 +33,8 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 class V8_Manager: public Thread {
 	typedef List<int, Thread_Mutex> Int_List;
 public:
+	typedef boost::unordered_map<const char *, void *> Plugin_Handle_Map;
+
 	static V8_Manager *instance(void);
 	virtual void run_handler(void);
 	virtual int process_list(void);
@@ -39,6 +43,7 @@ public:
 	int fini(void);
 
 	inline void push_timer(int timer_id) { timer_list_.push_back(timer_id); }
+	inline Plugin_Handle_Map &plugin_handle_map() {return plugin_handle_map_;}
 
 private:
 	V8_Manager(void);
@@ -53,6 +58,7 @@ private:
 	Global<Context> context_;
 	Node_Info node_info_;		//节点信息
 	Int_List timer_list_;		//定时器编号
+	Plugin_Handle_Map plugin_handle_map_;
 };
 
 #define V8_MANAGER V8_Manager::instance()
