@@ -63,28 +63,19 @@ function send_public_msg(cid, msg_id, sid, msg) {
 	send_msg(Endpoint.PUBLIC_SERVER, cid, msg_id, Msg_Type.NODE_MSG, sid, msg);
 }
 
-function send_error_msg(cid, sid, error_code) {
-	var msg_res = new s2c_4();
-	msg_res.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, sid, msg_res);
-}
-
 function load_public_data() {
 	var msg = new node_205();
 	msg.data_type = Public_Data_Type.ALL_DATA;
-	send_msg_to_db(Msg.NODE_PUBLIC_DB_LOAD_DATA, 0, msg);
+	send_msg_to_db(Msg.SYNC_PUBLIC_DB_LOAD_DATA, 0, msg);
 }
 
 function process_public_client_msg(msg) {
 	var public_player = sid_public_player_map.get(msg.sid);
 	if (!public_player) {
-		return log_error('process_public_client_msg, public_player not exist, gate_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
+		return log_error('process_public_client_msg, public_player not exist, game_cid:', msg.cid, ' sid:', msg.sid, ' msg_id:', msg.msg_id);
 	}
 	
 	switch(msg.msg_id) {
-	case Msg.REQ_FETCH_RANK:
-		rank_manager.fetch_rank(public_player, msg);
-		break;
 	case Msg.REQ_CREATE_GUILD:
 		guild_manager.create_guild(public_player, msg);
 		break;
@@ -99,7 +90,7 @@ function process_public_client_msg(msg) {
 
 function process_public_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.NODE_ERROR_CODE: {
+	case Msg.SYNC_ERROR_CODE: {
 		if (msg.error_code == Error_Code.GUILD_HAS_EXIST) {
 			var player = sid_public_player_map.get(msg.sid);
 			if (player) {
@@ -108,7 +99,7 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.NODE_DB_PUBLIC_DATA: {
+	case Msg.SYNC_DB_PUBLIC_DATA: {
 		switch (msg.data_type) {
 		case Public_Data_Type.ALL_DATA: {
 			guild_manager.load_data(msg);
@@ -129,16 +120,7 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT: {
-		//gate通知public玩家上线
-		var public_player = sid_public_player_map.get(msg.sid);
-		if (public_player == null) {
-			public_player = new Public_Player();
-		}
-		public_player.gate_login(msg.cid, msg.sid);
-		break;
-	}
-	case Msg.NODE_GAME_PUBLIC_LOGIN_LOGOUT: {
+	case Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT: {
 		//game通知public玩家上线下线
 		if (msg.login) {
 			var public_player = sid_public_player_map.get(msg.sid);

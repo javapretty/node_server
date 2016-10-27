@@ -30,7 +30,7 @@ function on_msg(msg) {
 	log_debug('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
-	case Msg.NODE_LOG_PLAYER_LOGOUT:
+	case Msg.SYNC_LOG_PLAYER_LOGOUT:
 		log_player_logout(msg);
 		break;
 	default:

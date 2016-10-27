@@ -75,16 +75,6 @@
 		<vector type="Item_Info" name="item_list"/>
 	</s2c_8>
 
-	<c2s_200>
-	  <arg type="int8" name="rank_type"/>
-	</c2s_200>
-
-	<s2c_200>
-		<arg type="int8" name="rank_type"/>
-		<arg type="int32" name="ranking"/>
-	  <vector type="Rank_Member_Detail" name="rank_list"/>
-	</s2c_200>
-
 	<c2s_201>
 		<arg type="string" name="guild_name"/>
 	</c2s_201>

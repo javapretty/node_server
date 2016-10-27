@@ -76,7 +76,7 @@ int V8_Manager::process_list(void) {
 
 		//脚本处理cid掉线
 		int drop_cid = NODE_MANAGER->pop_drop_cid();
-		if(drop_cid != -1){
+		if(drop_cid != -1) {
 			all_empty = false;
 			NODE_MANAGER->remove_session(drop_cid);
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_drop", NewStringType::kNormal).ToLocalChecked();
@@ -120,7 +120,7 @@ int V8_Manager::process_list(void) {
 			if (NODE_MANAGER->node_info().node_type == GATE_SERVER
 					&& (msg_type == C2S || msg_type == NODE_S2C)
 					&& msg_id >= 3 && msg_id <= 255) {
-				int buf_endpoint_id = 0;
+				int buf_eid = 0;
 				int buf_cid = 0;
 				int buf_msg_id = msg_id;
 				int buf_msg_type = 0;
@@ -129,28 +129,29 @@ int V8_Manager::process_list(void) {
 				if (msg_type == C2S) {
 					Session *session = NODE_MANAGER->find_session_by_cid(cid);
 					if (!session) {
+						LOG_ERROR("find_session_by_cid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
+								endpoint_id, cid, msg_type, msg_id, sid);
 						continue;
 					}
 
-					if (msg_id >= 3 && msg_id < 200) {
-						buf_endpoint_id = session->game_endpoint;
-					} else {
-						buf_endpoint_id = session->public_endpoint;
-					}
+					buf_eid = session->game_eid;
+					buf_cid = session->game_cid;
 					buf_msg_type = NODE_C2S;
 					buf_sid = session->sid;
 				} else if (msg_type == NODE_S2C) {
 					Session *session = NODE_MANAGER->find_session_by_sid(sid);
 					if (!session) {
+						LOG_ERROR("find_session_by_sid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
+								endpoint_id, cid, msg_type, msg_id, sid);
 						continue;
 					}
 
-					buf_endpoint_id = session->gate_endpoint;
-					buf_cid = session->cid;
+					buf_eid = session->client_eid;
+					buf_cid = session->client_cid;
 					buf_msg_type = S2C;
 					buf_sid = session->sid;
 				}
-				NODE_MANAGER->send_buffer(buf_endpoint_id, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
+				NODE_MANAGER->send_buffer(buf_eid, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
 				NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
 				continue;
 			}

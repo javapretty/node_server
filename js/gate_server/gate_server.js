@@ -17,9 +17,11 @@ var sid_idx = 0;
 var max_idx = 0;
 //sid set
 var sid_set = new Set();
-//game_node--game_endpoint
-var game_node_endpoint_map = new Map();
-//cid--session
+//gate node_info
+var gate_node_info = null;
+//game_node_id--game_cid
+var game_nid_cid_map = new Map();
+//client_cid--session
 var cid_session_map = new Map();
 //sid--session
 var sid_session_map = new Map();
@@ -39,24 +41,19 @@ function init(node_info) {
 	sid_idx = node_info.node_id % 10000 * 1000000;
 	max_idx = sid_idx + 1000000;
 	//初始化game node_id对应的endpoint map
-	game_node_endpoint_map.set(Node_Id.GAME_SERVER1, Endpoint.GATE_GAME1_CONNECTOR);
-	game_node_endpoint_map.set(Node_Id.GAME_SERVER2, Endpoint.GATE_GAME2_CONNECTOR);
 
-	var msg = new node_0();
+	var msg = new node_1();
 	msg.node_info = node_info;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_CENTER_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
 function on_drop(cid) {
 	var session = cid_session_map.get(cid);
 	if (session) {
-		var msg = new node_6();
-		send_msg(session.game_endpoint, 0, Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg);
+		var msg = new node_5();
+		send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg);
 		
-		sid_set.delete(session.sid);
-		cid_session_map.delete(session.cid);
-		sid_session_map.delete(session.sid);
-		account_session_map.delete(session.account);
+		on_remove_session(session);
 	}
 }
 
@@ -84,13 +81,39 @@ function get_sid(cid) {
 
 	if (count >= 10000) {
 		log_error('get_sid error, cal count:', count, ' cid:', cid); 
-		remove_session(cid, Error_Code.DISCONNECT_SELF);
+		on_close_session(cid, Error_Code.DISCONNECT_SELF);
 		return -1;
 	}
 	return sid_idx;
 }
 
-function remove_session(cid, error_code) {
+function on_add_session(session) {
+	sid_set.add(session.sid);
+	cid_session_map.set(session.client_cid, session);
+	sid_session_map.set(session.sid, session);
+	account_session_map.set(session.account, session);
+	//将session添加到C++层
+	add_session(session);
+
+	//通知game
+	var msg_3 = new node_3();
+	msg_3.gate_nid = gate_node_info.node_id;
+	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_3);
+	
+	//通知client
+	var msg_res = new s2c_2();
+	msg_res.account = session.account;
+	send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, msg_res);
+}
+
+function on_remove_session(session) {
+	sid_set.delete(session.sid);
+	cid_session_map.delete(session.client_cid);
+	sid_session_map.delete(session.sid);
+	account_session_map.delete(session.account);	
+}
+
+function on_close_session(cid, error_code) {
 	var msg = new s2c_4();
 	msg.error_code = error_code;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
@@ -102,10 +125,11 @@ function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.REQ_HEARTBEAT: {
 		var session = cid_session_map.get(msg.cid);
-		if (!session) {
-			remove_session(msg.cid, Error_Code.DISCONNECT_NOLOGIN);
+		if (session) {
+			session.on_heartbeat(msg);
+		} else {
+			on_close_session(msg.cid, Error_Code.DISCONNECT_NOLOGIN);
 		}
-		session.on_heartbeat(msg);
 		break;
 	}
 	case Msg.REQ_CONNECT_GATE:
@@ -119,11 +143,14 @@ function process_gate_client_msg(msg) {
 
 function process_gate_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.NODE_GATE_CENTER_VERIFY_TOKEN:
+	case Msg.SYNC_NODE_INFO:
+		set_node_info(msg);
+		break;
+	case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
 		verify_token(msg);
 		break;
-	case Msg.NODE_GAME_GATE_LOGIN_LOGOUT:
-		game_login_logout(msg);
+	case Msg.SYNC_GAME_GATE_LOGOUT:
+		game_logout(msg);
 		break;
 	default:
 		log_error('process_gate_node_msg, msg_id not exist:', msg.msg_id);
@@ -135,48 +162,34 @@ function connect_gate(msg) {
 	log_debug('connect_gate, account:', msg.account, ' token:', msg.token);
 	if (account_session_map.get(msg.account)) {
 		log_error('account in gate server, ', msg.account);
-		return remove_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
+		return on_close_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
 	}
 	
 	var msg_res = new node_2();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
+}
+
+function set_node_info(msg) {
+	game_nid_cid_map.set(msg.node_info.node_id, msg.cid);
 }
 
 function verify_token(msg) {
 	var session = new Session();
-	session.gate_endpoint = Endpoint.GATE_CLIENT_SERVER;
-	session.game_endpoint = game_node_endpoint_map.get(msg.game_node);
-	session.public_endpoint = Endpoint.GATE_PUBLIC_CONNECTOR;
-	session.cid = msg.sid;
+	session.client_eid = Endpoint.GATE_CLIENT_SERVER;
+	session.client_cid = msg.sid;
+	session.game_eid = Endpoint.GATE_NODE_SERVER;
+	session.game_cid = game_nid_cid_map.get(msg.game_nid);
 	session.sid = get_sid(msg.sid);
 	session.account = msg.account;
-	sid_set.add(session.sid);
-	cid_session_map.set(session.cid, session);
-	sid_session_map.set(session.sid, session);
-	account_session_map.set(session.account, session);
-	//将session添加到C++层
-	add_session(session);
-
-	var msg_res = new s2c_2();
-	msg_res.account = msg.account;
-	send_msg(Endpoint.GATE_CLIENT_SERVER, msg.sid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, msg_res);
+	on_add_session(session);
 }
 
-function game_login_logout(msg) {
-	if (msg.login) {
-		var msg_res = new node_6();
-		send_msg(Endpoint.GATE_PUBLIC_CONNECTOR, 0, Msg.NODE_GATE_PUBLIC_LOGIN_GAME_LOGOUT, Msg_Type.NODE_MSG, msg.sid, msg_res);
-	}
-	else {
-		//玩家下线，清除session信息
-		var session = sid_session_map.get(msg.sid);
-		if (session) {
-			cid_session_map.delete(session.cid);
-			sid_session_map.delete(session.sid);
-			account_session_map.delete(session.account);
-			remove_session(session.cid, Error_Code.PLAYER_KICK_OFF);	
-		}
+function game_logout(msg) {
+	var session = sid_session_map.get(msg.sid);
+	if (session) {
+		on_close_session(session.client_cid, msg.error_code);
+		on_remove_session(session);
 	}
 }

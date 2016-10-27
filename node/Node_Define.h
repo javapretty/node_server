@@ -21,20 +21,21 @@ enum Msg_Type {
 };
 
 enum Node_Type {
-	DB_SERVER = 1,
-	LOG_SERVER = 2,
-	CENTER_SERVER = 3,
-	PUBLIC_SERVER = 4,
-	GAME_SERVER = 5,
-	GATE_SERVER = 6,
+	CENTER_SERVER 	= 0,
+	GATE_SERVER 		= 1,
+	DB_SERVER 			= 2,
+	LOG_SERVER 			= 3,
+	MASTER_SERVER 	= 4,
+	PUBLIC_SERVER 	= 5,
+	GAME_SERVER 		= 6,
 };
 
 struct Session {
-	int gate_endpoint;			//client连接的gate endpoint_id
-	int game_endpoint;			//与game_server连接的endpoint_id
-	int public_endpoint;		//与public_server连接的endpoint_id
-	int cid;								//client与gate连接的cid
-	int sid;								//gate生成的全局唯一session_id
+	int client_eid;	//gate向client发消息的端点id
+	int client_cid;	//client与gate连接的cid
+	int game_eid;		//gate向game发消息的端点id
+	int game_cid;		//game与gate连接的cid
+	int sid;					//gate生成的全局唯一session_id
 };
 
 struct Drop_Info {
@@ -50,6 +51,7 @@ struct Node_Info {
 	int node_type;							//节点类型
 	int node_id;								//节点id
 	std::string node_name;			//节点名称
+	std::string node_ip;				//节点ip
 	std::string script_path;	//启动的js脚本路径
 	std::vector<std::string> plugin_list; 	//插件列表
 	Endpoint_List server_list;							//服务器线程列表

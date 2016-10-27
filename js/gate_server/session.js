@@ -5,14 +5,14 @@
 */
 
 function Session() {
-	this.gate_endpoint = 0;		//client连接的gate endpoint_id
-	this.game_endpoint = 0;		//与game_server连接的endpoint_id
-	this.public_endpoint = 0;	//与public_server连接的endpoint_id
-	this.cid = 0;							//client与gate连接的cid
-	this.sid = 0;							//gate生成的全局唯一session_id
-	this.account = "";				//client帐号名
-	this.last_hb_time = 0;		//上次心跳时间
-  	this.latency = 0;					//上次心跳到本次心跳经过的时间
+	this.client_eid = 0;	//gate向client发消息的端点id
+	this.client_cid = 0;	//client与gate连接的cid
+	this.game_eid = 0;		//gate向game发消息的端点id
+	this.game_cid = 0;		//game与gate连接的cid
+	this.sid = 0;					//gate生成的全局唯一session_id				
+	this.account = "";		//client帐号名
+	this.last_hb_time = 0;//上次心跳时间
+  	this.latency = 0;			//上次心跳到本次心跳经过的时间
 }
 
 Session.prototype.on_heartbeat = function(msg) {

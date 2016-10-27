@@ -178,7 +178,7 @@ int Node_Manager::add_session(Session *session) {
 		LOG_ERROR("node_id:%d, node_name:%s add session error", node_info_.node_id, node_info_.node_name.c_str());
 		return -1;
 	}
-	cid_session_map_.insert(std::make_pair(session->cid, session));
+	cid_session_map_.insert(std::make_pair(session->client_cid, session));
 	sid_session_map_.insert(std::make_pair(session->sid, session));
 	return 0;
 }

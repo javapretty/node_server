@@ -30,25 +30,25 @@ function on_msg(msg) {
 	log_debug('db_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
 	switch(msg.msg_id) {
-	case Msg.NODE_GAME_DB_CREATE_PLAYER:
+	case Msg.SYNC_GAME_DB_CREATE_PLAYER:
 		create_player(msg);
 		break;
-	case Msg.NODE_GAME_DB_LOAD_PLAYER:
+	case Msg.SYNC_GAME_DB_LOAD_PLAYER:
 		load_player(msg);
 		break;
-	case Msg.NODE_GAME_DB_SAVE_PLAYER:
+	case Msg.SYNC_GAME_DB_SAVE_PLAYER:
 		save_player(msg);
 		break;
-	case Msg.NODE_PUBLIC_DB_CREATE_GUILD:
+	case Msg.SYNC_PUBLIC_DB_CREATE_GUILD:
 		create_guild(msg);
 		break;
-	case Msg.NODE_PUBLIC_DB_LOAD_DATA:
+	case Msg.SYNC_PUBLIC_DB_LOAD_DATA:
 		load_public_data(msg);
 		break;
-	case Msg.NODE_PUBLIC_DB_SAVE_DATA:
+	case Msg.SYNC_PUBLIC_DB_SAVE_DATA:
 		save_public_data(msg);
 		break;
-	case Msg.NODE_PUBLIC_DB_DELETE_DATA:
+	case Msg.SYNC_PUBLIC_DB_DELETE_DATA:
 		delete_public_data(msg);
 		break;
 	default:
@@ -93,9 +93,9 @@ function send_db_msg(cid, msg_id, sid, msg) {
 }
 
 function send_error_msg(cid, sid, error_code) {
-	var msg_res = new node_1();
+	var msg_res = new node_0();
 	msg_res.error_code = error_code;
-	send_msg(Endpoint.DB_SERVER, cid, Msg.NODE_ERROR_CODE, Msg_Type.NODE_MSG, sid, msg_res);
+	send_msg(Endpoint.DB_SERVER, cid, Msg.SYNC_ERROR_CODE, Msg_Type.NODE_MSG, sid, msg_res);
 }
 
 function create_player(msg) {
@@ -117,7 +117,7 @@ function create_player(msg) {
 		msg_res.player_data.mail_info.role_id = role_id;
 		//将玩家数据写到数据库
 		save_db_data(DB_Id.GAME, "Player_Data", msg_res.player_data);
-		send_db_msg(msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	}
 }
 
@@ -126,7 +126,7 @@ function load_player(msg) {
 	if (role_id > 0) {
 		var msg_res = new node_203();
 		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
-		send_db_msg(msg.cid, Msg.NODE_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	} else {
 		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
 	}
@@ -156,7 +156,7 @@ function create_guild(msg) {
 		var msg_res = new node_208();
 		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
 		msg_res.guild_list.push(guild_info);
-		send_db_msg(msg.cid, Msg.NODE_DB_PUBLIC_DATA, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.SYNC_DB_PUBLIC_DATA, msg.sid, msg_res);
 	}
 }
 
@@ -179,7 +179,7 @@ function load_public_data(msg) {
 		log_error('load_public_data, data_type not exist:', msg.data_type);
 		break;
 	}
-	send_db_msg(msg.cid, Msg.NODE_DB_PUBLIC_DATA, msg.sid, msg_res);
+	send_db_msg(msg.cid, Msg.SYNC_DB_PUBLIC_DATA, msg.sid, msg_res);
 }
 
 function save_public_data(msg) {

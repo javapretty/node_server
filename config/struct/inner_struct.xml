@@ -1,34 +1,30 @@
 <root>
 	<node_0>
-		<struct type="Node_Info" name="node_info"/>
+		<arg type="int16" name="error_code"/>
 	</node_0>
 	
 	<node_1>
-		<arg type="int16" name="error_code"/>
+		<struct type="Node_Info" name="node_info"/>
 	</node_1>
 
 	<node_2>
 		<arg type="string" name="account"/>
 		<arg type="string" name="token"/>
-		<arg type="int32" name="game_node"/>
+		<arg type="int32" name="game_nid"/>
 	</node_2>
 
 	<node_3>
-		<arg type="bool" name="login"/>
-		<struct type="Public_Player_Info" name="player_info"/>
+		<arg type="int32" name="gate_nid"/>
 	</node_3>
-
+	
 	<node_4>
 		<arg type="bool" name="login"/>
+		<struct type="Public_Player_Info" name="player_info"/>
 	</node_4>
 
 	<node_5>
-		<arg type="bool" name="login"/>
-		<arg type="int32" name="game_node"/>
+		<arg type="int16" name="error_code"/>
 	</node_5>
-	
-	<node_6>
-	</node_6>
 	
 	<node_200>
 		<arg type="string" name="account"/>

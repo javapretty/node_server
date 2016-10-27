@@ -13,8 +13,6 @@ require('timer.js');
 
 //account--Token_Info
 var account_token_map = new Map();
-//game_node--sid_set
-var game_sid_map = new Map();
 //gate列表
 var gate_list = new Array();
 //game列表
@@ -35,22 +33,28 @@ function on_drop(cid) { }
 function on_msg(msg) {
 	log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
-	switch(msg.msg_id) {
-	case Msg.REQ_SELECT_GATE:
-		select_gate(msg);
-		break;	
-	case Msg.NODE_CENTER_NODE_INFO:
-		set_node_info(msg);
-		break;		
-	case Msg.NODE_GATE_CENTER_VERIFY_TOKEN:
-		verify_token(msg);
-		break;
-	case Msg.NODE_GAME_CENTER_LOGIN_LOGOUT:
-		game_login_logout(msg);
-		break;
-	default:
-		log_error('center_server on_msg, msg_id not exist:', msg.msg_id);
-		break;
+	if (msg.msg_type == Msg_Type.C2S) {
+		switch(msg.msg_id) {
+		case Msg.REQ_SELECT_GATE:
+			select_gate(msg);
+			break;	
+		default:
+			log_error('center_server process client msg, msg_id not exist:', msg.msg_id);
+			break;
+		}
+	} 
+	else if (msg.msg_type == Msg_Type.NODE_MSG) {
+		switch(msg.msg_id) {
+		case Msg.SYNC_NODE_INFO:
+			set_node_info(msg);
+			break;		
+		case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
+			verify_token(msg);
+			break;
+		default:
+			log_error('center_server process node msg, msg_id not exist:', msg.msg_id);
+			break;
+		}	
 	}
 }
 
@@ -61,7 +65,7 @@ function on_tick(timer_id) {
 	}
 }
 
-function remove_session(account, cid, error_code) {
+function on_close_session(account, cid, error_code) {
 	account_token_map.delete(account);
 	var msg = new s2c_4();
 	msg.error_code = error_code;
@@ -74,7 +78,7 @@ function select_gate(msg) {
 	log_info('select gate, account:', msg.account);
 	if (account_token_map.get(msg.account)) {
 		log_error('account in center_server:', msg.account);
-		return remove_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
+		return on_close_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
 	var index = hash(msg.account) % (gate_list.length);
@@ -107,31 +111,13 @@ function verify_token(msg) {
 		log_error('verify_token, token error, account:', msg.account, ' token:', msg.token);
 		var msg_res = new s2c_4();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
-		return send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
+		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
 	}
 
 	var index = hash(msg.account) % (game_list.length);
 	var game_info = game_list[index];
 	var msg_res = new node_2();
 	msg_res.account = msg.account;
-	msg_res.game_node = game_info.node_id;
-	send_msg(Endpoint.CENTER_SERVER, msg.cid, Msg.NODE_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
-}
-
-function game_login_logout(msg) {
-	var sid_set = game_sid_map.get(msg.game_node);
-	if (sid_set) {
-		if (msg.login) {
-			sid_set.add(msg.sid);
-		} else {
-			sid_set.delete(msg.sid);
-		}		
-	} 
-	else {
-		if (msg.login) {
-			sid_set = new Set();
-			sid_set.add(msg.sid);
-			game_sid_map.set(msg.game_node, sid_set);
-		}
-	}
+	msg_res.game_nid = game_info.node_id;
+	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
 }
