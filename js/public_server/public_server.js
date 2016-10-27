@@ -34,6 +34,9 @@ function init(node_info) {
 	timer.init(Node_Type.PUBLIC_SERVER);	
 	//加载公共数据
 	load_public_data();
+	var msg = new node_1();
+	msg.node_info = node_info;
+	send_msg(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
 function on_drop(cid) { }

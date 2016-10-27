@@ -53,19 +53,6 @@ if (typeof Node_Type == "undefined") {
 	Node_Type.GAME_SERVER		= 6;
 }
 
-if (typeof Node_Id == "undefined") {
-	var Node_Id = {};
-	Node_Id.CENTER_SERVER = 1;
-	Node_Id.GATE_SERVER1 	= 10001;
-	Node_Id.GATE_SERVER2 	= 10002;
-	Node_Id.DB_SERVER			= 20001;
-	Node_Id.LOG_SERVER		= 30001;
-	Node_Id.MASTER_SERVER	= 40001;
-	Node_Id.PUBLIC_SERVER	= 50001;
-	Node_Id.GAME_SERVER1	= 60001;
-	Node_Id.GAME_SERVER2	= 60002;
-}
-
 if (typeof Endpoint == "undefined") {
 	var Endpoint = {};
 
@@ -80,7 +67,8 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.LOG_SERVER						= 1;
 	
 	Endpoint.MASTER_SERVER				= 1;
-	Endpoint.MASTER_CENTER_CONNECTOR = 2;
+	Endpoint.MASTER_HTTP_SERVER		= 2;
+	Endpoint.MASTER_CENTER_CONNECTOR = 3;
 	
 	Endpoint.PUBLIC_SERVER				= 1;
 	Endpoint.PUBLIC_DB_CONNECTOR		= 2;

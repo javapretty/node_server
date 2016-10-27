@@ -11,10 +11,11 @@ function gen_msg(){
 }
 
 function gen_js(){
-	./struct_tool js $DEFINE_PATH 'base_struct.xml' 'struct'
+	./struct_tool js $DEFINE_PATH 'client_msg.xml' 'struct'
 	./struct_tool js $DEFINE_PATH 'db_struct.xml' 'struct'
-	./struct_tool js $DEFINE_PATH 'inner_struct.xml' 'struct'
-	./struct_tool js $DEFINE_PATH 'outer_struct.xml' 'struct'
+	./struct_tool js $DEFINE_PATH 'node_msg.xml' 'struct'
+	./struct_tool js $DEFINE_PATH 'node_struct.xml' 'struct'
+	./struct_tool js $DEFINE_PATH 'public_struct.xml' 'struct'
 }
 
 function gen_msgid(){
@@ -24,9 +25,8 @@ function gen_msgid(){
 function cp_file(){
 	wildcard='.*'
 	cp -rf JS/* $JS_TARGET
-	cp -rf '../config/struct/db_struct.xml' '../../node_robot/config'
-	cp -rf '../config/struct/base_struct.xml' '../../node_robot/config'
-	cp -rf '../config/struct/outer_struct.xml' '../../node_robot/config'
+	cp -rf '../config/struct/client_msg.xml' '../../node_robot/config'
+	cp -rf '../config/struct/public_struct.xml' '../../node_robot/config'
 }
 
 function rm_file(){

@@ -1,12 +1,18 @@
 <root>
 	
+	<Player_Data>
+		<struct type="Role_Info" name="role_info"/>
+		<struct type="Mail_Info" name="mail_info"/>
+		<struct type="Bag_Info" name="bag_info"/>
+	</Player_Data>
+	
 	<Idx_Info>
 		<head table_name="game.idx" index_name="type"/>
 		<arg type="string" name="type"/>
 		<arg type="int32" name="value"/>
 	</Idx_Info>
 	
-	<Game_Player_Info>
+	<Role_Info>
 		<head table_name="game.role" index_name="role_id"/>
 		<arg type="int64" name="role_id"/>
 		<arg type="string" name="role_name"/>
@@ -27,7 +33,7 @@
 		<arg type="int32" name="pos_x"/>
 		<arg type="int32" name="pos_y"/>
 		<arg type="int32" name="pos_z"/>
-	</Game_Player_Info>
+	</Role_Info>
 
 	<Bag_Info>
 		<head table_name="game.bag" index_name="role_id"/>
