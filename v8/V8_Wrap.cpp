@@ -9,10 +9,11 @@
 #include "Base_V8.h"
 #include "Msg_Struct.h"
 #include "Struct_Manager.h"
+#include "DB_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Manager.h"
-#include "V8_Wrap.h"
 #include "V8_Manager.h"
+#include "V8_Wrap.h"
 
 std::string get_struct_name(int msg_type, int msg_id) {
 	std::ostringstream stream;

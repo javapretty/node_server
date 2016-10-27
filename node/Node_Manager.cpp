@@ -6,10 +6,11 @@
  */
 
 #include "Base_Function.h"
+#include "DB_Manager.h"
+#include "Struct_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Config.h"
 #include "V8_Manager.h"
-#include "Struct_Manager.h"
 #include "Node_Manager.h"
 
 Node_Manager::Node_Manager(void):
@@ -54,7 +55,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 	for (uint i = 0; i < node_misc["db_struct_path"].size(); ++i) {
 		STRUCT_MANAGER->init_struct(node_misc["db_struct_path"][i].asCString(), DB_STRUCT);
 	}
-	STRUCT_MANAGER->init_db_operator();
+	DB_MANAGER->init_db_operator();
 
 	//启动server线程
 	for (Endpoint_List::iterator iter = node_info_.server_list.begin(); iter != node_info_.server_list.end(); ++iter) {
