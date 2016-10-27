@@ -168,7 +168,7 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct != nullptr) {
-		msg_struct->build_msg_buffer(args.GetIsolate(), args[5]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
+		msg_struct->build_buffer(args.GetIsolate(), args[5]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
 	}
 	NODE_MANAGER->send_buffer(endpoint_id, cid, msg_id, msg_type, sid, &buffer);
 }
@@ -186,17 +186,17 @@ void add_session(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Local<Object> object = args[0]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked();
-	session->gate_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
-			String::NewFromUtf8(args.GetIsolate(), "gate_endpoint", NewStringType::kNormal).
+	session->client_eid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "client_eid", NewStringType::kNormal).
 			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
-	session->game_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
-			String::NewFromUtf8(args.GetIsolate(), "game_endpoint", NewStringType::kNormal).
+	session->client_cid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "client_cid", NewStringType::kNormal).
 			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
-	session->public_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
-			String::NewFromUtf8(args.GetIsolate(), "public_endpoint", NewStringType::kNormal).
-			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
-	session->cid = (object->Get(args.GetIsolate()->GetCurrentContext(),
-			String::NewFromUtf8(args.GetIsolate(), "cid", NewStringType::kNormal).
+	session->game_eid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+		String::NewFromUtf8(args.GetIsolate(), "game_eid", NewStringType::kNormal).
+		ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->game_cid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "game_cid", NewStringType::kNormal).
 			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
 	session->sid = (object->Get(args.GetIsolate()->GetCurrentContext(),
 			String::NewFromUtf8(args.GetIsolate(), "sid", NewStringType::kNormal).

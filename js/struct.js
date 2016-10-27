@@ -12,6 +12,7 @@ function Node_Info() {
 	this.node_type = 0;
 	this.node_id = 0;
 	this.node_name = "";
+	this.node_ip = "";
 	this.server_list = new Array();
 }
 
@@ -146,34 +147,30 @@ function Logout_Info() {
 }
 
 function node_0() {
-	this.node_info = new Node_Info();
+	this.error_code = 0;
 }
 
 function node_1() {
-	this.error_code = 0;
+	this.node_info = new Node_Info();
 }
 
 function node_2() {
 	this.account = "";
 	this.token = "";
-	this.game_node = 0;
+	this.game_nid = 0;
 }
 
 function node_3() {
-	this.login = 0;
-	this.player_info = new Public_Player_Info();
+	this.gate_nid = 0;
 }
 
 function node_4() {
 	this.login = 0;
+	this.player_info = new Public_Player_Info();
 }
 
 function node_5() {
-	this.login = 0;
-	this.game_node = 0;
-}
-
-function node_6() {
+	this.error_code = 0;
 }
 
 function node_200() {
@@ -305,16 +302,6 @@ function c2s_8() {
 
 function s2c_8() {
 	this.item_list = new Array();
-}
-
-function c2s_200() {
-	this.rank_type = 0;
-}
-
-function s2c_200() {
-	this.rank_type = 0;
-	this.ranking = 0;
-	this.rank_list = new Array();
 }
 
 function c2s_201() {

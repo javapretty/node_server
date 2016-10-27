@@ -15,6 +15,7 @@ void Node_Conf::init(void) {
 		node_info.node_type = node_conf[i]["node_type"].asInt();
 		node_info.node_id = node_conf[i]["node_id"].asInt();
 		node_info.node_name = node_conf[i]["node_name"].asString();
+		node_info.node_ip = node_conf[i]["node_ip"].asString();
 		node_info.script_path = node_conf[i]["script_path"].asString();
 
 		const Json::Value &plugin_conf = node_conf[i]["plugin"];

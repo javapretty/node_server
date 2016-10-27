@@ -44,64 +44,68 @@ if (typeof Msg_Type == "undefined") {
 
 if (typeof Node_Type == "undefined") {
 	var Node_Type = {};
-	Node_Type.DB_SERVER		= 1;
-	Node_Type.LOG_SERVER	= 2;
-	Node_Type.CENTER_SERVER	= 3;
-	Node_Type.PUBLIC_SERVER	= 4;
-	Node_Type.GAME_SERVER	= 5;
-	Node_Type.GATE_SERVER	= 6;
+	Node_Type.CENTER_SERVER = 0;
+	Node_Type.GATE_SERVER 	= 1;
+	Node_Type.DB_SERVER			= 2;
+	Node_Type.LOG_SERVER		= 3;
+	Node_Type.MASTER_SERVER	= 4;
+	Node_Type.PUBLIC_SERVER	= 5;
+	Node_Type.GAME_SERVER		= 6;
 }
 
 if (typeof Node_Id == "undefined") {
 	var Node_Id = {};
-	Node_Id.DB_SERVER		= 10001;
-	Node_Id.LOG_SERVER	= 20001;
-	Node_Id.CENTER_SERVER	= 30001;
-	Node_Id.PUBLIC_SERVER	= 40001;
-	Node_Id.GAME_SERVER1	= 50001;
-	Node_Id.GAME_SERVER2	= 50002;
-	Node_Id.GATE_SERVER1	= 60001;
-	Node_Id.GATE_SERVER2	= 60002;
+	Node_Id.CENTER_SERVER = 1;
+	Node_Id.GATE_SERVER1 	= 10001;
+	Node_Id.GATE_SERVER2 	= 10002;
+	Node_Id.DB_SERVER			= 20001;
+	Node_Id.LOG_SERVER		= 30001;
+	Node_Id.MASTER_SERVER	= 40001;
+	Node_Id.PUBLIC_SERVER	= 50001;
+	Node_Id.GAME_SERVER1	= 60001;
+	Node_Id.GAME_SERVER2	= 60002;
 }
 
 if (typeof Endpoint == "undefined") {
 	var Endpoint = {};
 
-	Endpoint.DB_SERVER				= 1001;
-	Endpoint.LOG_SERVER				= 2001;
-		
-	Endpoint.CENTER_CLIENT_SERVER	= 3001;
-	Endpoint.CENTER_SERVER			= 3002;
+	Endpoint.CENTER_CLIENT_SERVER	= 1;
+	Endpoint.CENTER_NODE_SERVER		= 2;
 	
-	Endpoint.PUBLIC_SERVER			= 4001;
-	Endpoint.PUBLIC_HTTP_SERVER		= 4002;
-	Endpoint.PUBLIC_LOG_CONNECTOR	= 4003;
-	Endpoint.PUBLIC_DB_CONNECTOR	= 4004;
+	Endpoint.GATE_CLIENT_SERVER 		= 1;
+	Endpoint.GATE_NODE_SERVER 			= 2;
+	Endpoint.GATE_CENTER_CONNECTOR	= 3;
 	
-	Endpoint.GAME_SERVER			= 5001;
-	Endpoint.GAME_CENTER_CONNECTOR 	= 5002;
-	Endpoint.GAME_LOG_CONNECTOR		= 5003;
-	Endpoint.GAME_DB_CONNECTOR		= 5004;
-	Endpoint.GAME_PUBLIC_CONNECTOR	= 5005;
+	Endpoint.DB_SERVER						= 1;
+	Endpoint.LOG_SERVER						= 1;
 	
-	Endpoint.GATE_CLIENT_SERVER 	= 6001;
-	Endpoint.GATE_CENTER_CONNECTOR 	= 6002;
-	Endpoint.GATE_PUBLIC_CONNECTOR	= 6003;
-	Endpoint.GATE_GAME1_CONNECTOR	= 6004;
-	Endpoint.GATE_GAME2_CONNECTOR	= 6005;
+	Endpoint.MASTER_SERVER				= 1;
+	Endpoint.MASTER_CENTER_CONNECTOR = 2;
+	
+	Endpoint.PUBLIC_SERVER				= 1;
+	Endpoint.PUBLIC_DB_CONNECTOR		= 2;
+	Endpoint.PUBLIC_LOG_CONNECTOR	= 3;
+	Endpoint.PUBLIC_MASTER_CONNECTOR	= 4;
+	
+	Endpoint.GAME_DB_CONNECTOR			= 1;
+	Endpoint.GAME_LOG_CONNECTOR		= 2;
+	Endpoint.GAME_MASTER_CONNECTOR	= 3;
+	Endpoint.GAME_PUBLIC_CONNECTOR	= 4;
+	Endpoint.GAME_GATE1_CONNECTOR	= 5;
+	Endpoint.GAME_GATE2_CONNECTOR	= 6;
 }
 
 if (typeof Public_Data_Type == "undefined") {
 	var Public_Data_Type = {};
-	Public_Data_Type.ALL_DATA			= 0; 	//所有数据
-	Public_Data_Type.GUILD_DATA			= 1; 	//公会数据
+	Public_Data_Type.ALL_DATA					= 0; //所有数据
+	Public_Data_Type.GUILD_DATA				= 1; //公会数据
 	Public_Data_Type.CREATE_GUILD_DATA	= 2;	//创建公会数据
-	Public_Data_Type.RANK_DATA 			= 3;	//排行榜数据
+	Public_Data_Type.RANK_DATA 				= 3;	//排行榜数据
 }
 
 if (typeof Rank_Type == "undefined") {
 	var Rank_Type = {};
-	Rank_Type.LEVEL_RANK	= 1;	//等级排行
+	Rank_Type.LEVEL_RANK		= 1;	//等级排行
 	Rank_Type.COMBAT_RANK 	= 2;	//战力排行
 }
 

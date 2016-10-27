@@ -5,23 +5,14 @@
 */
 
 function Public_Player() {
-	this.gate_cid = 0;
 	this.game_cid = 0;
 	this.sid = 0;
 	this.player_info = new Public_Player_Info();
 }
 
-Public_Player.prototype.gate_login = function(gate_cid, sid) {
-	log_info('********public_player login from gate, gate_cid:', gate_cid, ' sid:', sid);
-	
-	this.gate_cid = gate_cid;
-	this.sid = sid;
-	sid_public_player_map.set(this.sid, this);
-}
-
 //玩家上线，加载数据
 Public_Player.prototype.login = function(game_cid, sid, player_info) {
-	log_info('********public_player login from game, game_cid:', game_cid, ' sid:', sid, ' role_id:', player_info.role_id);
+	log_info('********public_player login, game_cid:', game_cid, ' sid:', sid, ' role_id:', player_info.role_id);
 
 	this.game_cid = game_cid;
 	this.sid = sid;
@@ -39,15 +30,14 @@ Public_Player.prototype.logout = function() {
 	role_id_public_player_map.delete(this.player_info.role_id);
 }
 
-Public_Player.prototype.tick = function(now) {
-}
+Public_Player.prototype.tick = function(now) {}
 
 Public_Player.prototype.send_success_msg = function(msg_id, msg) {
-	send_msg(Endpoint.PUBLIC_SERVER, this.gate_cid, msg_id, Msg_Type.NODE_S2C, this.sid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
 Public_Player.prototype.send_error_msg = function(error_code) {
 	var msg = new s2c_4();
 	msg.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_SERVER, this.gate_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
+	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
 }
