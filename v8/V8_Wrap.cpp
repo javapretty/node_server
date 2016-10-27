@@ -9,11 +9,11 @@
 #include "Base_V8.h"
 #include "Msg_Struct.h"
 #include "Struct_Manager.h"
+#include "DB_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Manager.h"
-#include "V8_Wrap.h"
 #include "V8_Manager.h"
-#include "DB_Manager.h"
+#include "V8_Wrap.h"
 
 std::string get_struct_name(int msg_type, int msg_id) {
 	std::ostringstream stream;
@@ -110,6 +110,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, register_timer));
 	global->Set(String::NewFromUtf8(isolate, "send_msg", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, send_msg));
+	global->Set(String::NewFromUtf8(isolate, "add_session", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, add_session));
 	global->Set(String::NewFromUtf8(isolate, "close_session", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, close_session));
 
@@ -163,33 +165,55 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	uint32_t sid = args[4]->Uint32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	Block_Buffer buffer;
-	buffer.write_uint16(0);
-	buffer.write_uint8(msg_id);
-	if (msg_type != S2C) {
-		buffer.write_uint8(msg_type);
-		buffer.write_uint32(sid);
-	}
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct != nullptr) {
 		msg_struct->build_msg_buffer(args.GetIsolate(), args[5]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
 	}
-	buffer.write_len(RPC_PKG);
-	NODE_MANAGER->send_buffer(endpoint_id, cid, buffer);
-	NODE_MANAGER->add_send_bytes(buffer.readable_bytes());
+	NODE_MANAGER->send_buffer(endpoint_id, cid, msg_id, msg_type, sid, &buffer);
+}
+
+void add_session(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 1 || !args[0]->IsObject()) {
+		LOG_ERROR("add_session args error, length: %d\n", args.Length());
+		return;
+	}
+
+	Session *session = NODE_MANAGER->pop_session();
+	if (!session) {
+		LOG_ERROR("pop session error");
+		return;
+	}
+
+	Local<Object> object = args[0]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked();
+	session->gate_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "gate_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->game_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "game_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->public_endpoint = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "public_endpoint", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->cid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "cid", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+	session->sid = (object->Get(args.GetIsolate()->GetCurrentContext(),
+			String::NewFromUtf8(args.GetIsolate(), "sid", NewStringType::kNormal).
+			ToLocalChecked()).ToLocalChecked())->Int32Value(args.GetIsolate()->GetCurrentContext()).FromJust();
+
+	NODE_MANAGER->add_session(session);
 }
 
 void close_session(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 3) {
-		LOG_ERROR("close_client args error, length: %d\n", args.Length());
-		args.GetReturnValue().SetNull();
+	if (args.Length() != 2) {
+		LOG_ERROR("close_session args error, length: %d\n", args.Length());
 		return;
 	}
 
 	Drop_Info drop_info;
 	drop_info.endpoint_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.drop_cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	drop_info.error_code = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	drop_info.cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	NODE_MANAGER->push_drop(drop_info);
 }
 
@@ -284,7 +308,8 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 			Local<Object> sub_object = Local<Object>();
 
 			DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(iter->field_type);
-			sub_object = DB_OPERATOR(db_id)->load_data(db_id, sub_struct, args.GetIsolate(), key_index);
+			Block_Buffer *buffer = DB_MANAGER->load_data(db_id, sub_struct, key_index);
+			sub_object = sub_struct->build_object_struct(args.GetIsolate(), *buffer);
 
 			object->Set(args.GetIsolate()->GetCurrentContext(),
 					String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
@@ -293,7 +318,8 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 		}
 	}
 	else {
-		Local<v8::Object> obj = DB_OPERATOR(db_id)->load_data(db_id, db_struct, args.GetIsolate(), key_index);
+		Block_Buffer *buffer = DB_MANAGER->load_data(db_id, db_struct, key_index);
+		Local<v8::Object> obj = db_struct->build_object_struct(args.GetIsolate(), *buffer);
 		args.GetReturnValue().Set(obj);
 	}
 }
@@ -329,11 +355,14 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			//从object中取出子对象进行保存操作，子对象是单张表单条记录
 			Local<Value> value = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
-			DB_OPERATOR(db_id)->save_data(db_id, sub_struct, isolate, sub_object);
-			//DB_MANAGER->save_data(table_name.c_str(),0,sub_obj);
+			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+			sub_struct->build_buffer(isolate, sub_object, *buffer);
+			DB_MANAGER->save_data(db_id, sub_struct, buffer);
 		}
 	} else {
-		DB_OPERATOR(db_id)->save_data(db_id, db_struct, isolate, object);
+		Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+		db_struct->build_buffer(isolate, object, *buffer);
+		DB_MANAGER->save_data(db_id, db_struct, buffer);
 	}
 }
 

@@ -1,12 +1,12 @@
 /*
- *		Master_Server.h
+ *		Daemon_Server.h
  *
  *  Created on: Sep 19, 2016
  *      Author: zhangyalei
  */
 
-#ifndef MASTER_SERVER_H_
-#define MASTER_SERVER_H_
+#ifndef DAEMON_SERVER_H_
+#define DAEMON_SERVER_H_
 
 #include <getopt.h>
 #include <string>
@@ -14,13 +14,13 @@
 #include "Node_Define.h"
 
 class Epoll_Watcher;
-class Master_Server {
+class Daemon_Server {
 	//pid--Node_Info
 	typedef boost::unordered_map<int, Node_Info> Int_Node_Map;
 	//node_type--core_num
 	typedef boost::unordered_map<int, int> Int_Core_Map;
 public:
-	static Master_Server *instance(void);
+	static Daemon_Server *instance(void);
 
 	int init(int argc, char *argv[]);
 	int start(int argc, char *argv[]);
@@ -34,13 +34,13 @@ public:
 	void restart_process(int pid);
 
 private:
-	Master_Server(void);
-	~Master_Server(void);
-	Master_Server(const Master_Server &);
-	const Master_Server &operator=(const Master_Server &);
+	Daemon_Server(void);
+	~Daemon_Server(void);
+	Daemon_Server(const Daemon_Server &);
+	const Daemon_Server &operator=(const Daemon_Server &);
 
 private:
-	static Master_Server *instance_;
+	static Daemon_Server *instance_;
 	static struct option long_options[];
 	Epoll_Watcher *wait_watcher_;
 
@@ -52,6 +52,6 @@ private:
 	Int_Core_Map core_map_;
 };
 
-#define MASTER_SERVER Master_Server::instance()
+#define DAEMON_SERVER Daemon_Server::instance()
 
-#endif /* MASTER_SERVER_H_ */
+#endif /* DAEMON_SERVER_H_ */

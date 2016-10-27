@@ -6,7 +6,7 @@
 
 #include <signal.h>
 #include "Time_Value.h"
-#include "Master_Server.h"
+#include "Daemon_Server.h"
 
 static void sighandler(int sig_no) { exit(0); } /// for gprof need normal exit
 
@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGUSR1, sighandler);
 
-	MASTER_SERVER->init(argc, argv);
-	MASTER_SERVER->start(argc, argv);
+	DAEMON_SERVER->init(argc, argv);
+	DAEMON_SERVER->start(argc, argv);
 
 	return 0;
 }

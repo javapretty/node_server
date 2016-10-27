@@ -31,10 +31,10 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 };
 
 class V8_Manager: public Thread {
-	typedef List<int, Thread_Mutex> Int_List;
 public:
+	typedef List<int, Thread_Mutex> Int_List;
 	typedef boost::unordered_map<const char *, void *> Plugin_Handle_Map;
-
+public:
 	static V8_Manager *instance(void);
 	virtual void run_handler(void);
 	virtual int process_list(void);
