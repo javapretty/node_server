@@ -96,64 +96,68 @@ int V8_Manager::process_list(void) {
 		if (buffer) {
 			all_empty = false;
 			NODE_MANAGER->add_recv_bytes(buffer->readable_bytes() - 8);
-			int32_t endpoint_id = 0;
+			int32_t eid = 0;
 			int32_t cid = 0;
-			uint8_t compress = 0;
+			uint8_t protocol = 0;
 			uint8_t client_msg = 0;
 			uint8_t msg_id = 0;
 			uint8_t msg_type = 0;
 			uint32_t sid = 0;
-			buffer->read_int32(endpoint_id);
+			buffer->read_int32(eid);
 			buffer->read_int32(cid);
-			buffer->read_uint8(compress);
-			buffer->read_uint8(client_msg);
-			buffer->read_uint8(msg_id);
-			if (client_msg) {
-				msg_type = C2S;
-			} else {
-				buffer->read_uint8(msg_type);
-				buffer->read_uint32(sid);
-			}
-			NODE_MANAGER->add_msg_count(msg_id);
+			buffer->read_uint8(protocol);
 
-			//gate消息直接发送，不经过脚本层转接
-			if (NODE_MANAGER->node_info().node_type == GATE_SERVER
-					&& (msg_type == C2S || msg_type == NODE_S2C)
-					&& msg_id >= 3 && msg_id <= 255) {
-				int buf_eid = 0;
-				int buf_cid = 0;
-				int buf_msg_id = msg_id;
-				int buf_msg_type = 0;
-				int buf_sid = 0;
-
-				if (msg_type == C2S) {
-					Session *session = NODE_MANAGER->find_session_by_cid(cid);
-					if (!session) {
-						LOG_ERROR("find_session_by_cid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
-								endpoint_id, cid, msg_type, msg_id, sid);
-						continue;
-					}
-
-					buf_eid = session->game_eid;
-					buf_cid = session->game_cid;
-					buf_msg_type = NODE_C2S;
-					buf_sid = session->sid;
-				} else if (msg_type == NODE_S2C) {
-					Session *session = NODE_MANAGER->find_session_by_sid(sid);
-					if (!session) {
-						LOG_ERROR("find_session_by_sid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
-								endpoint_id, cid, msg_type, msg_id, sid);
-						continue;
-					}
-
-					buf_eid = session->client_eid;
-					buf_cid = session->client_cid;
-					buf_msg_type = S2C;
-					buf_sid = session->sid;
+			const int argc = 1;
+			Local<Value> argv[argc];
+			if (protocol == TCP) {
+				//tcp消息包
+				buffer->read_uint8(client_msg);
+				buffer->read_uint8(msg_id);
+				if (client_msg) {
+					msg_type = C2S;
+				} else {
+					buffer->read_uint8(msg_type);
+					buffer->read_uint32(sid);
 				}
-				NODE_MANAGER->send_buffer(buf_eid, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
-				NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
-				continue;
+				NODE_MANAGER->add_msg_count(msg_id);
+
+				//gate消息直接发送，不经过脚本层
+				if (NODE_MANAGER->node_info().node_type == GATE_SERVER
+						&& (msg_type == C2S || msg_type == NODE_S2C)
+						&& msg_id >= 3 && msg_id <= 255) {
+					NODE_MANAGER->transmit_msg(eid, cid, msg_id, msg_type, sid, buffer);
+					NODE_MANAGER->push_buffer(eid, cid, buffer);
+					continue;
+				}
+
+				std::string struct_name = get_struct_name(msg_type, msg_id);
+				Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
+				if (msg_struct) {
+					argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_id, msg_type, sid, *buffer);
+				} else {
+					continue;
+				}
+			} else if (protocol == HTTP) {
+				//http消息包
+				std::string post_data = "";
+				buffer->read_string(post_data);
+				Json::Value value;
+			  Json::Reader reader(Json::Features::strictMode());
+				if ( !reader.parse(post_data, value) || !value["msg_id"].isInt()) {
+					LOG_ERROR("http post data:%s format error or msg_id not int", post_data.c_str());
+					continue;
+				}
+
+				msg_id = value["msg_id"].asInt();
+				msg_type = HTTP_MSG;
+				NODE_MANAGER->add_msg_count(msg_id);
+				std::string struct_name = get_struct_name(msg_type, msg_id);
+				Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
+				if (msg_struct) {
+					argv[0] = msg_struct->build_http_msg_object(isolate_, cid, msg_id, msg_type, value);
+				} else {
+					continue;
+				}
 			}
 
 			Local<String> func_name = String::NewFromUtf8(isolate_, "on_msg", NewStringType::kNormal).ToLocalChecked();
@@ -162,18 +166,9 @@ int V8_Manager::process_list(void) {
 				LOG_ERROR("can't find function 'on_msg'");
 				continue;
 			}
-
-			const int argc = 1;
-			Local<Value> argv[argc];
-			std::string struct_name = get_struct_name(msg_type, msg_id);
-			Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
-			if (msg_struct != nullptr) {
-				argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_id, msg_type, sid, *buffer);
-			}
 			Local<Function> js_func = Local<Function>::Cast(func_value);
 			js_func->Call(context, context->Global(), argc, argv);
-
-			NODE_MANAGER->push_buffer(endpoint_id, cid, buffer);
+			NODE_MANAGER->push_buffer(eid, cid, buffer);
 		}
 		
 		//脚本处理定时器

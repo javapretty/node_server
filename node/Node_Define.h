@@ -13,11 +13,12 @@
 #include "Time_Value.h"
 
 enum Msg_Type {
-	C2S 		= 1,		//客户端发到服务器的消息
-	S2C			= 2,		//服务器发到客户端的消息
+	C2S 			= 1,	//客户端发到服务器的消息
+	S2C				=	2,	//服务器发到客户端的消息
 	NODE_C2S	= 3,	//客户端经过gate中转发到后端服务器的消息
 	NODE_S2C	= 4,	//后端服务器经过gate中转发到gate的消息
 	NODE_MSG	= 5,	//服务器进程节点间通信的消息
+	HTTP_MSG = 6,	//http消息
 };
 
 enum Node_Type {
@@ -39,11 +40,11 @@ struct Session {
 };
 
 struct Drop_Info {
-	int endpoint_id;
+	int eid;
 	int cid;
 	Time_Value drop_time;
 
-	Drop_Info(void) : endpoint_id(0), cid(-1), drop_time(Time_Value::gettimeofday()) {}
+	Drop_Info(void) : eid(0), cid(-1), drop_time(Time_Value::gettimeofday()) {}
 };
 
 typedef std::vector<Endpoint_Info> Endpoint_List;

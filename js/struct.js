@@ -243,6 +243,11 @@ function node_210() {
 	this.logout_info = new Logout_Info();
 }
 
+function http_1() {
+	this.role_name = "";
+	this.gold = 0;
+}
+
 function Endpoint_Info() {
 	this.endpoint_type = 0;
 	this.endpoint_id = 0;

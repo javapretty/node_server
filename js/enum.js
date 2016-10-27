@@ -35,11 +35,12 @@ if (typeof Error_Code == "undefined") {
 
 if (typeof Msg_Type == "undefined") {
 	var Msg_Type = {};
-	Msg_Type.C2S		= 1;	//客户端发到服务器的消息
-	Msg_Type.S2C		= 2;	//服务器发到客户端的消息
+	Msg_Type.C2S			= 1;	//客户端发到服务器的消息
+	Msg_Type.S2C			= 2;	//服务器发到客户端的消息
 	Msg_Type.NODE_C2S	= 3;	//客户端经过gate中转发到后端服务器的消息
 	Msg_Type.NODE_S2C	= 4;	//后端服务器经过gate中转发到gate的消息
 	Msg_Type.NODE_MSG	= 5;	//服务器进程节点间通信的消息
+	Msg_Type.HTTP_MSG	= 6;//http消息
 }
 
 if (typeof Node_Type == "undefined") {

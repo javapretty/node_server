@@ -51,3 +51,7 @@ enum Node_Message {
 	SYNC_PUBLIC_GAME_GUILD_INFO   	= 209,	//public通知game公会信息
 	SYNC_LOG_PLAYER_LOGOUT 				= 210,	//玩家登出日志
 };
+
+enum Http_Message {
+	HTTP_MODIFY_GOLD	=	1,		//修改玩家元宝
+};

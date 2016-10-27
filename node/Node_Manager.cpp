@@ -136,10 +136,44 @@ int Node_Manager::process_list(void) {
 	return 0;
 }
 
-int Node_Manager::send_buffer(int endpoint_id, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
-	Endpoint_Map::iterator iter = endpoint_map_.find(endpoint_id);
+int Node_Manager::transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
+	int buf_eid = 0;
+	int buf_cid = 0;
+	int buf_msg_id = msg_id;
+	int buf_msg_type = 0;
+	int buf_sid = 0;
+
+	if (msg_type == C2S) {
+		Session *session = find_session_by_cid(cid);
+		if (!session) {
+			LOG_ERROR("find_session_by_cid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d", eid, cid, msg_type, msg_id, sid);
+			return -1;
+		}
+
+		buf_eid = session->game_eid;
+		buf_cid = session->game_cid;
+		buf_msg_type = NODE_C2S;
+		buf_sid = session->sid;
+	} else if (msg_type == NODE_S2C) {
+		Session *session = NODE_MANAGER->find_session_by_sid(sid);
+		if (!session) {
+			LOG_ERROR("find_session_by_sid error, eid, cid:%d, msg_type:%d, msg_id:%d, sid:%d", eid, cid, msg_type, msg_id, sid);
+			return -1;
+		}
+
+		buf_eid = session->client_eid;
+		buf_cid = session->client_cid;
+		buf_msg_type = S2C;
+		buf_sid = session->sid;
+	}
+	send_msg(buf_eid, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
+	return 0;
+}
+
+int Node_Manager::send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
+	Endpoint_Map::iterator iter = endpoint_map_.find(eid);
 	if (iter == endpoint_map_.end()) {
-		LOG_ERROR("endpoint_id %d not exist, cid:%d, msg_id:%d, msg_type:%d, sid:%d", endpoint_id, cid, msg_id, msg_type, sid);
+		LOG_ERROR("eid %d not exist, cid:%d, msg_id:%d, msg_type:%d, sid:%d", eid, cid, msg_id, msg_type, sid);
 		return -1;
 	}
 
@@ -224,7 +258,7 @@ int Node_Manager::drop_list_tick(Time_Value &now) {
 		drop_info = drop_list_.front();
 		if (now - drop_info.drop_time >= Time_Value(2, 0)) {
 			//关闭通信层连接
-			Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.endpoint_id);
+			Endpoint_Map::iterator iter = endpoint_map_.find(drop_info.eid);
 			if (iter != endpoint_map_.end()) {
 				iter->second->network().push_drop(drop_info.cid);
 			}
