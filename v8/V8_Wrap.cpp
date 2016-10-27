@@ -13,6 +13,7 @@
 #include "Node_Manager.h"
 #include "V8_Wrap.h"
 #include "V8_Manager.h"
+#include "DB_Manager.h"
 
 std::string get_struct_name(int msg_type, int msg_id) {
 	std::ostringstream stream;
@@ -329,6 +330,7 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			Local<Value> value = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
 			DB_OPERATOR(db_id)->save_data(db_id, sub_struct, isolate, sub_object);
+			//DB_MANAGER->save_data(table_name.c_str(),0,sub_obj);
 		}
 	} else {
 		DB_OPERATOR(db_id)->save_data(db_id, db_struct, isolate, object);
