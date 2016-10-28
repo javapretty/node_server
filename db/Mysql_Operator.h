@@ -26,6 +26,10 @@ public:
 	virtual void save_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 
+	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer *> &buffer_vec);
+	virtual void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
+	virtual void delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
+
 	virtual int init_db(int db_id, DB_Struct *db_struct);
 	virtual int64_t generate_table_index(int db_id, DB_Struct *db_struct, std::string &type);
 	virtual int64_t select_table_index(int db_id, DB_Struct *db_struct, std::string &query_name, std::string &query_value);
@@ -38,6 +42,11 @@ private:
 	v8::Local<v8::Array> load_data_vector(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 	v8::Local<v8::Map> load_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 	v8::Local<v8::Object> load_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
+
+	Block_Buffer *load_data_single(DB_Struct *db_struct, Block_Buffer *buffer, sql::ResultSet *result);
+	Block_Buffer *load_data_arg(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
+	Block_Buffer *load_data_vector(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
+	Block_Buffer *load_data_struct(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
 
 	int build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
 	int build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);

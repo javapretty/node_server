@@ -20,6 +20,10 @@ public:
 	virtual v8::Local<v8::Object> load_data(int db_id, DB_Struct *db_struct, Isolate* isolate, int64_t key_index) { return v8::Local<v8::Object>(); };
 	virtual void save_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
+	
+	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer *> &buffer_vec) { return 0;};
+	virtual void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {};
+	virtual void delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {};
 
 	virtual int init_db(int db_id, DB_Struct *db_struct) { return 0; };
 	virtual int64_t generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) { return 0; }

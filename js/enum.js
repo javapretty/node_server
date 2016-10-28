@@ -103,3 +103,11 @@ if (typeof DB_Id == "undefined") {
 	DB_Id.GAME		= 1001;	
 	DB_Id.LOG 		= 1002;
 }
+
+if (typeof SAVE_FLAG == "undefined") {
+	var SAVE_FLAG = {};
+	SAVE_FLAG.SAVE_BUFFER = 0;
+	SAVE_FLAG.SAVE_BUFFER_DB = 1;
+	SAVE_FLAG.SAVE_DB = 2;
+}
+
