@@ -595,67 +595,67 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *bu
 		if(iter->field_label == "arg") {
 			if(iter->field_type == "int8") {
 				int8_t val = 0;
-				val = buffer->read_int8(val);
+				buffer->read_int8(val);
 				pstmt->setInt(param_index, val);
 				pstmt->setInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "int16") {
 				int16_t val = 0;
-				val = buffer->read_int16(val);
+				buffer->read_int16(val);
 				pstmt->setInt(param_index, val);
 				pstmt->setInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "int32") {
 				int32_t val = 0;
-				val = buffer->read_int32(val);
+				buffer->read_int32(val);
 				pstmt->setInt(param_index, val);
 				pstmt->setInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "int64") {
 				int64_t val = 0;
-				val = buffer->read_int64(val);
+				buffer->read_int64(val);
 				pstmt->setInt64(param_index, val);
 				pstmt->setInt64(param_index + param_len, val);
 			}
 			else if(iter->field_type == "uint8") {
 				uint8_t val = 0;
-				val = buffer->read_uint8(val);
+				buffer->read_uint8(val);
 				pstmt->setUInt(param_index, val);
 				pstmt->setUInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "uint16") {
 				uint16_t val = 0;
-				val = buffer->read_uint16(val);
+				buffer->read_uint16(val);
 				pstmt->setUInt(param_index, val);
 				pstmt->setUInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "uint32") {
 				uint32_t val = 0;
-				val = buffer->read_uint32(val);
-				pstmt->setInt(param_index, val);
-				pstmt->setInt(param_index + param_len, val);
+				buffer->read_uint32(val);
+				pstmt->setUInt(param_index, val);
+				pstmt->setUInt(param_index + param_len, val);
 			}
 			else if(iter->field_type == "uint64") {
 				uint64_t val = 0;
-				val = buffer->read_uint64(val);
+				buffer->read_uint64(val);
 				pstmt->setUInt64(param_index, val);
 				pstmt->setUInt64(param_index + param_len, val);
 			}
 			else if(iter->field_type == "double") {
 				double val = 0;
-				val = buffer->read_double(val);
+				buffer->read_double(val);
 				pstmt->setDouble(param_index, val);
 				pstmt->setDouble(param_index + param_len, val);
 			}
 			else if(iter->field_type == "bool") {
 				bool val = 0;
-				val = buffer->read_bool(val);
+				buffer->read_bool(val);
 				pstmt->setBoolean(param_index, val);
 				pstmt->setBoolean(param_index + param_len, val);
 			}
 			else if(iter->field_type == "string") {
 				std::string val = "";
-				val = buffer->read_string(val);
+				buffer->read_string(val);
 				pstmt->setString(param_index, val);
 				pstmt->setString(param_index + param_len, val);
 			}
@@ -680,19 +680,19 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *bu
 	}
 	pstmt->execute();
 	delete pstmt;
-};
+}
 
 void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
-	int16_t len = 0;
-	buffer->read_int16(len);
-	for (int i = 0; i < len; ++i) {
+	uint16_t len = 0;
+	buffer->read_uint16(len);
+	for (uint i = 0; i < len; ++i) {
 		int64_t key_index = 0;
 		buffer->read_int64(key_index);
 		char sql_str[128] = {0};
 		sprintf(sql_str, "delete from %s where %s=%ld", db_struct->table_name().c_str(), db_struct->index_name().c_str(), key_index);
 		get_connection(db_id)->execute(sql_str);
 	}
-};
+}
 
 Block_Buffer *Mysql_Operator::load_data_single(DB_Struct *db_struct, Block_Buffer *buffer, sql::ResultSet *result) {
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();

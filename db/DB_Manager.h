@@ -15,17 +15,23 @@
 class DB_Manager {
 public:
 	typedef boost::unordered_map<int, DB_Operator *> DB_Operator_Map;
-	typedef boost::unordered_map<int64_t, Block_Buffer *> RECORD_BUFFER_MAP;
-	typedef boost::unordered_map<std::string, RECORD_BUFFER_MAP *> TABLE_BUFFER_MAP;
-	typedef boost::unordered_map<int, TABLE_BUFFER_MAP *> DB_BUFFER_MAP;
+	typedef boost::unordered_map<int64_t, Block_Buffer *> RECORD_BUFFER_MAP; //数据库记录集合
+	typedef boost::unordered_map<std::string, RECORD_BUFFER_MAP *> TABLE_BUFFER_MAP; //表名集合
+	typedef boost::unordered_map<int, TABLE_BUFFER_MAP *> DB_BUFFER_MAP; //数据库ID集合
+	typedef boost::unordered_map<int64_t, Block_Buffer *> TEMP_DATA_MAP;
 	typedef Object_Pool<Block_Buffer, Thread_Mutex> Buffer_Pool;
 public:
 	static DB_Manager *instance(void);
 
 	int init_db_operator();
 	DB_Operator *db_operator(int type);
-	void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
-	int load_data(int db_id, DB_Struct *db_struct, int64_t index,  std::vector<Block_Buffer *> &buffer_vec);
+	void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer, int flag);
+	int load_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Block_Buffer *> &buffer_vec);
+	int delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
+
+	void set_data(int64_t index, DB_Struct *db_struct, Block_Buffer *buffer);
+	Block_Buffer *get_data(int64_t index, DB_Struct *db_struct);
+	void clear_data(int64_t index);
 
 	inline Block_Buffer *pop_buffer(){return buffer_pool_.pop();};
 	inline void push_buffer(Block_Buffer *buffer){buffer->reset();buffer_pool_.push(buffer);};
@@ -40,6 +46,7 @@ private:
 	static DB_Manager *instance_;
 	DB_Operator_Map db_operator_map_;
 	DB_BUFFER_MAP db_buffer_map_;
+	TEMP_DATA_MAP temp_data_map_;
 	Buffer_Pool buffer_pool_;
 };
 

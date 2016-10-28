@@ -39,11 +39,18 @@ void generate_table_index(const FunctionCallbackInfo<Value>& args);
 void select_table_index(const FunctionCallbackInfo<Value>& args);
 //函数说明：读取数据库数据		参数：1.db_id, 2.table_name 3.key_index  返回值：数据object
 void load_db_data(const FunctionCallbackInfo<Value>& args);
-//函数说明：保存数据库数据		参数：1.db_id 2.table_name 3.数据object	返回值：无
+//函数说明：保存数据库数据		参数：1.保存类型(0.只更新缓存1.更新缓存和数据库2.更新数据库清空缓存 默认0) 2.db_id 3.table_name 4.数据object 返回值：无
 void save_db_data(const FunctionCallbackInfo<Value>& args);
 //函数说明：保存单条数据		参数：1.db_id 2.table_name 3.数据object	返回值：无
-void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Local<v8::Object> object);
+void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Local<v8::Object> object, int flag);
 //函数说明：删除数据库数据		参数：1.db_id 2.table_name 3.数据array		返回值：无
 void delete_db_data(const FunctionCallbackInfo<Value>& args);
+
+//函数说明：保存临时数据		参数：1.index 2.struct_name 3.数据object		返回值：无
+void set_temp_data(const FunctionCallbackInfo<Value>& args);
+//函数说明：获取临时数据		参数：1.index 2.struct_name	返回值：无
+void get_temp_data(const FunctionCallbackInfo<Value>& args);
+//函数说明：删除临时数据		参数：1.index 返回值：无
+void clear_temp_data(const FunctionCallbackInfo<Value>& args);
 
 #endif /* V8_WRAP_H_ */

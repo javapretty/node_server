@@ -60,5 +60,5 @@ function init_db_connect() {
 }
 
 function log_player_logout(msg) {
-	save_db_data(DB_Id.LOG, "log.logout", msg.logout_info);
+	save_db_data(SAVE_FLAG.SAVE_BUFFER_DB, DB_Id.LOG, "log.logout", msg.logout_info);
 }
