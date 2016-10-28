@@ -37,6 +37,46 @@ bool Mongo_Operator::connect_to_db(int db_id, std::string &ip, int port, std::st
 	return true;
 }
 
+int Mongo_Operator::init_db(int db_id, DB_Struct *db_struct) {
+	//创建索引
+	get_connection(db_id).createIndex(db_struct->table_name(), BSON(db_struct->index_name() << 1));
+	db_struct->set_db_init();
+	return 0;
+}
+
+int64_t Mongo_Operator::generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) {
+	if(!db_struct->db_init()) {
+		init_db(db_id, db_struct);
+	}
+	int serial = 1;
+	BSONObj result;
+	char str_json[128] = {0};
+	sprintf(str_json, "{findandmodify:'%s', query:{type:'%s'}, update:{$inc:{value:1}}, upsert:true}",
+			db_struct->table_name().c_str(), type.c_str());
+	if (get_connection(db_id).runCommand(db_struct->db_name(), fromjson(str_json), result) == false) {
+		LOG_ERROR("findandmodify type='%s' failed", type.c_str());
+		return -1;
+	}
+
+	serial = result.getFieldDotted("value.value").numberLong() + 1;
+
+	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), serial);
+	return id;
+}
+
+int64_t Mongo_Operator::select_table_index(int db_id, DB_Struct *db_struct,  std::string &query_name, std::string &query_value) {
+	if(!db_struct->db_init()) {
+		init_db(db_id, db_struct);
+	}
+	std::string table = db_struct->table_name();
+	BSONObj result = get_connection(db_id).findOne(table, MONGO_QUERY(query_name << query_value));
+	if (!result.isEmpty()) {
+		return result[db_struct->index_name()].numberLong();
+	} else {
+		return -1;
+	}
+}
+
 v8::Local<v8::Object> Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, Isolate* isolate, int64_t key_index) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
@@ -53,7 +93,9 @@ v8::Local<v8::Object> Mongo_Operator::load_data(int db_id, DB_Struct *db_struct,
 		v8::Local<v8::Array> array = Array::New(isolate, len);
 		for (int i = 0; i < len; ++i) {
 			v8::Local<v8::Object> data_obj = load_data_single(db_struct, isolate, record[i]);
-			array->Set(isolate->GetCurrentContext(), i, data_obj).FromJust();
+			if (!data_obj.IsEmpty()) {
+				array->Set(isolate->GetCurrentContext(), i, data_obj).FromJust();
+			}
 		}
 		return handle_scope.Escape(array);
 	} else {
@@ -111,46 +153,6 @@ void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Isolate* isola
 	}
 }
 
-int Mongo_Operator::init_db(int db_id, DB_Struct *db_struct) {
-	//创建索引
-	get_connection(db_id).createIndex(db_struct->table_name(), BSON(db_struct->index_name() << 1));
-	db_struct->set_db_init();
-	return 0;
-}
-
-int64_t Mongo_Operator::generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) {
-	if(!db_struct->db_init()) {
-		init_db(db_id, db_struct);
-	}
-	int serial = 1;
-	BSONObj result;
-	char str_json[128] = {0};
-	sprintf(str_json, "{findandmodify:'%s', query:{type:'%s'}, update:{$inc:{value:1}}, upsert:true}",
-			db_struct->table_name().c_str(), type.c_str());
-	if (get_connection(db_id).runCommand(db_struct->db_name(), fromjson(str_json), result) == false) {
-		LOG_ERROR("findandmodify type='%s' failed", type.c_str());
-		return -1;
-	}
-
-	serial = result.getFieldDotted("value.value").numberLong() + 1;
-
-	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), serial);
-	return id;
-}
-
-int64_t Mongo_Operator::select_table_index(int db_id, DB_Struct *db_struct,  std::string &query_name, std::string &query_value) {
-	if(!db_struct->db_init()) {
-		init_db(db_id, db_struct);
-	}
-	std::string table = db_struct->table_name();
-	BSONObj result = get_connection(db_id).findOne(table, MONGO_QUERY(query_name << query_value));
-	if (!result.isEmpty()) {
-		return result[db_struct->index_name()].numberLong();
-	} else {
-		return -1;
-	}
-}
-
 v8::Local<v8::Object> Mongo_Operator::load_data_single(DB_Struct *db_struct, Isolate* isolate, BSONObj &bsonobj) {
 	EscapableHandleScope handle_scope(isolate);
 	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
@@ -159,27 +161,35 @@ v8::Local<v8::Object> Mongo_Operator::load_data_single(DB_Struct *db_struct, Iso
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, *iter, bsonobj);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					value).FromJust();
+			if (!value.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						value).FromJust();
+			}
 		}
 		else if(iter->field_label == "vector") {
 			v8::Local<v8::Array> array = load_data_vector(db_struct, isolate, *iter, bsonobj);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					array).FromJust();
+			if (!array.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						array).FromJust();
+			}
 		}
 		else if(iter->field_label == "map") {
 			v8::Local<v8::Map> map = load_data_map(db_struct, isolate, *iter, bsonobj);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					map).FromJust();
+			if (!map.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						map).FromJust();
+			}
 		}
 		else if(iter->field_label == "struct") {
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, *iter, bsonobj);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					object).FromJust();
+			if (!object.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						object).FromJust();
+			}
 		}
 	}
 	return handle_scope.Escape(data_obj);
@@ -254,14 +264,18 @@ v8::Local<v8::Array> Mongo_Operator::load_data_vector(DB_Struct *db_struct, Isol
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, field_info, obj);
-			array->Set(isolate->GetCurrentContext(), i, object).FromJust();
+			if (!object.IsEmpty()) {
+				array->Set(isolate->GetCurrentContext(), i, object).FromJust();
+			}
 		}
 	}
 	else {
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
-			Local<Value> value = load_data_arg(db_struct, isolate, field_info, obj);
-			array->Set(isolate->GetCurrentContext(), i, value).FromJust();
+			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, field_info, obj);
+			if (!value.IsEmpty()) {
+				array->Set(isolate->GetCurrentContext(), i, value).FromJust();
+			}
 		}
 	}
 
@@ -281,8 +295,10 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, field_info, obj);
-			Local<Value> key = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, field_info.key_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
-			map->Set(isolate->GetCurrentContext(), key, object).ToLocalChecked();
+			v8::Local<v8::Value> key = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, field_info.key_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
+			if (!key.IsEmpty() && !object.IsEmpty()) {
+				map->Set(isolate->GetCurrentContext(), key, object).ToLocalChecked();
+			}
 		}
 	}
 	else {
@@ -292,9 +308,11 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 			key_info.field_label = "args";
 			key_info.field_type = field_info.key_type;
 			key_info.field_name = field_info.key_name;
-			Local<Value> key = load_data_arg(db_struct, isolate, key_info, obj);
-			Local<Value> value = load_data_arg(db_struct, isolate, field_info, obj);
-			map->Set(isolate->GetCurrentContext(), key, value).ToLocalChecked();
+			v8::Local<v8::Value> key = load_data_arg(db_struct, isolate, key_info, obj);
+			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, field_info, obj);
+			if (!key.IsEmpty() && !value.IsEmpty()) {
+				map->Set(isolate->GetCurrentContext(), key, value).ToLocalChecked();
+			}
 		}
 	}
 
@@ -318,27 +336,35 @@ v8::Local<v8::Object> Mongo_Operator::load_data_struct(DB_Struct *db_struct, Iso
 			iter != field_vec.end(); iter++) {
 		if(iter->field_label == "arg") {
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, *iter, fieldobj);
-			object->Set(isolate->GetCurrentContext(),
-								String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-								value).FromJust();
+			if (!value.IsEmpty()) {
+				object->Set(isolate->GetCurrentContext(),
+									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+									value).FromJust();
+			}
 		}
 		else if(iter->field_label == "vector") {
 			v8::Local<v8::Array> array = load_data_vector(db_struct, isolate, *iter, fieldobj);
-			object->Set(isolate->GetCurrentContext(),
-								String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-								array).FromJust();
+			if (!array.IsEmpty()) {
+				object->Set(isolate->GetCurrentContext(),
+									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+									array).FromJust();
+			}
 		}
 		else if(iter->field_label == "map") {
 			v8::Local<v8::Map> map = load_data_map(db_struct, isolate, *iter, fieldobj);
-			object->Set(isolate->GetCurrentContext(),
-								String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-								map).FromJust();
+			if (!map.IsEmpty()) {
+				object->Set(isolate->GetCurrentContext(),
+									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+									map).FromJust();
+			}
 		}
 		else if(iter->field_label == "struct") {
 			v8::Local<v8::Object> sub_object = load_data_struct(db_struct, isolate, *iter, fieldobj);
-			object->Set(isolate->GetCurrentContext(),
-								String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-								sub_object).FromJust();
+			if (!sub_object.IsEmpty()) {
+				object->Set(isolate->GetCurrentContext(),
+									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+									sub_object).FromJust();
+			}
 		}
 	}
 

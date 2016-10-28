@@ -295,7 +295,9 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 				for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
 						iter != buffer_vec.end(); iter++){
 					Local<Object> sub_object = sub_struct->build_object(args.GetIsolate(), *(*iter));
-					array->Set(i, sub_object);
+					if (!sub_object.IsEmpty()) {
+						array->Set(i, sub_object);
+					}
 					i++;
 				}
 				object->Set(args.GetIsolate()->GetCurrentContext(),
@@ -304,9 +306,11 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 			}
 			else {
 				Local<Object> sub_object = sub_struct->build_object(args.GetIsolate(), *buffer_vec[0]);
-				object->Set(args.GetIsolate()->GetCurrentContext(),
-						String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						sub_object).FromJust();
+				if (!sub_object.IsEmpty()) {
+					object->Set(args.GetIsolate()->GetCurrentContext(),
+							String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+							sub_object).FromJust();
+				}
 			}
 			args.GetReturnValue().Set(object);
 		}
@@ -320,7 +324,9 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
 				Local<v8::Object> obj = db_struct->build_object(args.GetIsolate(), *(*iter));
-				array->Set(i, obj);
+				if (!obj.IsEmpty()) {
+					array->Set(i, obj);
+				}
 				i++;
 			}
 			args.GetReturnValue().Set(array);

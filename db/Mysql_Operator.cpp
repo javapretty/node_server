@@ -39,6 +39,36 @@ bool Mysql_Operator::connect_to_db(int db_id, std::string &ip, int port, std::st
 	return true;
 }
 
+int Mysql_Operator::init_db(int db_id, DB_Struct *db_struct) {
+	return 0;
+}
+
+int64_t Mysql_Operator::generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) {
+	int serial = 1;
+	char str_sql[256] = {0};
+	sprintf(str_sql, "select * from %s where type='%s'",db_struct->table_name().c_str(), type.c_str());
+	sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
+	if (result && result->next()) {
+		serial = result->getInt("value") + 1;
+	}
+
+	sprintf(str_sql, "insert into %s (type,value) values ('%s',%d) ON DUPLICATE KEY UPDATE type='%s',value=%d", db_struct->table_name().c_str(), type.c_str(), 1, type.c_str(), serial);
+	get_connection(db_id)->execute_update(str_sql);
+	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), serial);
+	return id;
+}
+
+int64_t Mysql_Operator::select_table_index(int db_id, DB_Struct *db_struct, std::string &query_name, std::string &query_value) {
+	int64_t key_index = -1;
+	char str_sql[256] = {0};
+	sprintf(str_sql, "select %s from %s where %s='%s'", db_struct->index_name().c_str(), db_struct->table_name().c_str(), query_name.c_str(), query_value.c_str());
+	sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
+	if (result && result->next()) {
+		key_index = result->getInt64(db_struct->index_name());
+	}
+	return key_index;
+}
+
 v8::Local<v8::Object> Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, Isolate* isolate, int64_t key_index) {
 	EscapableHandleScope handle_scope(isolate);
 
@@ -55,7 +85,9 @@ v8::Local<v8::Object> Mysql_Operator::load_data(int db_id, DB_Struct *db_struct,
 		v8::Local<v8::Array> array = Array::New(isolate, len);
 		while(result->next()) {
 			v8::Local<v8::Object> data_obj = load_data_single(db_struct, isolate, result);
-			array->Set(isolate->GetCurrentContext(), i++, data_obj).FromJust();
+			if (!data_obj.IsEmpty()) {
+				array->Set(isolate->GetCurrentContext(), i++, data_obj).FromJust();
+			}
 		}
 		return handle_scope.Escape(array);
 	} else {
@@ -273,36 +305,6 @@ void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Isolate* isola
 	}
 }
 
-int Mysql_Operator::init_db(int db_id, DB_Struct *db_struct) {
-	return 0;
-}
-
-int64_t Mysql_Operator::generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) {
-	int serial = 1;
-	char str_sql[256] = {0};
-	sprintf(str_sql, "select * from %s where type='%s'",db_struct->table_name().c_str(), type.c_str());
-	sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
-	if (result && result->next()) {
-		serial = result->getInt("value") + 1;
-	}
-
-	sprintf(str_sql, "insert into %s (type,value) values ('%s',%d) ON DUPLICATE KEY UPDATE type='%s',value=%d", db_struct->table_name().c_str(), type.c_str(), 1, type.c_str(), serial);
-	get_connection(db_id)->execute_update(str_sql);
-	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), serial);
-	return id;
-}
-
-int64_t Mysql_Operator::select_table_index(int db_id, DB_Struct *db_struct, std::string &query_name, std::string &query_value) {
-	int64_t key_index = -1;
-	char str_sql[256] = {0};
-	sprintf(str_sql, "select %s from %s where %s='%s'", db_struct->index_name().c_str(), db_struct->table_name().c_str(), query_name.c_str(), query_value.c_str());
-	sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
-	if (result && result->next()) {
-		key_index = result->getInt64(db_struct->index_name());
-	}
-	return key_index;
-}
-
 v8::Local<v8::Object> Mysql_Operator::load_data_single(DB_Struct *db_struct, Isolate* isolate, sql::ResultSet *result) {
 	EscapableHandleScope handle_scope(isolate);
 	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
@@ -311,27 +313,35 @@ v8::Local<v8::Object> Mysql_Operator::load_data_single(DB_Struct *db_struct, Iso
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, *iter, result);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					value).FromJust();
+			if (!value.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						value).FromJust();
+			}
 		}
 		else if(iter->field_label == "vector") {
 			v8::Local<v8::Array> array = load_data_vector(db_struct, isolate, *iter, result);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					array).FromJust();
+			if (!array.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						array).FromJust();
+			}
 		}
 		else if(iter->field_label == "map") {
 			v8::Local<v8::Map> map = load_data_map(db_struct, isolate, *iter, result);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					map).FromJust();
+			if (!map.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						map).FromJust();
+			}
 		}
 		else if(iter->field_label == "struct") {
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, *iter, result);
-			data_obj->Set(isolate->GetCurrentContext(),
-					String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					object).FromJust();
+			if (!object.IsEmpty()) {
+				data_obj->Set(isolate->GetCurrentContext(),
+						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						object).FromJust();
+			}
 		}
 	}
 	return handle_scope.Escape(data_obj);
