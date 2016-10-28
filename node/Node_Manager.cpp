@@ -69,7 +69,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 	}
 
 	//短暂延迟让服务器启动
-	Time_Value::sleep(Time_Value(0, 100 * 1000));
+	Time_Value::sleep(Time_Value(0, 500 * 1000));
 
 	//启动connector线程
 	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {
