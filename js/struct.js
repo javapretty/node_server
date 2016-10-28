@@ -264,6 +264,7 @@ function Node_Info() {
 	this.node_name = "";
 	this.node_ip = "";
 	this.script_path = "";
+	this.plugin_list = new Array();
 	this.endpoint_list = new Array();
 }
 

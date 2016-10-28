@@ -7,9 +7,10 @@
 
 #include <sstream>
 #include "Base_V8.h"
+#include "DB_Manager.h"
 #include "Msg_Struct.h"
 #include "Struct_Manager.h"
-#include "DB_Manager.h"
+#include "Daemon_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Manager.h"
 #include "V8_Manager.h"
@@ -39,65 +40,10 @@ std::string get_struct_name(int msg_type, int msg_id) {
 	return stream.str();
 }
 
-Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info) {
-	EscapableHandleScope handle_scope(isolate);
-
-	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
-	Local<Object> node_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "node_type", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, node_info.node_type)).FromJust();
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "node_id", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, node_info.node_id)).FromJust();
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "node_name", NewStringType::kNormal).ToLocalChecked(),
-			String::NewFromUtf8(isolate, node_info.node_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "node_ip", NewStringType::kNormal).ToLocalChecked(),
-			String::NewFromUtf8(isolate, node_info.node_ip.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "script_path", NewStringType::kNormal).ToLocalChecked(),
-			String::NewFromUtf8(isolate, node_info.script_path.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
-
-	int vec_size = node_info.endpoint_list.size();
-	Local<Array> server_array = Array::New(isolate, vec_size);
-	for(uint16_t i = 0; i < vec_size; ++i) {
-		Local<Object> server_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		Endpoint_Info server_info = node_info.endpoint_list[i];
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "endpoint_type", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, server_info.endpoint_type)).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "endpoint_id", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, server_info.endpoint_id)).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "endpoint_name", NewStringType::kNormal).ToLocalChecked(),
-			String::NewFromUtf8(isolate, server_info.endpoint_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "server_ip", NewStringType::kNormal).ToLocalChecked(),
-			String::NewFromUtf8(isolate, server_info.server_ip.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "server_port", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, server_info.server_port)).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "protocol_type", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, server_info.protocol_type)).FromJust();
-		server_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "receive_timeout", NewStringType::kNormal).ToLocalChecked(),
-			Int32::New(isolate, server_info.receive_timeout)).FromJust();
-		
-		server_array->Set(isolate->GetCurrentContext(), i, server_obj).FromJust();
-	}
-	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "endpoint_list", NewStringType::kNormal).ToLocalChecked(),
-			server_array).FromJust();
-
-	return handle_scope.Escape(node_obj);
-}
-
 Local<Context> create_context(Isolate* isolate) {
 	Local<ObjectTemplate> global = ObjectTemplate::New(isolate);
+	global->Set(String::NewFromUtf8(isolate, "fork_process", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, fork_process));
 	global->Set(String::NewFromUtf8(isolate, "require", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, require));
 	global->Set(String::NewFromUtf8(isolate, "read_json", NewStringType::kNormal).ToLocalChecked(),
@@ -116,7 +62,6 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, log_warn));
 	global->Set(String::NewFromUtf8(isolate, "log_error", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, log_error));
-
 
 	global->Set(String::NewFromUtf8(isolate, "register_timer", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, register_timer));
@@ -154,6 +99,23 @@ Local<Context> create_context(Isolate* isolate) {
 	}
 
 	return Context::New(isolate, NULL, global);
+}
+
+void fork_process(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 1 || !args[0]->IsObject()) {
+		LOG_ERROR("fork_process args error, length: %d\n", args.Length());
+		return;
+	}
+
+	Node_Info node_info;
+	node_info.reset();
+	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct("Node_Info");
+	if (msg_struct) {
+		Block_Buffer buffer;
+		msg_struct->build_buffer(args.GetIsolate(), args[0]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
+		node_info.deserialize(buffer);
+	}
+	DAEMON_MANAGER->fork_process(node_info);
 }
 
 void register_timer(const FunctionCallbackInfo<Value>& args) {
