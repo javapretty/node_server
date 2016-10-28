@@ -81,8 +81,9 @@ v8::Local<v8::Object> Mongo_Operator::load_data(int db_id, DB_Struct *db_struct,
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
-	EscapableHandleScope handle_scope(isolate);
 
+	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
 	if(key_index == 0) {
 		//加载整张表数据
 		std::vector<BSONObj> record;
@@ -94,7 +95,7 @@ v8::Local<v8::Object> Mongo_Operator::load_data(int db_id, DB_Struct *db_struct,
 		for (int i = 0; i < len; ++i) {
 			v8::Local<v8::Object> data_obj = load_data_single(db_struct, isolate, record[i]);
 			if (!data_obj.IsEmpty()) {
-				array->Set(isolate->GetCurrentContext(), i, data_obj).FromJust();
+				array->Set(context, i, data_obj).FromJust();
 			}
 		}
 		return handle_scope.Escape(array);
@@ -110,9 +111,11 @@ void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
+
+	Local<Context> context(isolate->GetCurrentContext());
 	BSONObjBuilder set_builder;
-	v8::Local<v8::Value> key_value = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, db_struct->index_name().c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
-	int64_t key_index = key_value->NumberValue(isolate->GetCurrentContext()).FromJust();
+	v8::Local<v8::Value> key_value = object->Get(context, String::NewFromUtf8(isolate, db_struct->index_name().c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
+	int64_t key_index = key_value->NumberValue(context).FromJust();
 	LOG_INFO("table %s save key_index:%ld", db_struct->table_name().c_str(), key_index);
 	if (key_index <= 0) {
 		return;
@@ -120,7 +123,7 @@ void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); iter++) {
-		v8::Local<v8::Value> value = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
+		v8::Local<v8::Value> value = object->Get(context, String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 		if(iter->field_label == "arg") {
 			save_data_arg(db_struct, isolate, *iter, set_builder, value);
 		}
@@ -144,51 +147,47 @@ void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Isolate* isola
 		return;
 	}
 
+	Local<Context> context(isolate->GetCurrentContext());
 	v8::Local<v8::Array> array = v8::Local<v8::Array>::Cast(object);
 	int16_t len = array->Length();
 	for (int i = 0; i < len; ++i) {
-		v8::Local<v8::Value> value = array->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
-		int64_t key_index = value->NumberValue(isolate->GetCurrentContext()).FromJust();
+		v8::Local<v8::Value> value = array->Get(context, i).ToLocalChecked();
+		int64_t key_index = value->NumberValue(context).FromJust();
 		get_connection(db_id).remove(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)(key_index)));
 	}
 }
 
 v8::Local<v8::Object> Mongo_Operator::load_data_single(DB_Struct *db_struct, Isolate* isolate, BSONObj &bsonobj) {
 	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
+
 	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
-	v8::Local<v8::Object> data_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+	v8::Local<v8::Object> data_obj = localTemplate->NewInstance(context).ToLocalChecked();
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); ++iter) {
+		v8::Local<v8::String> key = String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked();
 		if(iter->field_label == "arg") {
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, *iter, bsonobj);
 			if (!value.IsEmpty()) {
-				data_obj->Set(isolate->GetCurrentContext(),
-						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						value).FromJust();
+				data_obj->Set(context, key, value).FromJust();
 			}
 		}
 		else if(iter->field_label == "vector") {
 			v8::Local<v8::Array> array = load_data_vector(db_struct, isolate, *iter, bsonobj);
 			if (!array.IsEmpty()) {
-				data_obj->Set(isolate->GetCurrentContext(),
-						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						array).FromJust();
+				data_obj->Set(context, key, array).FromJust();
 			}
 		}
 		else if(iter->field_label == "map") {
 			v8::Local<v8::Map> map = load_data_map(db_struct, isolate, *iter, bsonobj);
 			if (!map.IsEmpty()) {
-				data_obj->Set(isolate->GetCurrentContext(),
-						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						map).FromJust();
+				data_obj->Set(context, key, map).FromJust();
 			}
 		}
 		else if(iter->field_label == "struct") {
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, *iter, bsonobj);
 			if (!object.IsEmpty()) {
-				data_obj->Set(isolate->GetCurrentContext(),
-						String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						object).FromJust();
+				data_obj->Set(context, key, object).FromJust();
 			}
 		}
 	}
@@ -253,6 +252,7 @@ v8::Local<v8::Value> Mongo_Operator::load_data_arg(DB_Struct *db_struct, Isolate
 
 v8::Local<v8::Array> Mongo_Operator::load_data_vector(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObj &bsonobj) {
 	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
 
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_name);
 	int len = fieldobj.nFields();
@@ -265,7 +265,7 @@ v8::Local<v8::Array> Mongo_Operator::load_data_vector(DB_Struct *db_struct, Isol
 			obj = field_iter.next().embeddedObject();
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, field_info, obj);
 			if (!object.IsEmpty()) {
-				array->Set(isolate->GetCurrentContext(), i, object).FromJust();
+				array->Set(context, i, object).FromJust();
 			}
 		}
 	}
@@ -274,7 +274,7 @@ v8::Local<v8::Array> Mongo_Operator::load_data_vector(DB_Struct *db_struct, Isol
 			obj = field_iter.next().embeddedObject();
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, field_info, obj);
 			if (!value.IsEmpty()) {
-				array->Set(isolate->GetCurrentContext(), i, value).FromJust();
+				array->Set(context, i, value).FromJust();
 			}
 		}
 	}
@@ -284,6 +284,7 @@ v8::Local<v8::Array> Mongo_Operator::load_data_vector(DB_Struct *db_struct, Isol
 
 v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObj &bsonobj) {
 	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
 
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_name);
 	int len = fieldobj.nFields();
@@ -295,9 +296,9 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
 			v8::Local<v8::Object> object = load_data_struct(db_struct, isolate, field_info, obj);
-			v8::Local<v8::Value> key = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, field_info.key_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
+			v8::Local<v8::Value> key = object->Get(context, String::NewFromUtf8(isolate, field_info.key_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			if (!key.IsEmpty() && !object.IsEmpty()) {
-				map->Set(isolate->GetCurrentContext(), key, object).ToLocalChecked();
+				map->Set(context, key, object).ToLocalChecked();
 			}
 		}
 	}
@@ -311,7 +312,7 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 			v8::Local<v8::Value> key = load_data_arg(db_struct, isolate, key_info, obj);
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, field_info, obj);
 			if (!key.IsEmpty() && !value.IsEmpty()) {
-				map->Set(isolate->GetCurrentContext(), key, value).ToLocalChecked();
+				map->Set(context, key, value).ToLocalChecked();
 			}
 		}
 	}
@@ -321,6 +322,7 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 
 v8::Local<v8::Object> Mongo_Operator::load_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObj &bsonobj) {
 	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
 
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if(db_struct == nullptr){
@@ -328,42 +330,35 @@ v8::Local<v8::Object> Mongo_Operator::load_data_struct(DB_Struct *db_struct, Iso
 	}
 
 	Local<ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
-	v8::Local<v8::Object> object = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
+	v8::Local<v8::Object> object = localTemplate->NewInstance(context).ToLocalChecked();
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_type);
 
 	std::vector<Field_Info> field_vec = sub_struct->field_vec();
 	for(std::vector<Field_Info>::const_iterator iter = field_vec.begin();
 			iter != field_vec.end(); iter++) {
+		v8::Local<v8::String> key = String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked();
 		if(iter->field_label == "arg") {
 			v8::Local<v8::Value> value = load_data_arg(db_struct, isolate, *iter, fieldobj);
 			if (!value.IsEmpty()) {
-				object->Set(isolate->GetCurrentContext(),
-									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-									value).FromJust();
+				object->Set(context, key, value).FromJust();
 			}
 		}
 		else if(iter->field_label == "vector") {
 			v8::Local<v8::Array> array = load_data_vector(db_struct, isolate, *iter, fieldobj);
 			if (!array.IsEmpty()) {
-				object->Set(isolate->GetCurrentContext(),
-									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-									array).FromJust();
+				object->Set(context, key, array).FromJust();
 			}
 		}
 		else if(iter->field_label == "map") {
 			v8::Local<v8::Map> map = load_data_map(db_struct, isolate, *iter, fieldobj);
 			if (!map.IsEmpty()) {
-				object->Set(isolate->GetCurrentContext(),
-									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-									map).FromJust();
+				object->Set(context, key, map).FromJust();
 			}
 		}
 		else if(iter->field_label == "struct") {
 			v8::Local<v8::Object> sub_object = load_data_struct(db_struct, isolate, *iter, fieldobj);
 			if (!sub_object.IsEmpty()) {
-				object->Set(isolate->GetCurrentContext(),
-									String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-									sub_object).FromJust();
+				object->Set(context, key, sub_object).FromJust();
 			}
 		}
 	}
@@ -372,80 +367,81 @@ v8::Local<v8::Object> Mongo_Operator::load_data_struct(DB_Struct *db_struct, Iso
 }
 
 void Mongo_Operator::save_data_arg(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObjBuilder &builder, v8::Local<v8::Value> value) {
+	Local<Context> context(isolate->GetCurrentContext());
 	if(field_info.field_type == "int8") {
 		int8_t val = 0;
 		if (value->IsInt32()) {
-			val = value->Int32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Int32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (int)val;
 	}
 	else if(field_info.field_type == "int16") {
 		int16_t val = 0;
 		if (value->IsInt32()) {
-			val = value->Int32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Int32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (int)val;
 	}
 	else if(field_info.field_type == "int32") {
 		int32_t val = 0;
 		if (value->IsInt32()) {
-			val = value->Int32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Int32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (int)val;
 	}
 	else if(field_info.field_type == "int64") {
 		int64_t val = 0;
 		if (value->IsNumber()) {
-			val = value->NumberValue(isolate->GetCurrentContext()).FromJust();
+			val = value->NumberValue(context).FromJust();
 		}
 		builder << field_info.field_name << (long long int)val;
 	}
 	else if(field_info.field_type == "uint8") {
 		uint8_t val = 0;
 		if (value->IsUint32()) {
-			val = value->Uint32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Uint32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (uint)val;
 	}
 	else if(field_info.field_type == "uint16") {
 		uint16_t val = 0;
 		if (value->IsUint32()) {
-			val = value->Uint32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Uint32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (uint)val;
 	}
 	else if(field_info.field_type == "uint32") {
 		uint32_t val = 0;
 		if (value->IsUint32()) {
-			val = value->Uint32Value(isolate->GetCurrentContext()).FromJust();
+			val = value->Uint32Value(context).FromJust();
 		}
 		builder << field_info.field_name << (uint)val;
 	}
 	else if(field_info.field_type == "uint64") {
 		uint64_t val = 0;
 		if (value->IsNumber()) {
-			val = value->NumberValue(isolate->GetCurrentContext()).FromJust();
+			val = value->NumberValue(context).FromJust();
 		}
 		builder << field_info.field_name << (long long int)val;
 	}
 	else if(field_info.field_type == "double") {
 		double val = 0;
 		if (value->IsNumber()) {
-			val = value->NumberValue(isolate->GetCurrentContext()).FromJust();
+			val = value->NumberValue(context).FromJust();
 		}
 		builder << field_info.field_name << val;
 	}
 	else if(field_info.field_type == "bool") {
 		bool val = 0;
 		if (value->IsBoolean()) {
-			val = value->BooleanValue(isolate->GetCurrentContext()).FromJust();
+			val = value->BooleanValue(context).FromJust();
 		}
 		builder << field_info.field_name << val;
 	}
 	else if(field_info.field_type == "string") {
 		std::string val = "";
 		if (value->IsString()) {
-			String::Utf8Value str(value->ToString(isolate->GetCurrentContext()).ToLocalChecked());
+			String::Utf8Value str(value->ToString(context).ToLocalChecked());
 			val = to_string(str);
 		}
 		builder << field_info.field_name << val;
@@ -464,10 +460,11 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, Isolate* isolate, co
 		return;
 	}
 
+	Local<Context> context(isolate->GetCurrentContext());
 	v8::Local<v8::Array> array = v8::Local<v8::Array>::Cast(value);
 	int len = array->Length();
 	for (int i = 0; i < len; ++i) {
-		Local<Value> element = array->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
+		Local<Value> element = array->Get(context, i).ToLocalChecked();
 		if(db_struct->is_struct(field_info.field_type)) {
 			BSONObjBuilder obj_builder;
 			save_data_struct(db_struct, isolate, field_info, obj_builder, element);
@@ -491,6 +488,7 @@ void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const
 		return;
 	}
 
+	Local<Context> context(isolate->GetCurrentContext());
 	Local<Map> map = Local<Map>::Cast(value);
 	int len = map->Size();
 	v8::Local<v8::Array> array = map->AsArray();
@@ -498,7 +496,7 @@ void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const
 	if(db_struct->is_struct(field_info.field_type)){
 		for (int i = 0; i < len * 2; i = i + 2) {
 			BSONObjBuilder obj_builder;
-			Local<Value> element = array->Get(isolate->GetCurrentContext(), i + 1).ToLocalChecked();
+			Local<Value> element = array->Get(context, i + 1).ToLocalChecked();
 			save_data_struct(db_struct, isolate, field_info, obj_builder, element);
 			bson_vec.push_back(obj_builder.obj());
 		}
@@ -510,8 +508,8 @@ void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const
 		key_info.field_name = field_info.key_name;
 		for (int i = 0; i < len * 2; i = i + 2) {
 			BSONObjBuilder obj_builder;
-			Local<Value> key = array->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
-			Local<Value> element = array->Get(isolate->GetCurrentContext(), i + 1).ToLocalChecked();
+			Local<Value> key = array->Get(context, i).ToLocalChecked();
+			Local<Value> element = array->Get(context, i + 1).ToLocalChecked();
 			save_data_arg(db_struct, isolate, key_info, obj_builder, key);
 			save_data_arg(db_struct, isolate, field_info, obj_builder, element);
 			bson_vec.push_back(obj_builder.obj());
@@ -532,12 +530,13 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, co
 		return;
 	}
 
-	v8::Local<v8::Object> object = value->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
+	Local<Context> context(isolate->GetCurrentContext());
+	v8::Local<v8::Object> object = value->ToObject(context).ToLocalChecked();
 	BSONObjBuilder obj_builder;
 	std::vector<Field_Info> field_vec = sub_struct->field_vec();
 	for(std::vector<Field_Info>::const_iterator iter = field_vec.begin();
 			iter != field_vec.end(); iter++) {
-		v8::Local<v8::Value> element = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
+		v8::Local<v8::Value> element = object->Get(context, String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 		if(iter->field_label == "arg") {
 			save_data_arg(db_struct, isolate, *iter, obj_builder, element);
 		}
