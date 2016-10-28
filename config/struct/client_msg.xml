@@ -14,7 +14,7 @@
 
 	<s2c_1>
    	<arg type="string" name="gate_ip"/>
-    	<arg type="int16" name="gate_port"/>
+    	<arg type="uint16" name="gate_port"/>
     	<arg type="string" name="token"/>
 	</s2c_1>
 

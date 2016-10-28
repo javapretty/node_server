@@ -92,8 +92,8 @@ function select_gate(msg) {
 	account_token_map.set(msg.account, token_info);
 	
 	var msg_res = new s2c_1();
-	msg_res.gate_ip = gate_info.server_list[0].server_ip;
-	msg_res.gate_port = gate_info.server_list[0].server_port;
+	msg_res.gate_ip = gate_info.endpoint_list[0].server_ip;
+	msg_res.gate_port = gate_info.endpoint_list[0].server_port;
 	msg_res.token = token_info.token;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_SELECT_GATE, Msg_Type.S2C, 0, msg_res);
 }

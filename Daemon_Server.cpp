@@ -134,20 +134,16 @@ int Daemon_Server::fork_process(int node_type, int node_id, const char *node_nam
 }
 
 void Daemon_Server::run_daemon_server(void) {
-	for(Node_List::iterator iter = node_conf_.node_list.begin();
-			iter != node_conf_.node_list.end(); iter++) {
-		fork_process(iter->node_type, iter->node_id, iter->node_name.c_str());
+	for(Node_Map::iterator iter = node_conf_.node_map.begin(); iter != node_conf_.node_map.end(); iter++) {
+		fork_process(iter->second.node_type, iter->second.node_id, iter->second.node_name.c_str());
 	}
 }
 
 void Daemon_Server::run_node_server(int node_id) {
-	for (Node_List::const_iterator iter = node_conf_.node_list.begin();
-			iter != node_conf_.node_list.end(); ++iter) {
-		if (iter->node_id == node_id) {
-			NODE_MANAGER->init(*iter);
-			NODE_MANAGER->thr_create();
-			break;
-		}
+	Node_Map::iterator iter = node_conf_.node_map.find(node_id);
+	if (iter != node_conf_.node_map.end()) {
+		NODE_MANAGER->init(iter->second);
+		NODE_MANAGER->thr_create();
 	}
 }
 

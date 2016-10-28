@@ -6,7 +6,7 @@
 			"node_name" : "center_server",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/center_server/center_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 0,
 					"endpoint_id" : 1,
@@ -34,7 +34,7 @@
 			"node_name" : "gate_server1",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/gate_server/gate_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 0,
 					"endpoint_id" : 1,
@@ -52,9 +52,7 @@
     				"server_port" : 8150,					
     				"protocol_type" : 0,
     				"receive_timeout" : 0
-				}
-			],
-			"connector" : [
+				},
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 3,
@@ -64,7 +62,7 @@
 					"protocol_type" : 0,
     				"receive_timeout" : 0
 				}
-			]				
+			]		
 		},
 		{
 			"node_type" : 1,							
@@ -72,7 +70,7 @@
 			"node_name" : "gate_server2",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/gate_server/gate_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 0,
 					"endpoint_id" : 1,
@@ -90,9 +88,7 @@
     				"server_port" : 8151,					
     				"protocol_type" : 0,
     				"receive_timeout" : 0
-				}
-			],
-			"connector" : [
+				},
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 3,
@@ -102,7 +98,7 @@
 					"protocol_type" : 0,
     				"receive_timeout" : 0
 				}
-			]				
+			]			
 		},
 		
 		{
@@ -111,7 +107,7 @@
 			"node_name" : "db_server",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/db_server/db_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 1,
 					"endpoint_id" : 1,
@@ -140,7 +136,7 @@
 			"node_name" : "log_server",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/log_server/log_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 1,
 					"endpoint_id" : 1,
@@ -169,7 +165,7 @@
 			"node_name" : "master_server",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/master_server/master_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 1,
 					"endpoint_id" : 1,
@@ -187,9 +183,7 @@
     				"server_port" : 8080,					
     				"protocol_type" : 3,
     				"receive_timeout" : 0
-				}
-			],
-			"connector" : [
+				},
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 3,
@@ -208,7 +202,7 @@
 			"node_name" : "public_server",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/public_server/public_server.js",
-			"server" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 1,
 					"endpoint_id" : 1,
@@ -217,9 +211,7 @@
     				"server_port" : 8500,					
     				"protocol_type" : 0,
     				"receive_timeout" : 0
-				}
-			],
-			"connector" : [
+				},
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 2,
@@ -247,7 +239,7 @@
     				"protocol_type" : 0,
     				"receive_timeout" : 0
 				}
-			]				
+			]		
 		},
 
 		{
@@ -256,7 +248,7 @@
 			"node_name" : "game_server1",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/game_server/game_server.js",
-			"connector" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 1,
@@ -319,7 +311,7 @@
 			"node_name" : "game_server2",
 			"node_ip" : "127.0.0.1",
 			"script_path" : "js/game_server/game_server.js",
-			"connector" : [
+			"endpoint" : [
 				{
 					"endpoint_type" : 2,
 					"endpoint_id" : 1,

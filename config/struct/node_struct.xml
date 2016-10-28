@@ -5,8 +5,9 @@
 		<arg type="int32" name="endpoint_id"/>
 		<arg type="string" name="endpoint_name"/>
 		<arg type="string" name="server_ip"/>
-		<arg type="int16" name="server_port"/>
+		<arg type="uint16" name="server_port"/>
 		<arg type="int8" name="protocol_type"/>
+		<arg type="int32" name="receive_timeout"/>
 	</Endpoint_Info>
 	
 	<Node_Info>
@@ -14,7 +15,8 @@
 		<arg type="int32" name="node_id"/>
 		<arg type="string" name="node_name"/>
 		<arg type="string" name="node_ip"/>
-		<vector type="Endpoint_Info" name="server_list"/>
+		<arg type="string" name="script_path"/>
+		<vector type="Endpoint_Info" name="endpoint_list"/>
 	</Node_Info>
 
 	<Token_Info>

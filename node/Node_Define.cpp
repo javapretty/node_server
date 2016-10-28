@@ -24,32 +24,19 @@ void Node_Conf::init(void) {
 			node_info.plugin_list.push_back(plugin_path);
 		}
 
-		const Json::Value &server_conf = node_conf[i]["server"];
-		for (uint j = 0; j < server_conf.size();++j) {
+		const Json::Value &endpoint_conf = node_conf[i]["endpoint"];
+		for (uint j = 0; j < endpoint_conf.size();++j) {
 			Endpoint_Info endpoint_info;
-			endpoint_info.endpoint_type = server_conf[j]["endpoint_type"].asInt();
-			endpoint_info.endpoint_id = server_conf[j]["endpoint_id"].asInt();
-			endpoint_info.endpoint_name = server_conf[j]["endpoint_name"].asString();
-			endpoint_info.server_ip = server_conf[j]["server_ip"].asString();
-			endpoint_info.server_port = server_conf[j]["server_port"].asInt();
-			endpoint_info.protocol_type = server_conf[j]["protocol_type"].asInt();
-			endpoint_info.receive_timeout = server_conf[j]["receive_timeout"].asInt();
-			node_info.server_list.push_back(endpoint_info);
+			endpoint_info.endpoint_type = endpoint_conf[j]["endpoint_type"].asInt();
+			endpoint_info.endpoint_id = endpoint_conf[j]["endpoint_id"].asInt();
+			endpoint_info.endpoint_name = endpoint_conf[j]["endpoint_name"].asString();
+			endpoint_info.server_ip = endpoint_conf[j]["server_ip"].asString();
+			endpoint_info.server_port = endpoint_conf[j]["server_port"].asInt();
+			endpoint_info.protocol_type = endpoint_conf[j]["protocol_type"].asInt();
+			endpoint_info.receive_timeout = endpoint_conf[j]["receive_timeout"].asInt();
+			node_info.endpoint_list.push_back(endpoint_info);
 		}
 
-		const Json::Value &connector_conf = node_conf[i]["connector"];
-		for (uint j = 0; j < connector_conf.size();++j) {
-			Endpoint_Info endpoint_info;
-			endpoint_info.endpoint_type = connector_conf[j]["endpoint_type"].asInt();
-			endpoint_info.endpoint_id = connector_conf[j]["endpoint_id"].asInt();
-			endpoint_info.endpoint_name = connector_conf[j]["endpoint_name"].asString();
-			endpoint_info.server_ip = connector_conf[j]["server_ip"].asString();
-			endpoint_info.server_port = connector_conf[j]["server_port"].asInt();
-			endpoint_info.protocol_type = connector_conf[j]["protocol_type"].asInt();
-			endpoint_info.receive_timeout = connector_conf[j]["receive_timeout"].asInt();
-			node_info.connector_list.push_back(endpoint_info);
-		}
-
-		node_list.push_back(node_info);
+		node_map.insert(std::make_pair(node_info.node_id, node_info));
 	}
 }

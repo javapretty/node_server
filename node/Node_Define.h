@@ -9,6 +9,7 @@
 #define Node_DEFINE_H_
 
 #include <vector>
+#include <map>
 #include "Base_Define.h"
 #include "Time_Value.h"
 
@@ -49,19 +50,18 @@ struct Drop_Info {
 
 typedef std::vector<Endpoint_Info> Endpoint_List;
 struct Node_Info {
-	int node_type;							//节点类型
-	int node_id;								//节点id
-	std::string node_name;			//节点名称
-	std::string node_ip;				//节点ip
-	std::string script_path;	//启动的js脚本路径
-	std::vector<std::string> plugin_list; 	//插件列表
-	Endpoint_List server_list;							//服务器线程列表
-	Endpoint_List connector_list;						//链接器线程列表
+	int node_type;											//节点类型
+	int node_id;												//节点id
+	std::string node_name;							//节点名称
+	std::string node_ip;								//节点ip
+	std::string script_path;					//启动的js脚本路径
+	std::vector<std::string> plugin_list; //插件列表
+	Endpoint_List endpoint_list;			//线程列表
 };
 
-typedef std::vector<Node_Info> Node_List;
+typedef std::map<int, Node_Info> Node_Map;
 struct Node_Conf {
-	Node_List node_list;
+	Node_Map node_map;
 
 	void init(void);
 };

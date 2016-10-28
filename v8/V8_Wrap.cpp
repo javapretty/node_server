@@ -53,12 +53,18 @@ Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info) {
 	node_obj->Set(isolate->GetCurrentContext(),
 			String::NewFromUtf8(isolate, "node_name", NewStringType::kNormal).ToLocalChecked(),
 			String::NewFromUtf8(isolate, node_info.node_name.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "node_ip", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, node_info.node_ip.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
+	node_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "script_path", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, node_info.script_path.c_str(), NewStringType::kNormal).ToLocalChecked()).FromJust();
 
-	int vec_size = node_info.server_list.size();
+	int vec_size = node_info.endpoint_list.size();
 	Local<Array> server_array = Array::New(isolate, vec_size);
 	for(uint16_t i = 0; i < vec_size; ++i) {
 		Local<Object> server_obj = localTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
-		Endpoint_Info server_info = node_info.server_list[i];
+		Endpoint_Info server_info = node_info.endpoint_list[i];
 		server_obj->Set(isolate->GetCurrentContext(),
 			String::NewFromUtf8(isolate, "endpoint_type", NewStringType::kNormal).ToLocalChecked(),
 			Int32::New(isolate, server_info.endpoint_type)).FromJust();
@@ -77,11 +83,14 @@ Local<Object> get_node_object(Isolate* isolate, const Node_Info &node_info) {
 		server_obj->Set(isolate->GetCurrentContext(),
 			String::NewFromUtf8(isolate, "protocol_type", NewStringType::kNormal).ToLocalChecked(),
 			Int32::New(isolate, server_info.protocol_type)).FromJust();
+		server_obj->Set(isolate->GetCurrentContext(),
+			String::NewFromUtf8(isolate, "receive_timeout", NewStringType::kNormal).ToLocalChecked(),
+			Int32::New(isolate, server_info.receive_timeout)).FromJust();
 		
 		server_array->Set(isolate->GetCurrentContext(), i, server_obj).FromJust();
 	}
 	node_obj->Set(isolate->GetCurrentContext(),
-			String::NewFromUtf8(isolate, "server_list", NewStringType::kNormal).ToLocalChecked(),
+			String::NewFromUtf8(isolate, "endpoint_list", NewStringType::kNormal).ToLocalChecked(),
 			server_array).FromJust();
 
 	return handle_scope.Escape(node_obj);
