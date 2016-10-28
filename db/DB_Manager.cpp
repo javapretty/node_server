@@ -59,7 +59,7 @@ void DB_Manager::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer
 	TABLE_BUFFER_MAP::iterator ite = table_buffer_map->find(db_struct->table_name());
 	if(ite == table_buffer_map->end()){
 		record_buffer_map = new RECORD_BUFFER_MAP;
-		table_buffer_map[db_struct->table_name()] = record_buffer_map;
+		(*table_buffer_map)[db_struct->table_name()] = record_buffer_map;
 	}
 	else {
 		record_buffer_map = ite->second;
@@ -67,7 +67,7 @@ void DB_Manager::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer
 
 	RECORD_BUFFER_MAP::iterator it = record_buffer_map->find(index);
 	if(it == record_buffer_map->end()){
-		record_buffer_map[index] = buffer;
+		(*record_buffer_map)[index] = buffer;
 	}
 	else {
 		Block_Buffer *buf = it->second;
@@ -76,7 +76,7 @@ void DB_Manager::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer
 	}
 }
 
-Block_Buffer *DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t index) {
+int DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Block_Buffer *> &buffer_vec) {
 	TABLE_BUFFER_MAP *table_buffer_map = NULL;
 	DB_BUFFER_MAP::iterator iter = db_buffer_map_.find(db_id);
 	if(iter == db_buffer_map_.end()){
@@ -91,19 +91,28 @@ Block_Buffer *DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t ind
 	TABLE_BUFFER_MAP::iterator ite = table_buffer_map->find(db_struct->table_name());
 	if(ite == table_buffer_map->end()){
 		record_buffer_map = new RECORD_BUFFER_MAP;
-		table_buffer_map[db_struct->table_name()] = record_buffer_map;
+		(*table_buffer_map)[db_struct->table_name()] = record_buffer_map;
 	}
 	else {
 		record_buffer_map = ite->second;
 	}
 
-	RECORD_BUFFER_MAP::iterator it = record_buffer_map->find(index);
-	if(it == table_buffer_map->end()){
-		Block_Buffer *buffer = DB_OPERATOR(db_id)->load_data(db_id, db_struct, index);
-		table_buffer_map[index] = buffer;
-		return buffer;
+	int len = 0;
+	if(record_buffer_map->empty()) {
+		DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
+		for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+				iter != buffer_vec.end(); iter++){
+			int64_t ind = 0;
+			(*iter)->peek_int64(ind);
+			(*	record_buffer_map)[ind] = (*iter);
+		}
 	}
 	else {
-		return it->second;
+		for(RECORD_BUFFER_MAP::iterator iter = record_buffer_map->begin();
+				iter != record_buffer_map->end(); iter++){
+			buffer_vec.push_back(iter->second);
+		}
 	}
+	len = buffer_vec.size();
+	return len;
 }

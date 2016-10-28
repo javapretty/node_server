@@ -516,22 +516,21 @@ int Mysql_Operator::build_len_struct(DB_Struct *db_struct, const Field_Info &fie
 	return field_len;
 }
 
-Block_Buffer *Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index) {
+int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer*> &buffer_vec) {
 	char str_sql[128] = {0};
+	int len = 0;
 	if(key_index == 0) {
 		//加载整张表数据
 		sprintf(str_sql, "select * from %s", db_struct->table_name().c_str());
 		sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
-		int len = 0;
 		if (result) {
 			len = result->rowsCount();
 		}
-		Block_Buffer *buffer = DB_MANAGER->pop_buffer();
-		buffer->write_uint16(len);
 		while(result->next()) {
+			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
 			load_data_single(db_struct, buffer, result);
+			buffer_vec.push_back(buffer);
 		}
-		return buffer;
 	} else {
 		//加载单条数据
 		sprintf(str_sql, "select * from %s where %s=%ld", db_struct->table_name().c_str(), db_struct->index_name().c_str(), key_index);
@@ -539,12 +538,12 @@ Block_Buffer *Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t
 		if (result && result->next()) {
 			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
 			load_data_single(db_struct, buffer, result);
-			return buffer;
-		} else {
-			return NULL;
+			buffer_vec.push_back(buffer);
+			len = 1;
 		}
 	}
-};
+	return len;
+}
 
 void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
 	int64_t key_index = 0;

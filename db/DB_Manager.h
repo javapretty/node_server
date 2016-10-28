@@ -25,10 +25,10 @@ public:
 	int init_db_operator();
 	DB_Operator *db_operator(int type);
 	void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
-	Block_Buffer *load_data(int db_id, DB_Struct *db_struct, int64_t index);
+	int load_data(int db_id, DB_Struct *db_struct, int64_t index,  std::vector<Block_Buffer *> &buffer_vec);
 
-	inline Block_Buffer *pop_buffer(){Block_Buffer *buffer = buffer_pool_.pop();buffer->reset();return buffer;};
-	inline void push_buffer(Block_Buffer *buffer){buffer_pool_.push(buffer);};
+	inline Block_Buffer *pop_buffer(){return buffer_pool_.pop();};
+	inline void push_buffer(Block_Buffer *buffer){buffer->reset();buffer_pool_.push(buffer);};
 
 private:
 	DB_Manager(void);

@@ -8,8 +8,7 @@
 SRCDIR=	./\
 		./db/\
 		./node/\
-		./v8/\
-		./db/
+		./v8/
 
 ###这里定义目标文件目录
 OBJDIR =./obj/

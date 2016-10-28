@@ -305,22 +305,50 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 
 		for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 				iter != db_struct->field_vec().end(); ++iter) {
-			Local<Object> sub_object = Local<Object>();
 
 			DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(iter->field_type);
-			Block_Buffer *buffer = DB_MANAGER->load_data(db_id, sub_struct, key_index);
-			sub_object = sub_struct->build_object_struct(args.GetIsolate(), *buffer);
-
-			object->Set(args.GetIsolate()->GetCurrentContext(),
-					String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-					sub_object).FromJust();
+			std::vector<Block_Buffer *> buffer_vec;
+			DB_MANAGER->load_data(db_id, sub_struct, key_index, buffer_vec);
+			if(key_index == 0) {
+				Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
+				uint i = 0;
+				for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+						iter != buffer_vec.end(); iter++){
+					Local<Object> sub_object = sub_struct->build_object(args.GetIsolate(), *(*iter));
+					array->Set(i, sub_object);
+					i++;
+				}
+				object->Set(args.GetIsolate()->GetCurrentContext(),
+						String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						array).FromJust();
+			}
+			else {
+				Local<Object> sub_object = sub_struct->build_object(args.GetIsolate(), *buffer_vec[0]);
+				object->Set(args.GetIsolate()->GetCurrentContext(),
+						String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+						sub_object).FromJust();
+			}
 			args.GetReturnValue().Set(object);
 		}
 	}
 	else {
-		Block_Buffer *buffer = DB_MANAGER->load_data(db_id, db_struct, key_index);
-		Local<v8::Object> obj = db_struct->build_object_struct(args.GetIsolate(), *buffer);
-		args.GetReturnValue().Set(obj);
+		std::vector<Block_Buffer *> buffer_vec;
+		DB_MANAGER->load_data(db_id, db_struct, key_index, buffer_vec);
+		if(key_index == 0) {
+			Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
+			uint i = 0;
+			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+					iter != buffer_vec.end(); iter++){
+				Local<v8::Object> obj = db_struct->build_object(args.GetIsolate(), *(*iter));
+				array->Set(i, obj);
+				i++;
+			}
+			args.GetReturnValue().Set(array);
+		}
+		else {
+			Local<v8::Object> obj = db_struct->build_object(args.GetIsolate(), *buffer_vec[0]);
+			args.GetReturnValue().Set(obj);
+		}
 	}
 }
 

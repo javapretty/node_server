@@ -26,7 +26,7 @@ public:
 	virtual void save_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 
-	virtual Block_Buffer *load_data(int db_id, DB_Struct *db_struct, int64_t key_index);;
+	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer *> &buffer_vec);
 	virtual void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
 
