@@ -29,6 +29,9 @@ std::string get_struct_name(int msg_type, int msg_id) {
 	case NODE_MSG:
 		stream << "node_" << msg_id;
 		break;
+	case HTTP_MSG:
+		stream << "http_" << msg_id;
+		break;
 	default: {
 		break;
 	}
@@ -158,7 +161,7 @@ void register_timer(const FunctionCallbackInfo<Value>& args) {
 }
 
 void send_msg(const FunctionCallbackInfo<Value>& args) {
-	int endpoint_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int eid = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_id = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int msg_type = args[3]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
@@ -170,7 +173,7 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	if (msg_struct != nullptr) {
 		msg_struct->build_buffer(args.GetIsolate(), args[5]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), buffer);
 	}
-	NODE_MANAGER->send_buffer(endpoint_id, cid, msg_id, msg_type, sid, &buffer);
+	NODE_MANAGER->send_msg(eid, cid, msg_id, msg_type, sid, &buffer);
 }
 
 void add_session(const FunctionCallbackInfo<Value>& args) {
@@ -212,7 +215,7 @@ void close_session(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Drop_Info drop_info;
-	drop_info.endpoint_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	drop_info.eid = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	drop_info.cid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	NODE_MANAGER->push_drop(drop_info);
 }

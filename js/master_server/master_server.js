@@ -27,14 +27,36 @@ function on_drop(cid) { }
 function on_msg(msg) {
 	log_debug('master_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	
+	if (msg.msg_type == Msg_Type.NODE_MSG) {
+		process_master_node_msg(msg);
+	} else if (msg.msg_type == Msg_Type.HTTP_MSG) {
+		process_master_http_msg(msg);
+	}
+
+}
+
+function on_tick(timer_id) {}
+
+function process_master_node_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.SYNC_NODE_INFO:
 		send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
 		break;		
 	default:
-		log_error('master_server on_msg, msg_id not exist:', msg.msg_id);
+		log_error('process_master_node_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
 }
 
-function on_tick(timer_id) {}
+//可以使用curl命令，向服务器发送post消息，格式如下
+//curl -d "{\"msg_id\":1, \"role_name\":\"aa\", \"gold\":1000}" "http://127.0.0.1:8080"
+function process_master_http_msg(msg) {
+	switch(msg.msg_id) {
+	case Msg.HTTP_MODIFY_GOLD:
+		log_info('modify player gold, role_name:', msg.role_name, ' gold:', msg.gold);
+		break;		
+	default:
+		log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
+		break;
+	}
+}

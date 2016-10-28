@@ -11,8 +11,8 @@ require('config.js');
 require('util.js');
 require('timer.js');
 
-//account--Token_Info
-var account_token_map = new Map();
+//node_id--node_info
+var node_map = new Map();
 //gate列表
 var gate_list = new Array();
 //game列表
@@ -21,6 +21,8 @@ var game_list = new Array();
 var config = new Config();
 //定时器
 var timer = new Timer();
+//account--Token_Info
+var account_token_map = new Map();
 
 function init(node_info) {
 	log_info('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
@@ -103,6 +105,7 @@ function set_node_info(msg) {
 	else if (msg.node_info.node_type == Node_Type.GAME_SERVER) {
 		game_list.push(msg.node_info);
 	}
+	node_map.set(msg.node_info.node_id, msg.node_info);
 }
 
 function verify_token(msg) {

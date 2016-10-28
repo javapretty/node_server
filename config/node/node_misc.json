@@ -7,14 +7,15 @@
 	"agent_num" : 1,							//平台编号，比如37wan编号为1，生成角色id,帮派id时候用
 	"server_num" : 1,							//服务器编号，比如1服编号为1，生成角色id,帮派id时候用
 	"msg_struct_path" : [
-		"config/struct/inner_struct.xml",
-		"config/struct/outer_struct.xml",
-		"config/struct/base_struct.xml",
-		"config/struct/db_struct.xml"
+		"config/struct/client_msg.xml",
+		"config/struct/db_struct.xml",
+		"config/struct/node_msg.xml",
+		"config/struct/node_struct.xml",
+		"config/struct/public_struct.xml"
 	],
 	"db_struct_path" : [
-		"config/struct/base_struct.xml",
-		"config/struct/db_struct.xml"
+		"config/struct/db_struct.xml",
+		"config/struct/public_struct.xml"
 	]
 }
 

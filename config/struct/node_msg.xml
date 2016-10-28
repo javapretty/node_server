@@ -82,4 +82,8 @@
 		<struct type="Logout_Info" name="logout_info"/>
 	</node_210>
 	
+	<http_1>
+		<arg type="string" name="role_name"/>
+		<arg type="int32" name="gold"/>
+	</http_1>
 </root>

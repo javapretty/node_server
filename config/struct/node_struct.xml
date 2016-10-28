@@ -1,0 +1,37 @@
+<root>
+
+	<Endpoint_Info>
+		<arg type="int8" name="endpoint_type"/>
+		<arg type="int32" name="endpoint_id"/>
+		<arg type="string" name="endpoint_name"/>
+		<arg type="string" name="server_ip"/>
+		<arg type="int16" name="server_port"/>
+		<arg type="int8" name="protocol_type"/>
+	</Endpoint_Info>
+	
+	<Node_Info>
+		<arg type="int8" name="node_type"/>
+		<arg type="int32" name="node_id"/>
+		<arg type="string" name="node_name"/>
+		<arg type="string" name="node_ip"/>
+		<vector type="Endpoint_Info" name="server_list"/>
+	</Node_Info>
+
+	<Token_Info>
+		<arg type="int32" name="cid"/>
+		<arg type="string" name="token"/>
+		<arg type="int32" name="token_time"/>
+	</Token_Info>
+	
+	<Public_Player_Info>
+    	<arg type="int64" name="role_id"/>
+    	<arg type="string" name="account"/>
+    	<arg type="string" name="role_name"/>
+    	<arg type="int8" name="level"/>
+    	<arg type="int8" name="gender"/>
+    	<arg type="int8" name="career"/>
+    	<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+	</Public_Player_Info>
+	
+</root>

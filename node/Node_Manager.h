@@ -48,10 +48,12 @@ public:
 	//从endpoint中取消息buffer
 	inline Block_Buffer *pop_buffer(void);
 	//回收消息buffer
-	inline int push_buffer(int endpoint_id, int cid, Block_Buffer *buffer);
+	inline int push_buffer(int eid, int cid, Block_Buffer *buffer);
 
-	//发送消息buffer
-	int send_buffer(int endpoint_id, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
+	//传递消息，用于路由节点
+	int transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
+	//发送消息
+	int send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
 	//释放进程pool缓存，后台调用
 	int free_pool(void);
 
@@ -148,8 +150,8 @@ Block_Buffer *Node_Manager::pop_buffer(void) {
 	return nullptr;
 }
 
-int Node_Manager::push_buffer(int endpoint_id, int cid, Block_Buffer *buffer) {
-	Endpoint_Map::iterator iter = endpoint_map_.find(endpoint_id);
+int Node_Manager::push_buffer(int eid, int cid, Block_Buffer *buffer) {
+	Endpoint_Map::iterator iter = endpoint_map_.find(eid);
 	if (iter != endpoint_map_.end()) {
 		iter->second->push_block(cid, buffer);
 	}

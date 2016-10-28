@@ -106,13 +106,13 @@ function create_player(msg) {
 	} else {
 		role_id = generate_table_index(DB_Id.GAME, "game.idx", "role_id");
 		var msg_res = new node_203();
-		msg_res.player_data.player_info.role_id = role_id;
-		msg_res.player_data.player_info.account = msg.account;
-		msg_res.player_data.player_info.role_name = msg.role_name;
-		msg_res.player_data.player_info.level = 1;
-		msg_res.player_data.player_info.gender = msg.gender;
-		msg_res.player_data.player_info.career = msg.career;
-		msg_res.player_data.player_info.create_time = util.now_sec();
+		msg_res.player_data.role_info.role_id = role_id;
+		msg_res.player_data.role_info.account = msg.account;
+		msg_res.player_data.role_info.role_name = msg.role_name;
+		msg_res.player_data.role_info.level = 1;
+		msg_res.player_data.role_info.gender = msg.gender;
+		msg_res.player_data.role_info.career = msg.career;
+		msg_res.player_data.role_info.create_time = util.now_sec();
 		msg_res.player_data.bag_info.role_id = role_id;
 		msg_res.player_data.mail_info.role_id = role_id;
 		//将玩家数据写到数据库

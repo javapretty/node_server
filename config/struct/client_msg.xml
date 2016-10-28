@@ -31,7 +31,7 @@
 	</c2s_3>
 
 	<s2c_3>
-		<struct type="Role_Info" name="role_info"/>
+		<struct type="Client_Role_Info" name="role_info"/>
 	</s2c_3>
 
 	<c2s_4>
@@ -80,7 +80,7 @@
 	</c2s_201>
 
 	<s2c_201>
-	  <struct type="Guild_Info" name="guild_info"/>
+	  <struct type="Client_Guild_Info" name="guild_info"/>
 	</s2c_201>
 
 	<c2s_202>

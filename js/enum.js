@@ -35,11 +35,12 @@ if (typeof Error_Code == "undefined") {
 
 if (typeof Msg_Type == "undefined") {
 	var Msg_Type = {};
-	Msg_Type.C2S		= 1;	//客户端发到服务器的消息
-	Msg_Type.S2C		= 2;	//服务器发到客户端的消息
+	Msg_Type.C2S			= 1;	//客户端发到服务器的消息
+	Msg_Type.S2C			= 2;	//服务器发到客户端的消息
 	Msg_Type.NODE_C2S	= 3;	//客户端经过gate中转发到后端服务器的消息
 	Msg_Type.NODE_S2C	= 4;	//后端服务器经过gate中转发到gate的消息
 	Msg_Type.NODE_MSG	= 5;	//服务器进程节点间通信的消息
+	Msg_Type.HTTP_MSG	= 6;//http消息
 }
 
 if (typeof Node_Type == "undefined") {
@@ -51,19 +52,6 @@ if (typeof Node_Type == "undefined") {
 	Node_Type.MASTER_SERVER	= 4;
 	Node_Type.PUBLIC_SERVER	= 5;
 	Node_Type.GAME_SERVER		= 6;
-}
-
-if (typeof Node_Id == "undefined") {
-	var Node_Id = {};
-	Node_Id.CENTER_SERVER = 1;
-	Node_Id.GATE_SERVER1 	= 10001;
-	Node_Id.GATE_SERVER2 	= 10002;
-	Node_Id.DB_SERVER			= 20001;
-	Node_Id.LOG_SERVER		= 30001;
-	Node_Id.MASTER_SERVER	= 40001;
-	Node_Id.PUBLIC_SERVER	= 50001;
-	Node_Id.GAME_SERVER1	= 60001;
-	Node_Id.GAME_SERVER2	= 60002;
 }
 
 if (typeof Endpoint == "undefined") {
@@ -80,7 +68,8 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.LOG_SERVER						= 1;
 	
 	Endpoint.MASTER_SERVER				= 1;
-	Endpoint.MASTER_CENTER_CONNECTOR = 2;
+	Endpoint.MASTER_HTTP_SERVER		= 2;
+	Endpoint.MASTER_CENTER_CONNECTOR = 3;
 	
 	Endpoint.PUBLIC_SERVER				= 1;
 	Endpoint.PUBLIC_DB_CONNECTOR		= 2;
