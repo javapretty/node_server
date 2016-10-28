@@ -40,5 +40,5 @@ if (typeof Msg == "undefined") {
 	Msg.SYNC_DB_PUBLIC_DATA = 208; //db返回public数据
 	Msg.SYNC_PUBLIC_GAME_GUILD_INFO = 209; //public通知game公会信息
 	Msg.SYNC_LOG_PLAYER_LOGOUT = 210; //玩家登出日志
-	Msg.HTTP_MODIFY_GOLD = 1; //修改玩家元宝
+	Msg.HTTP_CREATE_NODE_PROCESS = 1; //创建node进程
 }

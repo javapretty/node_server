@@ -244,8 +244,7 @@ function node_210() {
 }
 
 function http_1() {
-	this.role_name = "";
-	this.gold = 0;
+	this.node_info = new Node_Info();
 }
 
 function Endpoint_Info() {

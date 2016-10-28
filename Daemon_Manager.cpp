@@ -127,11 +127,6 @@ int Daemon_Manager::fork_process(const Node_Info &node_info) {
 		}
 	} else { //parent
 		node_map_.insert(std::make_pair(pid, node_info));
-		//动态创建节点进程时候，将节点信息保存到父进程的node_conf，然后子进程创建时候，可以获取节点信息
-		Node_Map::iterator iter = node_conf_.node_map.find(node_info.node_id);
-		if (iter == node_conf_.node_map.end()) {
-			node_conf_.node_map.insert(std::make_pair(node_info.node_id, node_info));
-		}
 		LOG_INFO("fork new process, pid:%d, server_name:%s, node_type:%d, node_id:%d, node_name:%s",
 				pid, server_name_.c_str(), node_info.node_type, node_info.node_id, node_info.node_name.c_str());
 	}
