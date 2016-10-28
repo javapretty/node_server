@@ -58,31 +58,35 @@ int Node_Manager::init(const Node_Info &node_info) {
 	DB_MANAGER->init_db_operator();
 
 	//启动server线程
-	for (Endpoint_List::iterator iter = node_info_.server_list.begin(); iter != node_info_.server_list.end(); ++iter) {
-		Server *server = server_pool_.pop();
-		server->init(*iter);
-		server->start();
-		endpoint_map_.insert(std::make_pair(iter->endpoint_id, server));
-		LOG_INFO("%s listen ip:%s, port:%d, network_protocol:%d", iter->endpoint_name.c_str(), iter->server_ip.c_str(), iter->server_port, iter->protocol_type);
+	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {
+		if (iter->endpoint_type == CLIENT_SERVER || iter->endpoint_type == SERVER) {
+			Server *server = server_pool_.pop();
+			server->init(*iter);
+			server->start();
+			endpoint_map_.insert(std::make_pair(iter->endpoint_id, server));
+			LOG_INFO("%s listen ip:%s, port:%d, network_protocol:%d", iter->endpoint_name.c_str(), iter->server_ip.c_str(), iter->server_port, iter->protocol_type);
+		}
 	}
 
 	//短暂延迟让服务器启动
-	Time_Value::sleep(Time_Value(0, 500 * 1000));
+	Time_Value::sleep(Time_Value(0, 100 * 1000));
 
 	//启动connector线程
-	for (Endpoint_List::iterator iter = node_info_.connector_list.begin(); iter != node_info_.connector_list.end(); ++iter) {
-		Connector *connector = connector_pool_.pop();
-		connector->init(*iter);
-		connector->start();
-		int cid = connector->connect_server(iter->server_ip, iter->server_port);
-		if (cid < 2) {
-			connector_pool_.push(connector);
-			LOG_FATAL("%s fatal port:%d", iter->endpoint_name.c_str(), iter->server_port);
-			return -1;
+	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {
+		if (iter->endpoint_type == CONNECTOR) {
+			Connector *connector = connector_pool_.pop();
+			connector->init(*iter);
+			connector->start();
+			int cid = connector->connect_server(iter->server_ip, iter->server_port);
+			if (cid < 2) {
+				connector_pool_.push(connector);
+				LOG_FATAL("%s fatal port:%d", iter->endpoint_name.c_str(), iter->server_port);
+				return -1;
+			}
+			connector->set_cid(cid);
+			endpoint_map_.insert(std::make_pair(iter->endpoint_id, connector));
+			LOG_INFO("%s connect server ip:%s, port:%d, cid:%d", iter->endpoint_name.c_str(), iter->server_ip.c_str(), iter->server_port, cid);
 		}
-		connector->set_cid(cid);
-		endpoint_map_.insert(std::make_pair(iter->endpoint_id, connector));
-		LOG_INFO("%s connect server ip:%s, port:%d, cid:%d", iter->endpoint_name.c_str(), iter->server_ip.c_str(), iter->server_port, cid);
 	}
 
 	//启动V8线程，需要在网络线程启动后

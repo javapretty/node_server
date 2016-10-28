@@ -1,12 +1,12 @@
 /*
- *		Daemon_Server.h
+ *		Daemon_Manager.h
  *
  *  Created on: Sep 19, 2016
  *      Author: zhangyalei
  */
 
-#ifndef DAEMON_SERVER_H_
-#define DAEMON_SERVER_H_
+#ifndef DAEMON_MANAGER_H_
+#define DAEMON_MANAGER_H_
 
 #include <getopt.h>
 #include <string>
@@ -14,19 +14,19 @@
 #include "Node_Define.h"
 
 class Epoll_Watcher;
-class Daemon_Server {
+class Daemon_Manager {
 	//pid--Node_Info
 	typedef boost::unordered_map<int, Node_Info> Int_Node_Map;
 	//node_type--core_num
 	typedef boost::unordered_map<int, int> Int_Core_Map;
 public:
-	static Daemon_Server *instance(void);
+	static Daemon_Manager *instance(void);
 
 	int init(int argc, char *argv[]);
 	int start(int argc, char *argv[]);
 
 	int parse_cmd_arguments(int argc, char *argv[]);
-	int fork_process(int node_type, int node_id, const char *node_name);
+	int fork_process(const Node_Info &node_info);
 	void run_daemon_server(void);
 	void run_node_server(int node_id);
 
@@ -34,13 +34,13 @@ public:
 	void restart_process(int pid);
 
 private:
-	Daemon_Server(void);
-	~Daemon_Server(void);
-	Daemon_Server(const Daemon_Server &);
-	const Daemon_Server &operator=(const Daemon_Server &);
+	Daemon_Manager(void);
+	~Daemon_Manager(void);
+	Daemon_Manager(const Daemon_Manager &);
+	const Daemon_Manager &operator=(const Daemon_Manager &);
 
 private:
-	static Daemon_Server *instance_;
+	static Daemon_Manager *instance_;
 	static struct option long_options[];
 	Epoll_Watcher *wait_watcher_;
 
@@ -52,6 +52,6 @@ private:
 	Int_Core_Map core_map_;
 };
 
-#define DAEMON_SERVER Daemon_Server::instance()
+#define DAEMON_MANAGER Daemon_Manager::instance()
 
-#endif /* DAEMON_SERVER_H_ */
+#endif /* DAEMON_MANAGER_H_ */

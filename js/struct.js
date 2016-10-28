@@ -255,6 +255,7 @@ function Endpoint_Info() {
 	this.server_ip = "";
 	this.server_port = 0;
 	this.protocol_type = 0;
+	this.receive_timeout = 0;
 }
 
 function Node_Info() {
@@ -262,7 +263,9 @@ function Node_Info() {
 	this.node_id = 0;
 	this.node_name = "";
 	this.node_ip = "";
-	this.server_list = new Array();
+	this.script_path = "";
+	this.plugin_list = new Array();
+	this.endpoint_list = new Array();
 }
 
 function Token_Info() {
