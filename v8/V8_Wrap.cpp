@@ -7,8 +7,8 @@
 
 #include <sstream>
 #include "Base_V8.h"
-#include "DB_Manager.h"
 #include "Msg_Struct.h"
+#include "Data_Manager.h"
 #include "Struct_Manager.h"
 #include "Daemon_Manager.h"
 #include "Node_Timer.h"
@@ -86,19 +86,19 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, save_db_data));
 	global->Set(String::NewFromUtf8(isolate, "delete_db_data", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, delete_db_data));
-	global->Set(String::NewFromUtf8(isolate, "set_temp_data", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, set_temp_data));
-	global->Set(String::NewFromUtf8(isolate, "get_temp_data", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, get_temp_data));
-	global->Set(String::NewFromUtf8(isolate, "clear_temp_data", NewStringType::kNormal).ToLocalChecked(),
-		FunctionTemplate::New(isolate, clear_temp_data));
+	global->Set(String::NewFromUtf8(isolate, "set_runtime_data", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, set_runtime_data));
+	global->Set(String::NewFromUtf8(isolate, "get_runtime_data", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, get_runtime_data));
+	global->Set(String::NewFromUtf8(isolate, "delete_runtime_data", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, delete_runtime_data));
 
 	for(V8_Manager::Plugin_Handle_Map::iterator iter = V8_MANAGER->plugin_handle_map().begin();
 			iter != V8_MANAGER->plugin_handle_map().end(); iter++){
 		void *handle = iter->second;
 		void (*init_func)(Local<ObjectTemplate>&, Isolate*);
 		init_func = (void (*)(Local<ObjectTemplate>&, Isolate*))dlsym(handle, "init");
-		if(init_func == NULL) {
+		if(init_func == nullptr) {
 			LOG_FATAL("plugin %s can't find init function, dlerror:%s", iter->first, dlerror());
 		}
 		init_func(global, isolate);
@@ -288,7 +288,7 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 
 			DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(iter->field_type);
 			std::vector<Block_Buffer *> buffer_vec;
-			DB_MANAGER->load_data(db_id, sub_struct, key_index, buffer_vec);
+			DATA_MANAGER->load_db_data(db_id, sub_struct, key_index, buffer_vec);
 			if(key_index == 0) {
 				Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
 				uint i = 0;
@@ -313,7 +313,7 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 	}
 	else {
 		std::vector<Block_Buffer *> buffer_vec;
-		DB_MANAGER->load_data(db_id, db_struct, key_index, buffer_vec);
+		DATA_MANAGER->load_db_data(db_id, db_struct, key_index, buffer_vec);
 		if(key_index == 0) {
 			Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
 			uint i = 0;
@@ -366,14 +366,14 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			//从object中取出子对象进行保存操作，子对象是单张表单条记录
 			Local<Value> value = object->Get(isolate->GetCurrentContext(), String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
-			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			sub_struct->build_buffer(isolate, sub_object, *buffer);
-			DB_MANAGER->save_data(db_id, sub_struct, buffer, flag);
+			DATA_MANAGER->save_db_data(db_id, sub_struct, buffer, flag);
 		}
 	} else {
-		Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+		Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 		db_struct->build_buffer(isolate, object, *buffer);
-		DB_MANAGER->save_data(db_id, db_struct, buffer, flag);
+		DATA_MANAGER->save_db_data(db_id, db_struct, buffer, flag);
 	}
 }
 
@@ -389,35 +389,35 @@ void delete_db_data(const FunctionCallbackInfo<Value>& args) {
 	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, &buffer);
 }
 
-void set_temp_data(const FunctionCallbackInfo<Value>& args) {
+void set_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	int64_t index = args[0]->IntegerValue(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	String::Utf8Value table_str(args[1]->ToString(args.GetIsolate()->GetCurrentContext()).ToLocalChecked());
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+	Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 	db_struct->build_buffer(args.GetIsolate(), args[2]->ToObject(args.GetIsolate()->GetCurrentContext()).ToLocalChecked(), *buffer);
-	DB_MANAGER->set_data(index, db_struct, buffer);
+	DATA_MANAGER->set_runtime_data(index, db_struct, buffer);
 }
 
-void get_temp_data(const FunctionCallbackInfo<Value>& args) {
+void get_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	int64_t index = args[0]->IntegerValue(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
 	String::Utf8Value table_str(args[1]->ToString(args.GetIsolate()->GetCurrentContext()).ToLocalChecked());
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Block_Buffer *buffer = DB_MANAGER->get_data(index, db_struct);
+	Block_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
 	Local<Object> obj = Local<Object>();
-	if(buffer != NULL) {
+	if(buffer != nullptr) {
 		obj = db_struct->build_object(args.GetIsolate(), *buffer);
 	}
 	args.GetReturnValue().Set(obj);
 }
 
-void clear_temp_data(const FunctionCallbackInfo<Value>& args) {
+void delete_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	int64_t index = args[0]->IntegerValue(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	DB_MANAGER->clear_data(index);
+	DATA_MANAGER->delete_runtime_data(index);
 }
 

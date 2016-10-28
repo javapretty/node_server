@@ -6,7 +6,7 @@
  */
 
 #include "Base_Function.h"
-#include "DB_Manager.h"
+#include "Data_Manager.h"
 #include "Struct_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Config.h"
@@ -15,7 +15,7 @@
 
 Node_Manager::Node_Manager(void):
 	tick_time_(Time_Value::zero),
-	endpoint_map_(get_hash_table_size(64)),
+	endpoint_map_(get_hash_table_size(256)),
 	cid_session_map_(10240),
 	sid_session_map_(10240),
 	msg_count_(false),
@@ -55,7 +55,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 	for (uint i = 0; i < node_misc["db_struct_path"].size(); ++i) {
 		STRUCT_MANAGER->init_struct(node_misc["db_struct_path"][i].asCString(), DB_STRUCT);
 	}
-	DB_MANAGER->init_db_operator();
+	DATA_MANAGER->init_db_operator();
 
 	//启动server线程
 	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {

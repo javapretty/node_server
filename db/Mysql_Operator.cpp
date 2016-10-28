@@ -7,9 +7,9 @@
 
 #include "Base_Function.h"
 #include "Base_V8.h"
+#include "Data_Manager.h"
 #include "Struct_Manager.h"
 #include "Mysql_Operator.h"
-#include "DB_Manager.h"
 
 Mysql_Operator::Mysql_Operator(void) { }
 
@@ -19,7 +19,7 @@ Mysql_Conn *Mysql_Operator::get_connection(int db_id) {
 	Connection_Map::iterator iter = connection_map_.find(db_id);
 	if(iter == connection_map_.end()){
 		LOG_FATAL("DataBase %d dosen't connect", db_id);
-		return NULL;
+		return nullptr;
 	}
 	return iter->second;
 }
@@ -496,7 +496,7 @@ int Mysql_Operator::build_len_vector(DB_Struct *db_struct, const Field_Info &fie
 int Mysql_Operator::build_len_struct(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer) {
 	int field_len = 0;
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
-	if(sub_struct == NULL) {
+	if(sub_struct == nullptr) {
 		return field_len;
 	}
 
@@ -527,7 +527,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 			len = result->rowsCount();
 		}
 		while(result->next()) {
-			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, buffer, result);
 			buffer_vec.push_back(buffer);
 		}
@@ -536,7 +536,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 		sprintf(str_sql, "select * from %s where %s=%ld", db_struct->table_name().c_str(), db_struct->index_name().c_str(), key_index);
 		sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
 		if (result && result->next()) {
-			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, buffer, result);
 			buffer_vec.push_back(buffer);
 			len = 1;
@@ -757,7 +757,7 @@ Block_Buffer *Mysql_Operator::load_data_arg(DB_Struct *db_struct, Block_Buffer *
 	}
 	else {
 		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
-		return NULL;
+		return nullptr;
 	}
 	return buffer;
 }

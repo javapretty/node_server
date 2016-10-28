@@ -7,10 +7,10 @@
 
 #include "Base_Function.h"
 #include "Base_V8.h"
+#include "Data_Manager.h"
 #include "Struct_Manager.h"
 #include "Mongo_Operator.h"
 #include "Base_Struct.h"
-#include "DB_Manager.h"
 
 Mongo_Operator::Mongo_Operator(void) { }
 
@@ -305,7 +305,7 @@ v8::Local<v8::Object> Mongo_Operator::load_data_struct(DB_Struct *db_struct, Iso
 	EscapableHandleScope handle_scope(isolate);
 
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
-	if(db_struct == NULL){
+	if(db_struct == nullptr){
 		return handle_scope.Escape(v8::Local<v8::Object>());
 	}
 
@@ -502,7 +502,7 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, co
 	}
 
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
-	if (sub_struct == NULL) {
+	if (sub_struct == nullptr) {
 		return;
 	}
 
@@ -542,14 +542,14 @@ int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 			get_connection(db_id).findN(record, db_struct->table_name(), Query(), len);
 		}
 		for (int i = 0; i < len; ++i) {
-			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, record[i], *buffer);
 			buffer_vec.push_back(buffer);
 		}
 	} else {
 		//加载单条数据
 		BSONObj bsonobj = get_connection(db_id).findOne(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index));
-		Block_Buffer *buffer = DB_MANAGER->pop_buffer();
+		Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
 		load_data_single(db_struct, bsonobj, *buffer);
 		buffer_vec.push_back(buffer);
 		len = 1;
@@ -683,7 +683,7 @@ void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &fi
 
 void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Block_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
-	if(db_struct == NULL){
+	if(db_struct == nullptr){
 		return;
 	}
 
@@ -788,7 +788,7 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &fi
 
 void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Block_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
-	if (sub_struct == NULL) {
+	if (sub_struct == nullptr) {
 		return;
 	}
 
