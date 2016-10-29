@@ -24,11 +24,12 @@ enum Msg_Type {
 enum Node_Type {
 	CENTER_SERVER 	= 0,
 	GATE_SERVER 		= 1,
-	DB_SERVER 			= 2,
-	LOG_SERVER 			= 3,
-	MASTER_SERVER 	= 4,
-	PUBLIC_SERVER 	= 5,
-	GAME_SERVER 		= 6,
+	DATA_SERVER 		= 2,
+	DB_SERVER				= 3,
+	LOG_SERVER 			= 4,
+	MASTER_SERVER 	= 5,
+	PUBLIC_SERVER 	= 6,
+	GAME_SERVER 		= 7,
 };
 
 struct Session {

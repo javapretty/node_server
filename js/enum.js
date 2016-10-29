@@ -47,41 +47,44 @@ if (typeof Node_Type == "undefined") {
 	var Node_Type = {};
 	Node_Type.CENTER_SERVER = 0;
 	Node_Type.GATE_SERVER 	= 1;
-	Node_Type.DB_SERVER			= 2;
-	Node_Type.LOG_SERVER		= 3;
-	Node_Type.MASTER_SERVER	= 4;
-	Node_Type.PUBLIC_SERVER	= 5;
-	Node_Type.GAME_SERVER		= 6;
+	Node_Type.DATA_SERVER		= 2;
+	Node_Type.DB_SERVER			= 3;
+	Node_Type.LOG_SERVER		= 4;
+	Node_Type.MASTER_SERVER	= 5;
+	Node_Type.PUBLIC_SERVER	= 6;
+	Node_Type.GAME_SERVER		= 7;
 }
 
 if (typeof Endpoint == "undefined") {
 	var Endpoint = {};
 
-	Endpoint.CENTER_CLIENT_SERVER	= 1;
-	Endpoint.CENTER_NODE_SERVER		= 2;
+	Endpoint.CENTER_CLIENT_SERVER		= 1;
+	Endpoint.CENTER_NODE_SERVER			= 2;
 	
-	Endpoint.GATE_CLIENT_SERVER 		= 1;
-	Endpoint.GATE_NODE_SERVER 			= 2;
-	Endpoint.GATE_CENTER_CONNECTOR	= 3;
+	Endpoint.GATE_CLIENT_SERVER 			= 1;
+	Endpoint.GATE_NODE_SERVER 				= 2;
+	Endpoint.GATE_CENTER_CONNECTOR		= 3;
 	
-	Endpoint.DB_SERVER						= 1;
-	Endpoint.LOG_SERVER						= 1;
+	Endpoint.DATA_SERVER						= 1;
+	Endpoint.DB_DATA_CONNECTOR				= 1;
 	
-	Endpoint.MASTER_SERVER				= 1;
-	Endpoint.MASTER_HTTP_SERVER		= 2;
+	Endpoint.LOG_SERVER							= 1;
+	
+	Endpoint.MASTER_SERVER					= 1;
+	Endpoint.MASTER_HTTP_SERVER			= 2;
 	Endpoint.MASTER_CENTER_CONNECTOR = 3;
 	
-	Endpoint.PUBLIC_SERVER				= 1;
-	Endpoint.PUBLIC_DB_CONNECTOR		= 2;
-	Endpoint.PUBLIC_LOG_CONNECTOR	= 3;
+	Endpoint.PUBLIC_SERVER					= 1;
+	Endpoint.PUBLIC_DATA_CONNECTOR		= 2;
+	Endpoint.PUBLIC_LOG_CONNECTOR		= 3;
 	Endpoint.PUBLIC_MASTER_CONNECTOR	= 4;
 	
-	Endpoint.GAME_DB_CONNECTOR			= 1;
-	Endpoint.GAME_LOG_CONNECTOR		= 2;
-	Endpoint.GAME_MASTER_CONNECTOR	= 3;
-	Endpoint.GAME_PUBLIC_CONNECTOR	= 4;
-	Endpoint.GAME_GATE1_CONNECTOR	= 5;
-	Endpoint.GAME_GATE2_CONNECTOR	= 6;
+	Endpoint.GAME_DATA_CONNECTOR			= 1;
+	Endpoint.GAME_LOG_CONNECTOR			= 2;
+	Endpoint.GAME_MASTER_CONNECTOR		= 3;
+	Endpoint.GAME_PUBLIC_CONNECTOR		= 4;
+	Endpoint.GAME_GATE1_CONNECTOR		= 5;
+	Endpoint.GAME_GATE2_CONNECTOR		= 6;
 }
 
 if (typeof Public_Data_Type == "undefined") {
@@ -104,10 +107,10 @@ if (typeof DB_Id == "undefined") {
 	DB_Id.LOG 		= 1002;
 }
 
-if (typeof SAVE_FLAG == "undefined") {
-	var SAVE_FLAG = {};
-	SAVE_FLAG.SAVE_BUFFER = 0;
-	SAVE_FLAG.SAVE_BUFFER_DB = 1;
-	SAVE_FLAG.SAVE_DB = 2;
+if (typeof Save_Flag == "undefined") {
+	var Save_Flag = {};
+	Save_Flag.SAVE_BUFFER = 0;
+	Save_Flag.SAVE_BUFFER_DB = 1;
+	Save_Flag.SAVE_DB = 2;
 }
 

@@ -59,7 +59,7 @@ function on_tick(timer_id) {
 }
 
 function send_msg_to_db(msg_id, sid, msg) {
-	send_msg(Endpoint.PUBLIC_DB_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
+	send_msg(Endpoint.PUBLIC_DATA_CONNECTOR, 0, msg_id, Msg_Type.NODE_MSG, sid, msg);
 }
 
 function send_public_msg(cid, msg_id, sid, msg) {

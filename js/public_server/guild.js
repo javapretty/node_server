@@ -14,7 +14,6 @@ Guild.prototype.load_data = function(msg) {
 	log_info('load guild data, size:', msg.guild_list.length);	
 	for(var i = 0; i < msg.guild_list.length; i++) {
 		var guild_info = msg.guild_list[i];
-		log_info('guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name);
 		this.guild_map.set(guild_info.guild_id, guild_info);
 	}
 }
