@@ -1,6 +1,4 @@
 {
-	"exec_name" : "./node_server", //服务器执行程序名称
-	"server_name" : "test",				//服务器名称，ps查询进程时候区分用
 	"log_switcher" : 0,						//日志开关,1表示写入磁盘文件
 	"verify_pack" : 1,						//是否开启数据包安全验证
 	"msg_count" : 1,							//是否开启消息统计

@@ -41,6 +41,7 @@ Node_Manager *Node_Manager::instance(void) {
 
 int Node_Manager::init(int node_type, int node_id, int endpoint_gid, const std::string &node_name) {
 	//初始化node信息
+	NODE_CONFIG->load_node_config();
 	init_node_info();
 	Node_Map::iterator iter = node_map_.find(node_type);
 	if (iter != node_map_.end()) {

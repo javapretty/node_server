@@ -10,7 +10,6 @@
 #include "Msg_Struct.h"
 #include "Data_Manager.h"
 #include "Struct_Manager.h"
-#include "Daemon_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Manager.h"
 #include "V8_Manager.h"
@@ -113,13 +112,13 @@ void fork_process(const FunctionCallbackInfo<Value>& args) {
 		return;
 	}
 
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
-	int node_type = args[0]->Int32Value(context).FromMaybe(0);
-	int node_id = args[1]->Int32Value(context).FromMaybe(0);
-	int endpoint_gid = args[2]->Int32Value(context).FromMaybe(0);
-	String::Utf8Value name_str(args[3]->ToString(context).ToLocalChecked());
-	std::string node_name = to_string(name_str);
-	DAEMON_MANAGER->fork_process(node_type, node_id, endpoint_gid, node_name);
+	//Local<Context> context(args.GetIsolate()->GetCurrentContext());
+	//int node_type = args[0]->Int32Value(context).FromMaybe(0);
+	//int node_id = args[1]->Int32Value(context).FromMaybe(0);
+	//int endpoint_gid = args[2]->Int32Value(context).FromMaybe(0);
+	//String::Utf8Value name_str(args[3]->ToString(context).ToLocalChecked());
+	//std::string node_name = to_string(name_str);
+	//fork process via daemon_server
 }
 
 void register_timer(const FunctionCallbackInfo<Value>& args) {
