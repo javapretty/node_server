@@ -22,14 +22,16 @@ public:
 
 	typedef List<Drop_Info, Thread_Mutex> Drop_List;
 	typedef List<int, Thread_Mutex> Int_List;
-	typedef boost::unordered_map<int, Endpoint *> Endpoint_Map;
+	typedef boost::unordered_map<int, Node_Info> Node_Map;			//node_type--node_info
+	typedef boost::unordered_map<int, Endpoint *> Endpoint_Map;	//endpoint_id--endpoint
 	typedef boost::unordered_map<int, Session *> Session_Map;
-	typedef boost::unordered_map<int, int> Msg_Count_Map;
+	typedef boost::unordered_map<int, int> Msg_Count_Map;				//msg_id--msg_count
 public:
 	static Node_Manager *instance(void);
 
 	//初始化
-	int init(const Node_Info &node_info);
+	int init(int node_type, int node_id, int endpoint_gid, const std::string &node_name);
+	int init_node_info(void);
 	//主动关闭
 	int self_close(void);
 
@@ -112,7 +114,8 @@ private:
 	Connector_Pool connector_pool_;
 	Session_Pool session_pool_;
 
-	Node_Info node_info_;					//节点信息
+	Node_Info node_info_;					//本进程节点信息
+	Node_Map node_map_;						//节点信息
 	Endpoint_Map endpoint_map_;		//通信端信息
 
 	Session_Map cid_session_map_;	//cid--session_info

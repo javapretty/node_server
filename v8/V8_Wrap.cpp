@@ -108,21 +108,18 @@ Local<Context> create_context(Isolate* isolate) {
 }
 
 void fork_process(const FunctionCallbackInfo<Value>& args) {
-	if (args.Length() != 1 || !args[0]->IsObject()) {
+	if (args.Length() != 4) {
 		LOG_ERROR("fork_process args error, length: %d\n", args.Length());
 		return;
 	}
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 
-	Node_Info node_info;
-	node_info.reset();
-	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct("Node_Info");
-	if (msg_struct) {
-		Block_Buffer buffer;
-		msg_struct->build_buffer(args.GetIsolate(), args[0]->ToObject(context).ToLocalChecked(), buffer);
-		node_info.deserialize(buffer);
-	}
-	DAEMON_MANAGER->fork_process(node_info);
+	Local<Context> context(args.GetIsolate()->GetCurrentContext());
+	int node_type = args[0]->Int32Value(context).FromMaybe(0);
+	int node_id = args[1]->Int32Value(context).FromMaybe(0);
+	int endpoint_gid = args[2]->Int32Value(context).FromMaybe(0);
+	String::Utf8Value name_str(args[3]->ToString(context).ToLocalChecked());
+	std::string node_name = to_string(name_str);
+	DAEMON_MANAGER->fork_process(node_type, node_id, endpoint_gid, node_name);
 }
 
 void register_timer(const FunctionCallbackInfo<Value>& args) {
@@ -130,8 +127,8 @@ void register_timer(const FunctionCallbackInfo<Value>& args) {
 		LOG_ERROR("register timer args error, length: %d\n", args.Length());
 		return;
 	}
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 
+	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	int timer_id = args[0]->Int32Value(context).FromMaybe(0);
 	int interval = args[1]->Int32Value(context).FromMaybe(0);
 	int first_tick = args[2]->Int32Value(context).FromMaybe(0);
@@ -195,8 +192,8 @@ void close_session(const FunctionCallbackInfo<Value>& args) {
 		LOG_ERROR("close_session args error, length: %d\n", args.Length());
 		return;
 	}
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 
+	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	Drop_Info drop_info;
 	drop_info.eid = args[0]->Int32Value(context).FromMaybe(0);
 	drop_info.cid = args[1]->Int32Value(context).FromMaybe(0);
@@ -210,7 +207,6 @@ void connect_mysql(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
-
 	int db_id = args[0]->Int32Value(context).FromMaybe(0);
 	String::Utf8Value ip_str(args[1]->ToString(context).ToLocalChecked());
 	std::string ip = to_string(ip_str);
@@ -233,7 +229,6 @@ void connect_mongo(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
-
 	int db_id = args[0]->Int32Value(context).FromMaybe(0);
 	String::Utf8Value ip_str(args[1]->ToString(context).ToLocalChecked());
 	std::string ip = to_string(ip_str);
@@ -251,8 +246,8 @@ void generate_table_index(const FunctionCallbackInfo<Value>& args) {
 		LOG_ERROR("generate_table_index args error, length: %d\n", args.Length());
 		return ;
 	}
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 
+	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	int db_id = args[0]->Int32Value(context).FromMaybe(0);
 	String::Utf8Value table_str(args[1]);
 	std::string table_name = to_string(table_str);
@@ -441,4 +436,3 @@ void delete_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	int64_t index = args[0]->IntegerValue(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	DATA_MANAGER->delete_runtime_data(index);
 }
-

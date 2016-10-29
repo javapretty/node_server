@@ -26,6 +26,7 @@ struct option Daemon_Manager::long_options[] = {
 		{"server_name",	required_argument,	0,	's'},
 		{"node_type",		required_argument,	0,	't'},
 		{"node_id",				required_argument,	0,	'i'},
+		{"endpoint_gid",	required_argument,	0,	'e'},
 		{"node_name",		required_argument,	0,	'n'},
 		{0, 0, 0, 0}
 };
@@ -42,7 +43,17 @@ int Daemon_Manager::init(int argc, char *argv[]) {
 	}
 
 	NODE_CONFIG->load_node_config();
-	node_conf_.init();
+	const Json::Value &node_list = NODE_CONFIG->node_conf()["node_list"];
+	for(uint i = 0; i < node_list.size(); ++i) {
+		Node_Info node_info;
+		node_info.reset();
+		node_info.node_type = node_list[i]["node_type"].asInt();
+		node_info.node_id = node_list[i]["node_id"].asInt();
+		node_info.endpoint_gid = node_list[i]["endpoint_gid"].asInt();
+		node_info.node_name = node_list[i]["node_name"].asString();
+		node_list_.push_back(node_info);
+	}
+
 	const Json::Value &node_misc = NODE_CONFIG->node_misc();
 	exec_name_ = node_misc["exec_name"].asString();
 	server_name_ = node_misc["server_name"].asString();
@@ -59,6 +70,7 @@ int Daemon_Manager::start(int argc, char *argv[]) {
 int Daemon_Manager::parse_cmd_arguments(int argc, char *argv[]) {
 	int node_type = 0;
 	int node_id = 0;
+	int endpoint_gid = 0;
 	std::string node_name = "";
 	bool daemon_server = true;
 	int c = 0;
@@ -77,6 +89,10 @@ int Daemon_Manager::parse_cmd_arguments(int argc, char *argv[]) {
 			node_id = atoi(optarg);
 			break;
 		}
+		case 'e': { //endpoint_gid
+			endpoint_gid = atoi(optarg);
+			break;
+		}
 		case 'n': { //node_name
 			node_name = optarg;
 			break;
@@ -88,21 +104,22 @@ int Daemon_Manager::parse_cmd_arguments(int argc, char *argv[]) {
 	}
 
 	//先启动守护进程，守护进程启动node进程，无参数时候会启动守护进程
-	LOG_WARN("parse_cmd_arguments, daemon_server:%d, node_type:%d, node_id:%d, node_name:%s",
-			daemon_server, node_type, node_id, node_name.c_str());
+	LOG_WARN("parse_cmd_arguments, daemon_server:%d, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s",
+			daemon_server, node_type, node_id, endpoint_gid, node_name.c_str());
 
 	if (daemon_server) {
 		run_daemon_server();
 	} else {
-		run_node_server(node_id);
+		NODE_MANAGER->init(node_type, node_id, endpoint_gid, node_name);
+		NODE_MANAGER->thr_create();
 	}
 
 	return 0;
 }
 
-int Daemon_Manager::fork_process(const Node_Info &node_info) {
+int Daemon_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name) {
 	std::stringstream execname_stream;
-	execname_stream << exec_name_ << " --server_name=" << server_name_ << " --node_type=" << node_info.node_type << " --node_id=" << node_info.node_id << " --node_name=" << node_info.node_name;
+	execname_stream << exec_name_ << " --server_name=" << server_name_ << " --node_type=" << node_type << " --node_id=" << node_id << " --endpoint_gid=" << endpoint_gid  << " --node_name=" << node_name;
 
 	std::vector<std::string> exec_str_tok;
 	std::istringstream exec_str_stream(execname_stream.str().c_str());
@@ -126,25 +143,23 @@ int Daemon_Manager::fork_process(const Node_Info &node_info) {
 			LOG_FATAL("execvp %s fatal", pathname);
 		}
 	} else { //parent
+		Node_Info node_info;
+		node_info.reset();
+		node_info.node_type = node_type;
+		node_info.node_id = node_id;
+		node_info.endpoint_gid = endpoint_gid;
+		node_info.node_name = node_name;
 		node_map_.insert(std::make_pair(pid, node_info));
-		LOG_INFO("fork new process, pid:%d, server_name:%s, node_type:%d, node_id:%d, node_name:%s",
-				pid, server_name_.c_str(), node_info.node_type, node_info.node_id, node_info.node_name.c_str());
+		LOG_INFO("fork new process, pid:%d, server_name:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s",
+				pid, server_name_.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 	}
 
 	return pid;
 }
 
 void Daemon_Manager::run_daemon_server(void) {
-	for(Node_Map::iterator iter = node_conf_.node_map.begin(); iter != node_conf_.node_map.end(); iter++) {
-		fork_process(iter->second);
-	}
-}
-
-void Daemon_Manager::run_node_server(int node_id) {
-	Node_Map::iterator iter = node_conf_.node_map.find(node_id);
-	if (iter != node_conf_.node_map.end()) {
-		NODE_MANAGER->init(iter->second);
-		NODE_MANAGER->thr_create();
+	for (Node_List::iterator iter = node_list_.begin(); iter != node_list_.end(); ++iter) {
+		fork_process(iter->node_type, iter->node_id, iter->endpoint_gid, iter->node_name);
 	}
 }
 
@@ -176,6 +191,6 @@ void Daemon_Manager::restart_process(int pid) {
 		core_map_.insert(std::make_pair(iter->second.node_id, 0));
 	}
 
-	fork_process(iter->second);
+	fork_process(iter->second.node_type, iter->second.node_id, iter->second.endpoint_gid, iter->second.node_name);
 	node_map_.erase(pid);
 }

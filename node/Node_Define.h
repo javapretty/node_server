@@ -9,7 +9,6 @@
 #define Node_DEFINE_H_
 
 #include <vector>
-#include <map>
 #include "Base_Define.h"
 #include "Time_Value.h"
 
@@ -52,6 +51,7 @@ typedef std::vector<Endpoint_Info> Endpoint_List;
 struct Node_Info {
 	int node_type;									//节点类型
 	int node_id;										//节点id
+	int endpoint_gid;							//端点组id
 	std::string node_name;					//节点名称
 	std::string node_ip;						//节点ip
 	std::string script_path;			//启动的js脚本路径
@@ -61,13 +61,6 @@ struct Node_Info {
 	void serialize(Block_Buffer &buffer);
 	void deserialize(Block_Buffer &buffer);
 	void reset(void);
-};
-
-typedef std::map<int, Node_Info> Node_Map;
-struct Node_Conf {
-	Node_Map node_map;
-
-	void init(void);
 };
 
 #endif /* Node_DEFINE_H_ */

@@ -16,8 +16,8 @@
 Node_Manager::Node_Manager(void):
 	tick_time_(Time_Value::zero),
 	endpoint_map_(get_hash_table_size(256)),
-	cid_session_map_(10240),
-	sid_session_map_(10240),
+	cid_session_map_(10000),
+	sid_session_map_(10000),
 	msg_count_(false),
 	msg_count_map_(512),
 	total_recv_bytes(0),
@@ -39,8 +39,17 @@ Node_Manager *Node_Manager::instance(void) {
 	return instance_;
 }
 
-int Node_Manager::init(const Node_Info &node_info) {
-	node_info_ = node_info;
+int Node_Manager::init(int node_type, int node_id, int endpoint_gid, const std::string &node_name) {
+	//初始化node信息
+	init_node_info();
+	Node_Map::iterator iter = node_map_.find(node_type);
+	if (iter != node_map_.end()) {
+		node_info_ = iter->second;
+		node_info_.node_id = node_id;
+		node_info_.endpoint_gid = endpoint_gid;
+		node_info_.node_name = node_name;
+	}
+
 	const Json::Value &node_misc = NODE_CONFIG->node_misc();
 	Log::instance()->set_folder_name(node_info_.node_name);
 	Log::instance()->set_log_switcher(node_misc["log_switcher"].asInt());
@@ -49,6 +58,9 @@ int Node_Manager::init(const Node_Info &node_info) {
 	STRUCT_MANAGER->set_server_num(node_misc["server_num"].asInt());
 
 	//初始化结构体
+	for (uint i = 0; i < node_misc["base_struct_path"].size(); ++i) {
+		STRUCT_MANAGER->init_struct(node_misc["base_struct_path"][i].asCString(), BASE_STRUCT);
+	}
 	for (uint i = 0; i < node_misc["msg_struct_path"].size(); ++i) {
 		STRUCT_MANAGER->init_struct(node_misc["msg_struct_path"][i].asCString(), MSG_STRUCT);
 	}
@@ -59,7 +71,7 @@ int Node_Manager::init(const Node_Info &node_info) {
 
 	//启动server线程
 	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {
-		if (iter->endpoint_type == CLIENT_SERVER || iter->endpoint_type == SERVER) {
+		if (iter->endpoint_gid == endpoint_gid && (iter->endpoint_type == CLIENT_SERVER || iter->endpoint_type == SERVER)) {
 			Server *server = server_pool_.pop();
 			server->init(*iter);
 			server->start();
@@ -69,11 +81,11 @@ int Node_Manager::init(const Node_Info &node_info) {
 	}
 
 	//短暂延迟让服务器启动
-	Time_Value::sleep(Time_Value(0, 500 * 1000));
+	Time_Value::sleep(Time_Value(0, 250 * 1000));
 
 	//启动connector线程
 	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {
-		if (iter->endpoint_type == CONNECTOR) {
+		if (iter->endpoint_gid == endpoint_gid && iter->endpoint_type == CONNECTOR) {
 			Connector *connector = connector_pool_.pop();
 			connector->init(*iter);
 			connector->start();
@@ -90,12 +102,46 @@ int Node_Manager::init(const Node_Info &node_info) {
 	}
 
 	//启动V8线程，需要在网络线程启动后
-	V8_MANAGER->init(node_info);
+	V8_MANAGER->init(node_info_);
 	V8_MANAGER->thr_create();
 
 	//启动定时器线程,需在V8线程启动后
 	NODE_TIMER->thr_create();
 
+	return 0;
+}
+
+int Node_Manager::init_node_info(void) {
+	const Json::Value &node_conf = NODE_CONFIG->node_conf()["node_info"];
+	for(uint i = 0; i < node_conf.size(); ++i) {
+		Node_Info node_info;
+		node_info.reset();
+		node_info.node_type = node_conf[i]["node_type"].asInt();
+		node_info.node_ip = "127.0.0.1";		//获得本机ip
+		node_info.script_path = node_conf[i]["script_path"].asString();
+
+		const Json::Value &plugin_conf = node_conf[i]["plugin"];
+		for (uint j = 0; j < plugin_conf.size();++j) {
+			std::string plugin_path = plugin_conf[j]["path"].asString();
+			node_info.plugin_list.push_back(plugin_path);
+		}
+
+		const Json::Value &endpoint_conf = node_conf[i]["endpoint"];
+		for (uint j = 0; j < endpoint_conf.size();++j) {
+			Endpoint_Info endpoint_info;
+			endpoint_info.endpoint_type = endpoint_conf[j]["endpoint_type"].asInt();
+			endpoint_info.endpoint_gid = endpoint_conf[j]["endpoint_gid"].asInt();
+			endpoint_info.endpoint_id = endpoint_conf[j]["endpoint_id"].asInt();
+			endpoint_info.endpoint_name = endpoint_conf[j]["endpoint_name"].asString();
+			endpoint_info.server_ip = endpoint_conf[j]["server_ip"].asString();
+			endpoint_info.server_port = endpoint_conf[j]["server_port"].asInt();
+			endpoint_info.protocol_type = endpoint_conf[j]["protocol_type"].asInt();
+			endpoint_info.receive_timeout = endpoint_conf[j]["receive_timeout"].asInt();
+			node_info.endpoint_list.push_back(endpoint_info);
+		}
+
+		node_map_.insert(std::make_pair(node_info.node_type, node_info));
+	}
 	return 0;
 }
 

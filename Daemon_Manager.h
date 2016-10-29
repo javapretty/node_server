@@ -15,6 +15,7 @@
 
 class Epoll_Watcher;
 class Daemon_Manager {
+	typedef std::vector<Node_Info> Node_List;
 	//pid--Node_Info
 	typedef boost::unordered_map<int, Node_Info> Int_Node_Map;
 	//node_type--core_num
@@ -26,9 +27,8 @@ public:
 	int start(int argc, char *argv[]);
 
 	int parse_cmd_arguments(int argc, char *argv[]);
-	int fork_process(const Node_Info &node_info);
+	int fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name);
 	void run_daemon_server(void);
-	void run_node_server(int node_id);
 
 	static void sigcld_handle(int signo);
 	void restart_process(int pid);
@@ -44,10 +44,10 @@ private:
 	static struct option long_options[];
 	Epoll_Watcher *wait_watcher_;
 
-	Node_Conf node_conf_;
 	std::string exec_name_;
 	std::string server_name_;
 
+	Node_List node_list_;
 	Int_Node_Map node_map_;
 	Int_Core_Map core_map_;
 };

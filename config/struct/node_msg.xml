@@ -83,6 +83,9 @@
 	</node_210>
 	
 	<http_1>
-		<struct type="Node_Info" name="node_info"/>
+		<arg type="int32" name="node_type"/>
+		<arg type="int32" name="node_id"/>
+		<arg type="int32" name="endpoint_gid"/>
+		<arg type="string" name="node_name"/>
 	</http_1>
 </root>

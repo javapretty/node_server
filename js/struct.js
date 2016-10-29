@@ -244,11 +244,15 @@ function node_210() {
 }
 
 function http_1() {
-	this.node_info = new Node_Info();
+	this.node_type = 0;
+	this.node_id = 0;
+	this.endpoint_gid = 0;
+	this.node_name = "";
 }
 
 function Endpoint_Info() {
 	this.endpoint_type = 0;
+	this.endpoint_gid = 0;
 	this.endpoint_id = 0;
 	this.endpoint_name = "";
 	this.server_ip = "";
@@ -260,6 +264,7 @@ function Endpoint_Info() {
 function Node_Info() {
 	this.node_type = 0;
 	this.node_id = 0;
+	this.endpoint_gid = 0;
 	this.node_name = "";
 	this.node_ip = "";
 	this.script_path = "";

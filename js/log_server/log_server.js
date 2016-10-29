@@ -42,18 +42,19 @@ function on_msg(msg) {
 function on_tick(timer_id) {}
 
 function init_db_connect() {
-	for(var i = 0; i < config.node_json['node'].length; i++){
-		if(config.node_json['node'][i]['node_type'] == Node_Type.LOG_SERVER){
-			var mysql_conf = config.node_json['node'][i]['mysql_db'];
-			if(mysql_conf != null){
-				for(var j = 0; j < mysql_conf.length; j++){
-					var ret = connect_mysql(mysql_conf[j]['db_id'], mysql_conf[j]['ip'], mysql_conf[j]['port'], mysql_conf[j]['user'],
+	var node_info = config.node_json['node_info'];
+	for(var i = 0; i < node_info.length; i++) {
+		if(node_info[i]['node_type'] == Node_Type.LOG_SERVER){
+			var mysql_conf = node_info[i]['mysql_db'];
+			if (mysql_conf == null)
+				return;
+				
+			for(var j = 0; j < mysql_conf.length; j++) {
+				var ret = connect_mysql(mysql_conf[j]['db_id'], mysql_conf[j]['ip'], mysql_conf[j]['port'], mysql_conf[j]['user'],
 						mysql_conf[j]['password'], mysql_conf[j]['pool_name']);
-					if(!ret) {
-						log_error("connect to db ", mysql_conf['db_id'], ' error');
-						return;
-					}	
-				}
+				if(!ret) {
+					return log_error("connect to db ", mysql_conf['db_id'], ' error');
+				}	
 			}
 		}
 	}

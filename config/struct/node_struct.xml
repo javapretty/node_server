@@ -2,6 +2,7 @@
 
 	<Endpoint_Info>
 		<arg type="int32" name="endpoint_type"/>
+		<arg type="int32" name="endpoint_gid"/>
 		<arg type="int32" name="endpoint_id"/>
 		<arg type="string" name="endpoint_name"/>
 		<arg type="string" name="server_ip"/>
@@ -13,6 +14,7 @@
 	<Node_Info>
 		<arg type="int32" name="node_type"/>
 		<arg type="int32" name="node_id"/>
+		<arg type="int32" name="endpoint_gid"/>
 		<arg type="string" name="node_name"/>
 		<arg type="string" name="node_ip"/>
 		<arg type="string" name="script_path"/>
