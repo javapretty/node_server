@@ -49,11 +49,12 @@ function process_master_node_msg(msg) {
 }
 
 //可以使用curl命令，向服务器发送post消息，格式如下
-//curl -d "{\"msg_id\":1, \"role_name\":\"aa\", \"gold\":1000}" "http://127.0.0.1:8080"
+//curl -d "{\"msg_id\":1,\"node_info\":{\"node_type\":6,\"node_id\":60003,\"node_name\":\"game_server3\",\"node_ip\":\"127.0.0.1\",\"script_path\":\"js/game_server/game_server.js\",\"plugin_list\":[],\"endpoint_list\":[{\"endpoint_type\":2,\"endpoint_id\":1,\"endpoint_name\":\"game3_db_connector\",\"server_ip\":\"127.0.0.1\",\"server_port\":8200,\"protocol_type\":0,\"receive_timeout\":0}]}}" "http://127.0.0.1:8080" 
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.HTTP_MODIFY_GOLD:
-		log_info('modify player gold, role_name:', msg.role_name, ' gold:', msg.gold);
+	case Msg.HTTP_CREATE_NODE_PROCESS:
+		log_info('create node process, node_type:',msg.node_info.node_type,' node_id:',msg.node_info.node_id,' node_name:',msg.node_info.node_name);
+		fork_process(msg.node_info);
 		break;		
 	default:
 		log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);

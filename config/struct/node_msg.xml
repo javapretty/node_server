@@ -83,7 +83,6 @@
 	</node_210>
 	
 	<http_1>
-		<arg type="string" name="role_name"/>
-		<arg type="int32" name="gold"/>
+		<struct type="Node_Info" name="node_info"/>
 	</http_1>
 </root>

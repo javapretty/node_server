@@ -88,7 +88,6 @@ config:
 	@tar -zvx -f doc/v8.tar.gz -C doc
 	@cp -rf doc/v8/include/* /usr/local/include/include
 	@cp -rf doc/v8/*.so /usr/local/lib64
-	@cp -rf doc/v8/*.a /usr/local/lib64
 	@cp -rf doc/v8/*.bin ./
 	@rm -rf doc/v8/
 	@ldconfig

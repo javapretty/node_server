@@ -53,5 +53,5 @@ enum Node_Message {
 };
 
 enum Http_Message {
-	HTTP_MODIFY_GOLD	=	1,		//修改玩家元宝
+	HTTP_CREATE_NODE_PROCESS			=	1,	//创建node进程
 };

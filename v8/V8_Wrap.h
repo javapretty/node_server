@@ -46,11 +46,11 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 //函数说明：删除数据库数据		参数：1.db_id 2.table_name 3.数据array		返回值：无
 void delete_db_data(const FunctionCallbackInfo<Value>& args);
 
-//函数说明：保存临时数据		参数：1.index 2.struct_name 3.数据object		返回值：无
-void set_temp_data(const FunctionCallbackInfo<Value>& args);
-//函数说明：获取临时数据		参数：1.index 2.struct_name	返回值：无
-void get_temp_data(const FunctionCallbackInfo<Value>& args);
-//函数说明：删除临时数据		参数：1.index 返回值：无
-void clear_temp_data(const FunctionCallbackInfo<Value>& args);
+//函数说明：保存运行时数据		参数：1.index 2.struct_name 3.数据object		返回值：无
+void set_runtime_data(const FunctionCallbackInfo<Value>& args);
+//函数说明：获取运行时数据		参数：1.index 2.struct_name	返回值：无
+void get_runtime_data(const FunctionCallbackInfo<Value>& args);
+//函数说明：删除运行时数据		参数：1.index 返回值：无
+void delete_runtime_data(const FunctionCallbackInfo<Value>& args);
 
 #endif /* V8_WRAP_H_ */

@@ -210,7 +210,7 @@ int V8_Manager::init(const Node_Info &node_info) {
 	for(uint i = 0; i < node_info_.plugin_list.size(); i++) {
 		const char* path = node_info_.plugin_list[i].c_str();
 		void *handle = dlopen(path, RTLD_NOW);
-		if(handle == NULL) {
+		if(handle == nullptr) {
 			LOG_FATAL("can't open the plugin %s, dlerror:%s", path, dlerror());
 		}
 		plugin_handle_map_[path] = handle;

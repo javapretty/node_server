@@ -9,25 +9,25 @@
 #include "Base_Function.h"
 #include "Mongo_Operator.h"
 #include "Mysql_Operator.h"
-#include "DB_Manager.h"
+#include "Data_Manager.h"
 
-DB_Manager::DB_Manager(void) :
+Data_Manager::Data_Manager(void) :
 	db_operator_map_(get_hash_table_size(512)),
 	db_buffer_map_(get_hash_table_size(512)),
-	temp_data_map_(get_hash_table_size(2048))
+	runtime_data_map_(get_hash_table_size(4096))
 { }
 
-DB_Manager::~DB_Manager(void) { }
+Data_Manager::~Data_Manager(void) { }
 
-DB_Manager *DB_Manager::instance_;
+Data_Manager *Data_Manager::instance_;
 
-DB_Manager *DB_Manager::instance(void) {
+Data_Manager *Data_Manager::instance(void) {
 	if (instance_ == 0)
-		instance_ = new DB_Manager;
+		instance_ = new Data_Manager;
 	return instance_;
 }
 
-int DB_Manager::init_db_operator() {
+int Data_Manager::init_db_operator() {
 	Mongo_Operator *mongo = new Mongo_Operator();
 	Mysql_Operator *mysql = new Mysql_Operator();
 	db_operator_map_[MYSQL] = mysql;
@@ -35,20 +35,20 @@ int DB_Manager::init_db_operator() {
 	return 0;
 }
 
-DB_Operator *DB_Manager::db_operator(int type) {
+DB_Operator *Data_Manager::db_operator(int type) {
 	DB_Operator_Map::iterator iter = db_operator_map_.find(type / 1000);
 	if(iter != db_operator_map_.end())
 		return iter->second;
 	LOG_ERROR("DB_TYPE %d not found!", type);
-	return NULL;
+	return nullptr;
 }
 
-void DB_Manager::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer, int flag) {
+int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer, int flag) {
 	int64_t index = 0;
 	buffer->peek_int64(index);
-	RECORD_BUFFER_MAP *record_buffer_map = get_record_map(db_id, db_struct->table_name());
+	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 
-	RECORD_BUFFER_MAP::iterator it = record_buffer_map->find(index);
+	Record_Buffer_Map::iterator it = record_buffer_map->find(index);
 	if(it == record_buffer_map->end()){
 		switch(flag) {
 		case 0:
@@ -81,10 +81,11 @@ void DB_Manager::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer
 			break;
 		}
 	}
+	return 0;
 }
 
-int DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Block_Buffer *> &buffer_vec) {
-	RECORD_BUFFER_MAP *record_buffer_map = get_record_map(db_id, db_struct->table_name());
+int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Block_Buffer *> &buffer_vec) {
+	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 	int len = 0;
 	if(index == 0) {
 		if(record_buffer_map->empty()) {
@@ -97,14 +98,14 @@ int DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t index, std::v
 			}
 		}
 		else {
-			for(RECORD_BUFFER_MAP::iterator iter = record_buffer_map->begin();
+			for(Record_Buffer_Map::iterator iter = record_buffer_map->begin();
 					iter != record_buffer_map->end(); iter++){
 				buffer_vec.push_back(iter->second);
 			}
 		}
 	}
 	else {
-		RECORD_BUFFER_MAP::iterator iter;
+		Record_Buffer_Map::iterator iter;
 		if((iter = record_buffer_map->find(index)) == record_buffer_map->end()){
 			DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
 			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
@@ -122,8 +123,8 @@ int DB_Manager::load_data(int db_id, DB_Struct *db_struct, int64_t index, std::v
 	return len;
 }
 
-int DB_Manager::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
-	RECORD_BUFFER_MAP *record_buffer_map = get_record_map(db_id, db_struct->table_name());
+int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 	int rdx = buffer->get_read_idx();
 	uint16_t len = 0;
 	buffer->read_uint16(len);
@@ -137,10 +138,10 @@ int DB_Manager::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffe
 	return 0;
 }
 
-void DB_Manager::set_data(int64_t index, DB_Struct *db_struct, Block_Buffer *buffer) {
-	TEMP_DATA_MAP::iterator iter = temp_data_map_.find(index);
-	if(iter == temp_data_map_.end()) {
-		temp_data_map_[index] = buffer;
+void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Block_Buffer *buffer) {
+	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
+	if(iter == runtime_data_map_.end()) {
+		runtime_data_map_[index] = buffer;
 	}
 	else {
 		push_buffer(iter->second);
@@ -148,37 +149,37 @@ void DB_Manager::set_data(int64_t index, DB_Struct *db_struct, Block_Buffer *buf
 	}
 }
 
-Block_Buffer *DB_Manager::get_data(int64_t index, DB_Struct *db_struct) {
-	TEMP_DATA_MAP::iterator iter = temp_data_map_.find(index);
-	if(iter != temp_data_map_.end()) {
+Block_Buffer *Data_Manager::get_runtime_data(int64_t index, DB_Struct *db_struct) {
+	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
+	if(iter != runtime_data_map_.end()) {
 		return iter->second;
 	}
-	return NULL;
+	return nullptr;
 }
 
-void DB_Manager::clear_data(int64_t index) {
-	TEMP_DATA_MAP::iterator iter = temp_data_map_.find(index);
-	if(iter != temp_data_map_.end()) {
+void Data_Manager::delete_runtime_data(int64_t index) {
+	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
+	if(iter != runtime_data_map_.end()) {
 		push_buffer(iter->second);
-		temp_data_map_.erase(iter);
+		runtime_data_map_.erase(iter);
 	}
 }
 
-DB_Manager::RECORD_BUFFER_MAP *DB_Manager::get_record_map(int db_id, std::string table_name) {
-	TABLE_BUFFER_MAP *table_buffer_map = NULL;
-	DB_BUFFER_MAP::iterator iter = db_buffer_map_.find(db_id);
+Data_Manager::Record_Buffer_Map *Data_Manager::get_record_map(int db_id, std::string table_name) {
+	Table_Buffer_Map*table_buffer_map = NULL;
+	DB_Buffer_Map::iterator iter = db_buffer_map_.find(db_id);
 	if(iter == db_buffer_map_.end()){
-		table_buffer_map = new TABLE_BUFFER_MAP(get_hash_table_size(512));
+		table_buffer_map = new Table_Buffer_Map(get_hash_table_size(512));
 		db_buffer_map_[db_id] = table_buffer_map;
 	}
 	else {
 		table_buffer_map = iter->second;
 	}
 
-	RECORD_BUFFER_MAP *record_buffer_map = NULL;
-	TABLE_BUFFER_MAP::iterator it = table_buffer_map->find(table_name);
+	Record_Buffer_Map *record_buffer_map = NULL;
+	Table_Buffer_Map::iterator it = table_buffer_map->find(table_name);
 	if(it == table_buffer_map->end()){
-		record_buffer_map = new RECORD_BUFFER_MAP(get_hash_table_size(MAX_RECORD_NUM));
+		record_buffer_map = new Record_Buffer_Map(get_hash_table_size(MAX_RECORD_NUM));
 		(*table_buffer_map)[table_name] = record_buffer_map;
 	}
 	else {
