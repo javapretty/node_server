@@ -1,5 +1,5 @@
 /*
- * DB_Manager.cpp
+ * Data_Manager.cpp
  *
  *  Created on: 2016年10月27日
  *      Author: zhangyalei
@@ -179,7 +179,7 @@ Data_Manager::Record_Buffer_Map *Data_Manager::get_record_map(int db_id, std::st
 	Record_Buffer_Map *record_buffer_map = NULL;
 	Table_Buffer_Map::iterator it = table_buffer_map->find(table_name);
 	if(it == table_buffer_map->end()){
-		record_buffer_map = new Record_Buffer_Map(get_hash_table_size(MAX_RECORD_NUM));
+		record_buffer_map = new Record_Buffer_Map(get_hash_table_size(10000));
 		(*table_buffer_map)[table_name] = record_buffer_map;
 	}
 	else {

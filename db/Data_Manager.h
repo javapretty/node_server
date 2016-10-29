@@ -12,8 +12,6 @@
 #include "DB_Operator.h"
 #include "Object_Pool.h"
 
-#define MAX_RECORD_NUM 10000
-
 class Data_Manager {
 public:
 	typedef boost::unordered_map<int, DB_Operator *> DB_Operator_Map;					//db_id--DB_Operator
