@@ -12,6 +12,8 @@
 #include "DB_Operator.h"
 #include "Object_Pool.h"
 
+#define MAX_RECORD_NUM 200000
+
 class DB_Manager {
 public:
 	typedef boost::unordered_map<int, DB_Operator *> DB_Operator_Map;
@@ -41,6 +43,8 @@ private:
 	virtual ~DB_Manager(void);
 	DB_Manager(const DB_Manager &);
 	const DB_Manager &operator=(const DB_Manager &);
+
+	RECORD_BUFFER_MAP *get_record_map(int db_id, std::string table_name);
 
 private:
 	static DB_Manager *instance_;

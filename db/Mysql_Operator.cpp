@@ -528,7 +528,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 		}
 		while(result->next()) {
 			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
-			load_data_single(db_struct, buffer, result);
+			load_data_single(db_struct, result, *buffer);
 			buffer_vec.push_back(buffer);
 		}
 	} else {
@@ -537,7 +537,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 		sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
 		if (result && result->next()) {
 			Block_Buffer *buffer = DB_MANAGER->pop_buffer();
-			load_data_single(db_struct, buffer, result);
+			load_data_single(db_struct, result, *buffer);
 			buffer_vec.push_back(buffer);
 			len = 1;
 		}
@@ -694,84 +694,79 @@ void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *
 	}
 }
 
-Block_Buffer *Mysql_Operator::load_data_single(DB_Struct *db_struct, Block_Buffer *buffer, sql::ResultSet *result) {
+void Mysql_Operator::load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Block_Buffer &buffer) {
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
-			load_data_arg(db_struct, buffer, *iter, result);
+			load_data_arg(db_struct, *iter, result, buffer);
 		}
 		else if(iter->field_label == "vector" || iter->field_label == "map") {
-			load_data_vector(db_struct, buffer, *iter, result);
+			load_data_vector(db_struct, *iter, result, buffer);
 		}
 		else if(iter->field_label == "struct") {
-			load_data_struct(db_struct, buffer, *iter, result);
+			load_data_struct(db_struct, *iter, result, buffer);
 		}
 	}
-	return buffer;
 }
 
-Block_Buffer *Mysql_Operator::load_data_arg(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result) {
+void Mysql_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
 	if(field_info.field_type == "int8") {
 		int8_t val = result->getInt(field_info.field_name);
-		buffer->write_int8(val);
+		buffer.write_int8(val);
 	}
 	else if(field_info.field_type == "int16") {
 		int16_t val = result->getInt(field_info.field_name);
-		buffer->write_int16(val);
+		buffer.write_int16(val);
 	}
 	else if(field_info.field_type == "int32") {
 		int32_t val = result->getInt(field_info.field_name);
-		buffer->write_int32(val);
+		buffer.write_int32(val);
 	}
 	else if(field_info.field_type == "int64") {
 		int64_t val = result->getInt64(field_info.field_name);
-		buffer->write_int64(val);
+		buffer.write_int64(val);
 	}
 	else if(field_info.field_type == "uint8") {
 		uint8_t val = result->getUInt(field_info.field_name);
-		buffer->write_uint8(val);
+		buffer.write_uint8(val);
 	}
 	else if(field_info.field_type == "uint16") {
 		uint16_t val = result->getUInt(field_info.field_name);
-		buffer->write_uint16(val);
+		buffer.write_uint16(val);
 	}
 	else if(field_info.field_type == "uint32") {
 		uint32_t val = result->getUInt(field_info.field_name);
-		buffer->write_uint32(val);
+		buffer.write_uint32(val);
 	}
 	else if(field_info.field_type == "uint64") {
 		uint64_t val = result->getUInt64(field_info.field_name);
-		buffer->write_uint64(val);
+		buffer.write_uint64(val);
 	}
 	else if(field_info.field_type == "double") {
 		double val = result->getDouble(field_info.field_name);
-		buffer->write_double(val);
+		buffer.write_double(val);
 	}
 	else if(field_info.field_type == "bool") {
 		bool val = result->getBoolean(field_info.field_name);
-		buffer->write_bool(val);
+		buffer.write_bool(val);
 	}
 	else if(field_info.field_type == "string") {
 		std::string val = result->getString(field_info.field_name);
-		buffer->write_string(val);
+		buffer.write_string(val);
 	}
 	else {
 		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
-		return NULL;
 	}
-	return buffer;
 }
 
-Block_Buffer *Mysql_Operator::load_data_vector(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result) {
+void Mysql_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
-	buffer->copy(decode);
-	return buffer;
+	buffer.copy(decode);
 }
 
-Block_Buffer *Mysql_Operator::load_data_struct(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result) {
+void Mysql_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
-	buffer->copy(decode);
-	return buffer;
+	buffer.copy(decode);
 }
