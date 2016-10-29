@@ -44,10 +44,10 @@ private:
 	v8::Local<v8::Map> load_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 	v8::Local<v8::Object> load_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 
-	Block_Buffer *load_data_single(DB_Struct *db_struct, Block_Buffer *buffer, sql::ResultSet *result);
-	Block_Buffer *load_data_arg(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
-	Block_Buffer *load_data_vector(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
-	Block_Buffer *load_data_struct(DB_Struct *db_struct, Block_Buffer *buffer, const Field_Info &field_info, sql::ResultSet *result);
+	void load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Block_Buffer &buffer);
+	void load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
+	void load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
+	void load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
 
 	int build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
 	int build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
