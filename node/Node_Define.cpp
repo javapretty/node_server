@@ -11,7 +11,6 @@
 void Node_Info::serialize(Block_Buffer &buffer) {
 	buffer.write_int32(node_type);
 	buffer.write_int32(node_id);
-	buffer.write_int32(endpoint_gid);
 	buffer.write_string(node_name);
 	buffer.write_string(node_ip);
 	buffer.write_string(script_path);
@@ -32,7 +31,6 @@ void Node_Info::serialize(Block_Buffer &buffer) {
 void Node_Info::deserialize(Block_Buffer &buffer) {
 	buffer.read_int32(node_type);
 	buffer.read_int32(node_id);
-	buffer.read_int32(endpoint_gid);
 	buffer.read_string(node_name);
 	buffer.read_string(node_ip);
 	buffer.read_string(script_path);
@@ -58,7 +56,6 @@ void Node_Info::deserialize(Block_Buffer &buffer) {
 void Node_Info::reset(void) {
 	node_type = 0;
 	node_id = 0;
-	endpoint_gid = 0;
 	node_name = "";
 	node_ip = "";
 	script_path = "";

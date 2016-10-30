@@ -14,6 +14,8 @@
 #include "Endpoint.h"
 #include "Node_Define.h"
 
+#define NODE_FIFO "/tmp/node_fifo"
+
 class Node_Manager: public Thread {
 public:
 	typedef Object_Pool<Server, Thread_Mutex> Server_Pool;
@@ -34,6 +36,9 @@ public:
 	int init_node_info(void);
 	//主动关闭
 	int self_close(void);
+	//通知daemon创建进程
+	int fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name);
+
 
 	virtual void run_handler(void);
 	virtual int process_list(void);

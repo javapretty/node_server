@@ -264,7 +264,6 @@ function Endpoint_Info() {
 function Node_Info() {
 	this.node_type = 0;
 	this.node_id = 0;
-	this.endpoint_gid = 0;
 	this.node_name = "";
 	this.node_ip = "";
 	this.script_path = "";

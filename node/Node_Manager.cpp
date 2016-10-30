@@ -5,6 +5,9 @@
  *      Author: zhangyalei
  */
 
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "Base_Function.h"
 #include "Data_Manager.h"
 #include "Struct_Manager.h"
@@ -47,8 +50,10 @@ int Node_Manager::init(int node_type, int node_id, int endpoint_gid, const std::
 	if (iter != node_map_.end()) {
 		node_info_ = iter->second;
 		node_info_.node_id = node_id;
-		node_info_.endpoint_gid = endpoint_gid;
 		node_info_.node_name = node_name;
+	} else {
+		LOG_ERROR("can't init node, node_type:%d error, node_id:%d, node_name:%s", node_type, node_id, node_name.c_str());
+		return -1;
 	}
 
 	const Json::Value &node_misc = NODE_CONFIG->node_misc();
@@ -165,6 +170,38 @@ int Node_Manager::self_close(void) {
 	while (++i < 60) {
 		sleep(1);
 	}
+
+	return 0;
+}
+
+int ::Node_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name) {
+	Block_Buffer buf;
+	buf.write_int32(node_type);
+	buf.write_int32(node_id);
+	buf.write_int32(endpoint_gid);
+	buf.write_string(node_name);
+
+	int real_write;
+	int fd;
+	//测试FIFO是否存在，若不存在，mkfifo一个FIFO
+	if(access(NODE_FIFO, F_OK) == -1) {
+		if((mkfifo(NODE_FIFO, 0666) < 0) && (errno != EEXIST)) {
+			LOG_ERROR("Can not create fifo file,%s\n", NODE_FIFO);
+			return -1;
+		}
+	}
+
+	//调用open以只写方式打开FIFO，返回文件描述符fd
+	if((fd = open(NODE_FIFO, O_WRONLY)) == -1) {
+		LOG_ERROR("Open fifo error,%s\n", NODE_FIFO);
+		return -1;
+	}
+
+	//调用write将buff写到文件描述符fd指向的FIFO中
+	if ((real_write = write(fd, buf.get_read_ptr(), buf.readable_bytes())) > 0) {
+		LOG_INFO("Write into fifo:%s, real_write:%d\n", NODE_FIFO, real_write);
+	}
+	close(fd);
 
 	return 0;
 }
