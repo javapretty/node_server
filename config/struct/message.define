@@ -1,42 +1,42 @@
 enum Client_Server_Message {
-	REQ_HEARTBEAT			= 0,	//发送心跳到gate_server
-	REQ_SELECT_GATE		= 1,	//选择gate_server
-	REQ_CONNECT_GATE	= 2,	//登录gate_server
+	REQ_HEARTBEAT			= 1,	//发送心跳到gate_server
+	REQ_SELECT_GATE		= 2,	//选择gate_server
+	REQ_CONNECT_GATE	= 3,	//登录gate_server
 	
-	REQ_FETCH_ROLE		= 3,	//获取角色
-	REQ_CREATE_ROLE 	= 4,	//创建角色
-	REQ_FETCH_MAIL 		= 5,	//获取邮件
-	REQ_PICKUP_MAIL 	= 6,	//收取附件
-	REQ_DEL_MAIL 			= 7,	//删除邮件
-	REQ_FETCH_BAG			= 8,	//获取背包
+	REQ_FETCH_ROLE		= 4,	//获取角色
+	REQ_CREATE_ROLE 	= 5,	//创建角色
+	REQ_FETCH_MAIL 		= 6,	//获取邮件
+	REQ_PICKUP_MAIL 	= 7,	//收取附件
+	REQ_DEL_MAIL 			= 8,	//删除邮件
+	REQ_FETCH_BAG			= 9,	//获取背包
 	
 	REQ_CREATE_GUILD	= 201,	//创建公会 
 	REQ_DISSOVE_GUILD	= 202,	//解散公会
 };
 
 enum Server_Client_Message {
-	RES_HEARTBEAT			= 0,	//发送心跳到gate
-	RES_SELECT_GATE		= 1,	//选择gate_server
-	RES_CONNECT_GATE	= 2,	//登录gate_server
+	RES_HEARTBEAT			= 1,	//发送心跳到gate
+	RES_SELECT_GATE		= 2,	//选择gate_server
+	RES_CONNECT_GATE	= 3,	//登录gate_server
 	
-	RES_ROLE_INFO			= 3,	//角色信息更新
-	RES_ERROR_CODE		= 4,	//返回错误号
-	RES_MAIL_INFO 		= 5,	//邮件信息更新
-	RES_PICKUP_MAIL 	= 6,	//收取附件
-	RES_DEL_MAIL 			= 7,	//删除邮件
-	RES_FETCH_BAG			= 8,	//获取背包
+	RES_ROLE_INFO			= 4,	//角色信息更新
+	RES_ERROR_CODE		= 5,	//返回错误号
+	RES_MAIL_INFO 		= 6,	//邮件信息更新
+	RES_PICKUP_MAIL 	= 7,	//收取附件
+	RES_DEL_MAIL 			= 8,	//删除邮件
+	RES_FETCH_BAG			= 9,	//获取背包
 	
 	RES_CREATE_GUILD	= 201,	//创建公会 
 	RES_DISSOVE_GUILD	= 202,	//解散公会
 };
 
 enum Node_Message {
-	SYNC_ERROR_CODE								= 0,	//同步进程节点错误号
-	SYNC_NODE_INFO								= 1,	//同步进程节点信息
-	SYNC_GATE_CENTER_VERIFY_TOKEN	= 2,	//gate通知center校验token
-	SYNC_GATE_GAME_ADD_SESSION			= 3,	//gate通知game增加session
-	SYNC_GAME_PUBLIC_LOGIN_LOGOUT	= 4,	//game通知public玩家上线下线
-	SYNC_GAME_GATE_LOGOUT					= 5,	//game与gate互相通知玩家下线
+	SYNC_ERROR_CODE								= 1,	//同步进程节点错误号
+	SYNC_NODE_INFO								= 2,	//同步进程节点信息
+	SYNC_GATE_CENTER_VERIFY_TOKEN	= 3,	//gate通知center校验token
+	SYNC_GATE_GAME_ADD_SESSION			= 4,	//gate通知game增加session
+	SYNC_GAME_PUBLIC_LOGIN_LOGOUT	= 5,	//game通知public玩家上线下线
+	SYNC_GAME_GATE_LOGOUT					= 6,	//game与gate互相通知玩家下线
 	
 	SYNC_GAME_DB_CREATE_PLAYER			= 200,	//创建玩家
 	SYNC_GAME_DB_LOAD_PLAYER			= 201,	//加载玩家信息

@@ -8,15 +8,17 @@
 #include <getopt.h>
 #include "Time_Value.h"
 #include "Node_Manager.h"
+#include "Msg_Tool.h"
 
 static void sighandler(int sig_no) { exit(0); } /// for gprof need normal exit
 
 struct option long_options[] = {
-		{"label",					required_argument,	0,	'l'},
+		{"label",			required_argument,	0,	'l'},
 		{"node_type",		required_argument,	0,	't'},
-		{"node_id",				required_argument,	0,	'i'},
+		{"node_id",			required_argument,	0,	'i'},
 		{"endpoint_gid",	required_argument,	0,	'e'},
 		{"node_name",		required_argument,	0,	'n'},
+		{"struct_tool",		no_argument,		0,	's'},
 		{0, 0, 0, 0}
 };
 
@@ -26,8 +28,9 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 	int node_id = 0;
 	int endpoint_gid = 0;
 	std::string node_name = "";
+	bool bspecial = false;
 	int c = 0;
-	while ((c = getopt_long(argc, argv, "vdm:", long_options, NULL)) != -1) {
+	while ((c = getopt_long_only(argc, argv, "vdm:", long_options, NULL)) != -1) {
 		switch (c) {
 		case 'l': { //server_name
 			label = optarg;
@@ -49,10 +52,20 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 			node_name = optarg;
 			break;
 		}
+		case 's': { //struct_tool
+			Msg_Tool tool;
+			tool.write_struct();
+			bspecial = true;
+			break;
+		}
 		default: {
 			break;
 		}
 		}
+	}
+
+	if(bspecial) {
+		return 1;
 	}
 
 	LOG_WARN("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
@@ -69,9 +82,9 @@ int main(int argc, char *argv[]) {
 	signal(SIGUSR1, sighandler);
 
 	//启动node相关线程
-	parse_cmd_arguments(argc, argv);
-
-	Epoll_Watcher watcher;
-	watcher.loop();
+	if(0 == parse_cmd_arguments(argc, argv)) {
+		Epoll_Watcher watcher;
+		watcher.loop();
+	}
 	return 0;
 }
