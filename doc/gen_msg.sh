@@ -12,7 +12,6 @@ function gen_msg(){
 
 function gen_js(){
 	./struct_tool js $DEFINE_PATH 'client_msg.xml' 'struct'
-	./struct_tool js $DEFINE_PATH 'db_struct.xml' 'struct'
 	./struct_tool js $DEFINE_PATH 'node_msg.xml' 'struct'
 	./struct_tool js $DEFINE_PATH 'node_struct.xml' 'struct'
 	./struct_tool js $DEFINE_PATH 'public_struct.xml' 'struct'
