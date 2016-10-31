@@ -8,17 +8,17 @@
 #ifndef DATA_MANAGER_H_
 #define DATA_MANAGER_H_
 
-#include "boost/unordered_map.hpp"
-#include "DB_Operator.h"
+#include <unordered_map>
 #include "Object_Pool.h"
+#include "DB_Operator.h"
 
 class Data_Manager {
 public:
-	typedef boost::unordered_map<int, DB_Operator *> DB_Operator_Map;					//db_id--DB_Operator
-	typedef boost::unordered_map<int64_t, Byte_Buffer *> Record_Buffer_Map; 	//index--buffer
-	typedef boost::unordered_map<std::string, Record_Buffer_Map *> Table_Buffer_Map;//table_name--record
-	typedef boost::unordered_map<int, Table_Buffer_Map *> DB_Buffer_Map; 			//db_id--table_buffer
-	typedef boost::unordered_map<int64_t, Byte_Buffer *> Runtime_Data_Map;		//index--buffer
+	typedef std::unordered_map<int, DB_Operator *> DB_Operator_Map;					//db_id--DB_Operator
+	typedef std::unordered_map<int64_t, Byte_Buffer *> Record_Buffer_Map; 	//index--buffer
+	typedef std::unordered_map<std::string, Record_Buffer_Map *> Table_Buffer_Map;//table_name--record
+	typedef std::unordered_map<int, Table_Buffer_Map *> DB_Buffer_Map; 			//db_id--table_buffer
+	typedef std::unordered_map<int64_t, Byte_Buffer *> Runtime_Data_Map;		//index--buffer
 	typedef Object_Pool<Byte_Buffer, Thread_Mutex> Buffer_Pool;
 public:
 	static Data_Manager *instance(void);

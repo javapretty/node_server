@@ -23,10 +23,10 @@ public:
 
 	typedef List<Drop_Info, Thread_Mutex> Drop_List;
 	typedef List<int, Thread_Mutex> Int_List;
-	typedef boost::unordered_map<int, Node_Info> Node_Map;			//node_type--node_info
-	typedef boost::unordered_map<int, Endpoint *> Endpoint_Map;	//endpoint_id--endpoint
-	typedef boost::unordered_map<int, Session *> Session_Map;
-	typedef boost::unordered_map<int, int> Msg_Count_Map;				//msg_id--msg_count
+	typedef std::unordered_map<int, Node_Info> Node_Map;			//node_type--node_info
+	typedef std::unordered_map<int, Endpoint *> Endpoint_Map;	//endpoint_id--endpoint
+	typedef std::unordered_map<int, Session *> Session_Map;
+	typedef std::unordered_map<int, int> Msg_Count_Map;				//msg_id--msg_count
 public:
 	static Node_Manager *instance(void);
 

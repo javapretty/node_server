@@ -8,14 +8,14 @@
 #ifndef MYSQL_OPERATOR_H_
 #define MYSQL_OPERATOR_H_
 
-#include "boost/unordered_map.hpp"
+#include <unordered_map>
 #include "Mysql_Conn.h"
 #include "DB_Operator.h"
 
 class Mysql_Operator : public DB_Operator {
 public:
-	typedef boost::unordered_map<int, Mysql_Conn *> Connection_Map;
-	//typedef boost::unordered_map<std::string, Connection_Map *> DB_Connection_Map;
+	typedef std::unordered_map<int, Mysql_Conn *> Connection_Map;
+	//typedef std::unordered_map<std::string, Connection_Map *> DB_Connection_Map;
 
 	Mysql_Operator(void);
 	virtual ~Mysql_Operator(void);

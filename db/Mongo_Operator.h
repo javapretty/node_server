@@ -9,7 +9,7 @@
 #define MONGO_OPERATOR_H_
 
 #include "mongo/client/dbclient.h"
-#include "boost/unordered_map.hpp"
+#include <unordered_map>
 #include "Object_Pool.h"
 #include "DB_Operator.h"
 
@@ -17,8 +17,8 @@ using namespace mongo;
 
 class Mongo_Operator : public DB_Operator {
 public:
-	typedef boost::unordered_map<int, DBClientConnection *> Connection_Map;
-	//typedef boost::unordered_map<std::string, Connection_Map *> DB_Connection_Map;
+	typedef std::unordered_map<int, DBClientConnection *> Connection_Map;
+	//typedef std::unordered_map<std::string, Connection_Map *> DB_Connection_Map;
 	typedef Object_Pool<DBClientConnection, Thread_Mutex> Connection_Pool;
 
 	Mongo_Operator(void);
