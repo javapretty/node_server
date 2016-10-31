@@ -306,7 +306,7 @@ v8::Local<v8::Map> Mongo_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
 			Field_Info key_info;
-			key_info.field_label = "args";
+			key_info.field_label = "arg";
 			key_info.field_type = field_info.key_type;
 			key_info.field_name = field_info.key_name;
 			v8::Local<v8::Value> key = load_data_arg(db_struct, isolate, key_info, obj);
@@ -503,7 +503,7 @@ void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const
 	}
 	else {
 		Field_Info key_info;
-		key_info.field_label = "args";
+		key_info.field_label = "arg";
 		key_info.field_type = field_info.key_type;
 		key_info.field_name = field_info.key_name;
 		for (int i = 0; i < len * 2; i = i + 2) {

@@ -251,7 +251,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 		}
 		else if(iter->field_label == "vector") {
 			Byte_Buffer buffer;
-			db_struct->build_buffer_vector(isolate, *iter, buffer, value);
+			db_struct->build_byte_buffer_vector(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_vector(db_struct, *iter, buffer);
 			std::string blob_data = base64_encode((unsigned char *)ptr, field_len);
@@ -263,7 +263,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 		}
 		else if(iter->field_label == "map") {
 			Byte_Buffer buffer;
-			db_struct->build_buffer_map(isolate, *iter, buffer, value);
+			db_struct->build_byte_buffer_map(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_vector(db_struct, *iter, buffer);
 			std::string blob_data = base64_encode((unsigned char *)ptr, field_len);
@@ -275,7 +275,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 		}
 		else if(iter->field_label == "struct") {
 			Byte_Buffer buffer;
-			db_struct->build_buffer_struct(isolate, *iter, buffer, value);
+			db_struct->build_byte_buffer_struct(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_struct(db_struct, *iter, buffer);
 			std::string blob_data = base64_encode((unsigned char *)ptr, field_len);
@@ -407,7 +407,7 @@ v8::Local<v8::Array> Mysql_Operator::load_data_vector(DB_Struct *db_struct, Isol
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
-	v8::Local<v8::Array> array = db_struct->build_object_vector(isolate, field_info, buffer);
+	v8::Local<v8::Array> array = db_struct->build_byte_object_vector(isolate, field_info, buffer);
 
 	return handle_scope.Escape(array);
 }
@@ -419,7 +419,7 @@ v8::Local<v8::Map> Mysql_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
-	v8::Local<v8::Map> map = db_struct->build_object_map(isolate, field_info, buffer);
+	v8::Local<v8::Map> map = db_struct->build_byte_object_map(isolate, field_info, buffer);
 
 	return handle_scope.Escape(map);
 }
@@ -431,7 +431,7 @@ v8::Local<v8::Object> Mysql_Operator::load_data_struct(DB_Struct *db_struct, Iso
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
-	v8::Local<v8::Object> object = db_struct->build_object_struct(isolate, field_info, buffer);
+	v8::Local<v8::Object> object = db_struct->build_byte_object_struct(isolate, field_info, buffer);
 
 	return handle_scope.Escape(object);
 }
@@ -486,15 +486,15 @@ int Mysql_Operator::build_len_arg(DB_Struct *db_struct, const Field_Info &field_
 
 int Mysql_Operator::build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer) {
 	int field_len = sizeof(uint16_t);
-	uint16_t vec_size = 0;
-	buffer.read_uint16(vec_size);
+	uint16_t length = 0;
+	buffer.read_uint16(length);
 	if(db_struct->is_struct(field_info.field_type)) {
-		for(uint16_t i = 0; i < vec_size; ++i) {
+		for(uint16_t i = 0; i < length; ++i) {
 			field_len += build_len_struct(db_struct, field_info, buffer);
 		}
 	}
 	else{
-		for(uint16_t i = 0; i < vec_size; ++i) {
+		for(uint16_t i = 0; i < length; ++i) {
 			field_len += build_len_arg(db_struct, field_info, buffer);
 		}
 	}
