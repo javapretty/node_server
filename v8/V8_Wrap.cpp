@@ -145,7 +145,7 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	int msg_type = args[3]->Int32Value(context).FromMaybe(0);
 	uint32_t sid = args[4]->Uint32Value(context).FromMaybe(0);
 
-	Block_Buffer buffer;
+	Byte_Buffer buffer;
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct != nullptr) {
@@ -293,12 +293,12 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 				iter != db_struct->field_vec().end(); ++iter) {
 
 			DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(iter->field_type);
-			std::vector<Block_Buffer *> buffer_vec;
+			std::vector<Byte_Buffer *> buffer_vec;
 			DATA_MANAGER->load_db_data(db_id, sub_struct, key_index, buffer_vec);
 			if(key_index == 0) {
 				Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
 				uint i = 0;
-				for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+				for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
 						iter != buffer_vec.end(); iter++){
 					Local<Object> sub_object = sub_struct->build_object(args.GetIsolate(), *(*iter));
 					if (!sub_object.IsEmpty()) {
@@ -322,12 +322,12 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 		}
 	}
 	else {
-		std::vector<Block_Buffer *> buffer_vec;
+		std::vector<Byte_Buffer *> buffer_vec;
 		DATA_MANAGER->load_db_data(db_id, db_struct, key_index, buffer_vec);
 		if(key_index == 0) {
 			Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
 			uint i = 0;
-			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
 				Local<v8::Object> obj = db_struct->build_object(args.GetIsolate(), *(*iter));
 				if (!obj.IsEmpty()) {
@@ -379,12 +379,12 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			//从object中取出子对象进行保存操作，子对象是单张表单条记录
 			Local<Value> value = object->Get(context, String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(context).ToLocalChecked();
-			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			sub_struct->build_buffer(isolate, sub_object, *buffer);
 			DATA_MANAGER->save_db_data(db_id, sub_struct, buffer, flag);
 		}
 	} else {
-		Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 		db_struct->build_buffer(isolate, object, *buffer);
 		DATA_MANAGER->save_db_data(db_id, db_struct, buffer, flag);
 	}
@@ -398,7 +398,7 @@ void delete_db_data(const FunctionCallbackInfo<Value>& args) {
 	std::string table_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
-	Block_Buffer buffer;
+	Byte_Buffer buffer;
 	db_struct->build_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), buffer);
 	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, &buffer);
 }
@@ -411,7 +411,7 @@ void set_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+	Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 	db_struct->build_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), *buffer);
 	DATA_MANAGER->set_runtime_data(index, db_struct, buffer);
 }
@@ -424,7 +424,7 @@ void get_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Block_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
+	Byte_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
 	Local<Object> obj = Local<Object>();
 	if(buffer != nullptr) {
 		obj = db_struct->build_object(args.GetIsolate(), *buffer);

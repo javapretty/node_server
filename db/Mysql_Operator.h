@@ -31,9 +31,9 @@ public:
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 
 	//数据与Buffer互转
-	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer *> &buffer_vec);
-	virtual void save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
-	virtual void delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer);
+	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec);
+	virtual void save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer);
+	virtual void delete_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer);
 
 private:
 	Mysql_Conn *get_connection(int db_id);
@@ -44,14 +44,14 @@ private:
 	v8::Local<v8::Map> load_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 	v8::Local<v8::Object> load_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result);
 
-	void load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Block_Buffer &buffer);
-	void load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
-	void load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
-	void load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer);
+	void load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Byte_Buffer &buffer);
+	void load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer);
+	void load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer);
+	void load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer);
 
-	int build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
-	int build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
-	int build_len_struct(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer);
+	int build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer);
+	int build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer);
+	int build_len_struct(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer);
 
 private:
 	Connection_Map connection_map_;

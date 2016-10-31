@@ -554,7 +554,7 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, co
 	builder << field_info.field_name << obj_builder.obj();
 }
 
-int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer *> &buffer_vec) {
+int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
@@ -567,14 +567,14 @@ int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 			get_connection(db_id).findN(record, db_struct->table_name(), Query(), len);
 		}
 		for (int i = 0; i < len; ++i) {
-			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, record[i], *buffer);
 			buffer_vec.push_back(buffer);
 		}
 	} else {
 		//加载单条数据
 		BSONObj bsonobj = get_connection(db_id).findOne(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index));
-		Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 		load_data_single(db_struct, bsonobj, *buffer);
 		buffer_vec.push_back(buffer);
 		len = 1;
@@ -582,7 +582,7 @@ int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 	return len;
 }
 
-void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
@@ -610,7 +610,7 @@ void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *bu
 			BSON("$set" << set_builder.obj() ), true);
 }
 
-void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	uint16_t len = 0;
 	buffer->read_uint16(len);
 	for (uint i = 0; i < len; ++i) {
@@ -620,7 +620,7 @@ void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *
 	}
 }
 
-void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Block_Buffer &buffer) {
+void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Byte_Buffer &buffer) {
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
@@ -635,7 +635,7 @@ void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Bl
 	}
 }
 
-void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Block_Buffer &buffer) {
+void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
 	if(field_info.field_type == "int8") {
 		int8_t val = bsonobj[field_info.field_name].numberInt();
 		buffer.write_int8(val);
@@ -685,7 +685,7 @@ void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 }
 
-void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Block_Buffer &buffer) {
+void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_name);
 	uint16_t len = fieldobj.nFields();
 	BSONObjIterator field_iter(fieldobj);
@@ -706,7 +706,7 @@ void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &fi
 	}
 }
 
-void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Block_Buffer &buffer) {
+void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if(db_struct == nullptr){
 		return;
@@ -729,7 +729,7 @@ void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &fi
 	}
 }
 
-void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Block_Buffer &buffer) {
+void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
 	if(field_info.field_type == "int8") {
 		int8_t val = 0;
 		buffer.read_int8(val);
@@ -790,7 +790,7 @@ void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 }
 
-void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Block_Buffer &buffer) {
+void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
 	std::vector<BSONObj> bson_vec;
 
 	uint16_t len = 0;
@@ -811,7 +811,7 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &fi
 	builder << field_info.field_name << bson_vec;
 }
 
-void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Block_Buffer &buffer) {
+void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if (sub_struct == nullptr) {
 		return;

@@ -8,18 +8,18 @@
 #ifndef V8_MANAGER_H_
 #define V8_MANAGER_H_
 
-#include <string.h>
 #include <dlfcn.h>
+#include <string.h>
 #include "include/v8.h"
 #include "include/libplatform/libplatform.h"
+#include "boost/unordered_map.hpp"
 #include "Thread.h"
 #include "List.h"
 #include "Node_Define.h"
-#include "boost/unordered_map.hpp"
 
 using namespace v8;
 
-class Block_Buffer;
+class Byte_Buffer;
 class ArrayBufferAllocator : public ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {

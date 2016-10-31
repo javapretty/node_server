@@ -9,7 +9,6 @@
 #define NODE_MANAGER_H_
 
 #include <semaphore.h>
-#include "Block_List.h"
 #include "Log.h"
 #include "Endpoint.h"
 #include "Node_Define.h"
@@ -53,14 +52,14 @@ public:
 	}
 
 	//从endpoint中取消息buffer
-	inline Block_Buffer *pop_buffer(void);
+	inline Byte_Buffer *pop_buffer(void);
 	//回收消息buffer
-	inline int push_buffer(int eid, int cid, Block_Buffer *buffer);
+	inline int push_buffer(int eid, int cid, Byte_Buffer *buffer);
 
 	//传递消息，用于路由节点
-	int transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
+	int transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer);
 	//发送消息
-	int send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer);
+	int send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer);
 	//释放进程pool缓存，后台调用
 	int free_pool(void);
 
@@ -149,19 +148,19 @@ int Node_Manager::pop_drop_cid() {
 	return drop_cid;
 }
 
-Block_Buffer *Node_Manager::pop_buffer(void) {
+Byte_Buffer *Node_Manager::pop_buffer(void) {
 	for (Endpoint_Map::iterator iter = endpoint_map_.begin(); iter != endpoint_map_.end(); ++iter) {
-		if (!iter->second->block_list().empty()) {
-			return iter->second->block_list().pop_front();
+		if (!iter->second->buffer_list().empty()) {
+			return iter->second->buffer_list().pop_front();
 		}
 	}
 	return nullptr;
 }
 
-int Node_Manager::push_buffer(int eid, int cid, Block_Buffer *buffer) {
+int Node_Manager::push_buffer(int eid, int cid, Byte_Buffer *buffer) {
 	Endpoint_Map::iterator iter = endpoint_map_.find(eid);
 	if (iter != endpoint_map_.end()) {
-		iter->second->push_block(cid, buffer);
+		iter->second->push_buffer(cid, buffer);
 	}
 	return 0;
 }

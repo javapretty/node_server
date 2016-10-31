@@ -69,7 +69,7 @@ int V8_Manager::process_list(void) {
 	Local<Value> argv[argc];
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct("Node_Info");
 	if (msg_struct) {
-		Block_Buffer buffer;
+		Byte_Buffer buffer;
 		node_info_.serialize(buffer);
 		argv[0] = msg_struct->build_object(isolate_, buffer);
 	} else {
@@ -79,7 +79,7 @@ int V8_Manager::process_list(void) {
 	Local<Function> js_func = Local<Function>::Cast(func_value);
 	js_func->Call(context, context->Global(), argc, argv);
 	
-	Block_Buffer *buffer = nullptr;
+	Byte_Buffer *buffer = nullptr;
 	while (1) {
 		bool all_empty = true;
 

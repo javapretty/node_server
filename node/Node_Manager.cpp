@@ -175,11 +175,11 @@ int Node_Manager::self_close(void) {
 }
 
 int Node_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name) {
-	Block_Buffer buf;
-	buf.write_int32(node_type);
-	buf.write_int32(node_id);
-	buf.write_int32(endpoint_gid);
-	buf.write_string(node_name);
+	Byte_Buffer buffer;
+	buffer.write_int32(node_type);
+	buffer.write_int32(node_id);
+	buffer.write_int32(endpoint_gid);
+	buffer.write_string(node_name);
 
 	int real_write;
 	int fd;
@@ -198,7 +198,7 @@ int Node_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std
 	}
 
 	//调用write将buff写到文件描述符fd指向的FIFO中
-	if ((real_write = write(fd, buf.get_read_ptr(), buf.readable_bytes())) > 0) {
+	if ((real_write = write(fd, buffer.get_read_ptr(), buffer.readable_bytes())) > 0) {
 		LOG_INFO("Write into fifo:%s, real_write:%d\n", NODE_FIFO, real_write);
 	}
 	close(fd);
@@ -224,7 +224,7 @@ int Node_Manager::process_list(void) {
 	return 0;
 }
 
-int Node_Manager::transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
+int Node_Manager::transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer) {
 	int buf_eid = 0;
 	int buf_cid = 0;
 	int buf_msg_id = msg_id;
@@ -258,7 +258,7 @@ int Node_Manager::transmit_msg(int eid, int cid, int msg_id, int msg_type, uint3
 	return 0;
 }
 
-int Node_Manager::send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Block_Buffer *buffer) {
+int Node_Manager::send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer) {
 	Endpoint_Map::iterator iter = endpoint_map_.find(eid);
 	if (iter == endpoint_map_.end()) {
 		LOG_ERROR("eid %d not exist, cid:%d, msg_id:%d, msg_type:%d, sid:%d", eid, cid, msg_id, msg_type, sid);
@@ -270,7 +270,7 @@ int Node_Manager::send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t 
 		send_cid = iter->second->get_cid();
 	}
 
-	Block_Buffer buf;
+	Byte_Buffer buf;
 	buf.write_uint16(0);
 	buf.write_uint8(msg_id);
 	if (msg_type != S2C) {
@@ -279,7 +279,7 @@ int Node_Manager::send_msg(int eid, int cid, int msg_id, int msg_type, uint32_t 
 	}
 	buf.copy(buffer);
 	buf.write_len(RPC_PKG);
-	iter->second->send_block(send_cid, buf);
+	iter->second->send_buffer(send_cid, buf);
 	add_send_bytes(buf.readable_bytes());
 	return 0;
 }

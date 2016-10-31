@@ -43,7 +43,7 @@ DB_Operator *Data_Manager::db_operator(int type) {
 	return nullptr;
 }
 
-int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer, int flag) {
+int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer, int flag) {
 	int64_t index = 0;
 	buffer->peek_int64(index);
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
@@ -84,13 +84,13 @@ int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *bu
 	return 0;
 }
 
-int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Block_Buffer *> &buffer_vec) {
+int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Byte_Buffer *> &buffer_vec) {
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 	int len = 0;
 	if(index == 0) {
 		if(record_buffer_map->empty()) {
 			DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
-			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
 				int64_t ind = 0;
 				(*iter)->peek_int64(ind);
@@ -108,7 +108,7 @@ int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, s
 		Record_Buffer_Map::iterator iter;
 		if((iter = record_buffer_map->find(index)) == record_buffer_map->end()){
 			DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
-			for(std::vector<Block_Buffer *>::iterator iter = buffer_vec.begin();
+			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
 				int64_t ind = 0;
 				(*iter)->peek_int64(ind);
@@ -123,7 +123,7 @@ int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, s
 	return len;
 }
 
-int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 	int rdx = buffer->get_read_idx();
 	uint16_t len = 0;
@@ -138,7 +138,7 @@ int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, Block_Buffer *
 	return 0;
 }
 
-void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Block_Buffer *buffer) {
+void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
 	if(iter == runtime_data_map_.end()) {
 		runtime_data_map_[index] = buffer;
@@ -149,7 +149,7 @@ void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Block_B
 	}
 }
 
-Block_Buffer *Data_Manager::get_runtime_data(int64_t index, DB_Struct *db_struct) {
+Byte_Buffer *Data_Manager::get_runtime_data(int64_t index, DB_Struct *db_struct) {
 	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
 	if(iter != runtime_data_map_.end()) {
 		return iter->second;

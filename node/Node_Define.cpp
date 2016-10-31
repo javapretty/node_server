@@ -5,10 +5,10 @@
  *      Author: zhangyalei
  */
 
-#include "Block_Buffer.h"
+#include "Byte_Buffer.h"
 #include "Node_Define.h"
 
-void Node_Info::serialize(Block_Buffer &buffer) {
+void Node_Info::serialize(Byte_Buffer &buffer) {
 	buffer.write_int32(node_type);
 	buffer.write_int32(node_id);
 	buffer.write_string(node_name);
@@ -28,7 +28,7 @@ void Node_Info::serialize(Block_Buffer &buffer) {
 	}
 }
 
-void Node_Info::deserialize(Block_Buffer &buffer) {
+void Node_Info::deserialize(Byte_Buffer &buffer) {
 	buffer.read_int32(node_type);
 	buffer.read_int32(node_id);
 	buffer.read_string(node_name);

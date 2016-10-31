@@ -250,7 +250,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 			}
 		}
 		else if(iter->field_label == "vector") {
-			Block_Buffer buffer;
+			Byte_Buffer buffer;
 			db_struct->build_buffer_vector(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_vector(db_struct, *iter, buffer);
@@ -262,7 +262,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 			//		iter->field_label.c_str(), iter->field_type.c_str(), iter->field_name.c_str(), param_index, field_len, buffer.get_read_idx());
 		}
 		else if(iter->field_label == "map") {
-			Block_Buffer buffer;
+			Byte_Buffer buffer;
 			db_struct->build_buffer_map(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_vector(db_struct, *iter, buffer);
@@ -274,7 +274,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 			//		iter->field_label.c_str(), iter->field_type.c_str(), iter->field_name.c_str(), param_index, field_len, buffer.get_read_idx());
 		}
 		else if(iter->field_label == "struct") {
-			Block_Buffer buffer;
+			Byte_Buffer buffer;
 			db_struct->build_buffer_struct(isolate, *iter, buffer, value);
 			char *ptr = buffer.get_read_ptr();
 			int field_len = build_len_struct(db_struct, *iter, buffer);
@@ -403,7 +403,7 @@ v8::Local<v8::Value> Mysql_Operator::load_data_arg(DB_Struct *db_struct, Isolate
 
 v8::Local<v8::Array> Mysql_Operator::load_data_vector(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result) {
 	EscapableHandleScope handle_scope(isolate);
-	Block_Buffer buffer;
+	Byte_Buffer buffer;
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
@@ -415,7 +415,7 @@ v8::Local<v8::Array> Mysql_Operator::load_data_vector(DB_Struct *db_struct, Isol
 v8::Local<v8::Map> Mysql_Operator::load_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result) {
 	EscapableHandleScope handle_scope(isolate);
 
-	Block_Buffer buffer;
+	Byte_Buffer buffer;
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
@@ -427,7 +427,7 @@ v8::Local<v8::Map> Mysql_Operator::load_data_map(DB_Struct *db_struct, Isolate* 
 v8::Local<v8::Object> Mysql_Operator::load_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, sql::ResultSet *result) {
 	EscapableHandleScope handle_scope(isolate);
 
-	Block_Buffer buffer;
+	Byte_Buffer buffer;
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
@@ -436,7 +436,7 @@ v8::Local<v8::Object> Mysql_Operator::load_data_struct(DB_Struct *db_struct, Iso
 	return handle_scope.Escape(object);
 }
 
-int Mysql_Operator::build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer) {
+int Mysql_Operator::build_len_arg(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer) {
 	int field_len = 0;
 	if(field_info.field_type == "int8") {
 		field_len = sizeof(int8_t);
@@ -484,7 +484,7 @@ int Mysql_Operator::build_len_arg(DB_Struct *db_struct, const Field_Info &field_
 	return field_len;
 }
 
-int Mysql_Operator::build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer) {
+int Mysql_Operator::build_len_vector(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer) {
 	int field_len = sizeof(uint16_t);
 	uint16_t vec_size = 0;
 	buffer.read_uint16(vec_size);
@@ -501,7 +501,7 @@ int Mysql_Operator::build_len_vector(DB_Struct *db_struct, const Field_Info &fie
 	return field_len;
 }
 
-int Mysql_Operator::build_len_struct(DB_Struct *db_struct, const Field_Info &field_info, Block_Buffer &buffer) {
+int Mysql_Operator::build_len_struct(DB_Struct *db_struct, const Field_Info &field_info, Byte_Buffer &buffer) {
 	int field_len = 0;
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if(sub_struct == nullptr) {
@@ -524,7 +524,7 @@ int Mysql_Operator::build_len_struct(DB_Struct *db_struct, const Field_Info &fie
 	return field_len;
 }
 
-int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Block_Buffer*> &buffer_vec) {
+int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer*> &buffer_vec) {
 	char str_sql[128] = {0};
 	int len = 0;
 	if(key_index == 0) {
@@ -535,7 +535,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 			len = result->rowsCount();
 		}
 		while(result->next()) {
-			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, result, *buffer);
 			buffer_vec.push_back(buffer);
 		}
@@ -544,7 +544,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 		sprintf(str_sql, "select * from %s where %s=%ld", db_struct->table_name().c_str(), db_struct->index_name().c_str(), key_index);
 		sql::ResultSet *result = get_connection(db_id)->execute_query(str_sql);
 		if (result && result->next()) {
-			Block_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, result, *buffer);
 			buffer_vec.push_back(buffer);
 			len = 1;
@@ -553,7 +553,7 @@ int Mysql_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 	return len;
 }
 
-void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	int64_t key_index = 0;
 	buffer->peek_int64(key_index);
 	LOG_INFO("table %s save key_index:%ld", db_struct->table_name().c_str(), key_index);
@@ -690,7 +690,7 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Block_Buffer *bu
 	delete pstmt;
 }
 
-void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *buffer) {
+void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
 	uint16_t len = 0;
 	buffer->read_uint16(len);
 	for (uint i = 0; i < len; ++i) {
@@ -702,7 +702,7 @@ void Mysql_Operator::delete_data(int db_id, DB_Struct *db_struct, Block_Buffer *
 	}
 }
 
-void Mysql_Operator::load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Block_Buffer &buffer) {
+void Mysql_Operator::load_data_single(DB_Struct *db_struct, sql::ResultSet *result, Byte_Buffer &buffer) {
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
@@ -717,7 +717,7 @@ void Mysql_Operator::load_data_single(DB_Struct *db_struct, sql::ResultSet *resu
 	}
 }
 
-void Mysql_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
+void Mysql_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer) {
 	if(field_info.field_type == "int8") {
 		int8_t val = result->getInt(field_info.field_name);
 		buffer.write_int8(val);
@@ -767,13 +767,13 @@ void Mysql_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 }
 
-void Mysql_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
+void Mysql_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer) {
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
 }
 
-void Mysql_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Block_Buffer &buffer) {
+void Mysql_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, sql::ResultSet *result, Byte_Buffer &buffer) {
 	std::string blob_str = result->getString(field_info.field_name);
 	std::string decode = base64_decode(blob_str);
 	buffer.copy(decode);
