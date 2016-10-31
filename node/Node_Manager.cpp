@@ -174,7 +174,7 @@ int Node_Manager::self_close(void) {
 	return 0;
 }
 
-int ::Node_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name) {
+int Node_Manager::fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name) {
 	Block_Buffer buf;
 	buf.write_int32(node_type);
 	buf.write_int32(node_id);

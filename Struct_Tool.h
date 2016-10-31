@@ -1,9 +1,13 @@
-#ifndef __MSG_TOOL__
-#define __MSG_TOOL__
+/*
+ * Struct_Tool.h
+ *  Created on: Oct 29, 2016
+ *      Author: zhangyalei
+ */
+
+#ifndef STRUCT_TOOL_
+#define STRUCT_TOOL_
 
 #include <stdlib.h>
-#include "Struct_Manager.h"
-#include "Log.h"
 
 #define BEGIN_IMPLEMENT "\nfunction %s() {\n"
 #define END_IMPLEMENT "}\n"
@@ -17,15 +21,15 @@
 #define MESSAGE_BODY "\tMsg.%s = %d;\n"
 #define END_MESSAGE END_IMPLEMENT
 
-class Msg_Tool {
+class Struct_Tool {
 public:
-	Msg_Tool();
-	~Msg_Tool();
+	Struct_Tool();
+	~Struct_Tool();
 	int write_struct();
+
 private:
 	int write_to_struct(FILE *fp);
 	int write_to_message(FILE *fp);
-private:
 };
 
 #endif

@@ -7,8 +7,8 @@
 #include <signal.h>
 #include <getopt.h>
 #include "Time_Value.h"
+#include "Struct_Tool.h"
 #include "Node_Manager.h"
-#include "Msg_Tool.h"
 
 static void sighandler(int sig_no) { exit(0); } /// for gprof need normal exit
 
@@ -28,7 +28,7 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 	int node_id = 0;
 	int endpoint_gid = 0;
 	std::string node_name = "";
-	bool bspecial = false;
+	bool write_struct = false;
 	int c = 0;
 	while ((c = getopt_long_only(argc, argv, "vdm:", long_options, NULL)) != -1) {
 		switch (c) {
@@ -53,9 +53,9 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 			break;
 		}
 		case 's': { //struct_tool
-			Msg_Tool tool;
+			Struct_Tool tool;
 			tool.write_struct();
-			bspecial = true;
+			write_struct = true;
 			break;
 		}
 		default: {
@@ -68,10 +68,9 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 		LOG_WARN("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 		NODE_MANAGER->init(node_type, node_id, endpoint_gid, node_name);
 		NODE_MANAGER->thr_create();
+	} else if (write_struct) {
+		return 1;
 	} else {
-		if(bspecial) {
-			return 1;
-		}
 		LOG_FATAL("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 	}
 
@@ -84,8 +83,7 @@ int main(int argc, char *argv[]) {
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGUSR1, sighandler);
 
-	//启动node相关线程
-	if(0 == parse_cmd_arguments(argc, argv)) {
+	if(parse_cmd_arguments(argc, argv) == 0) {
 		Epoll_Watcher watcher;
 		watcher.loop();
 	}

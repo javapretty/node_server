@@ -1,7 +1,15 @@
-#include "Msg_Tool.h"
-#include "Node_Config.h"
+/*
+ * Struct_Tool.cpp
+ *  Created on: Oct 29, 2016
+ *      Author: zhangyalei
+ */
 
-Msg_Tool::Msg_Tool()
+#include "Struct_Manager.h"
+#include "Log.h"
+#include "Node_Config.h"
+#include "Struct_Tool.h"
+
+Struct_Tool::Struct_Tool()
 {
 	NODE_CONFIG->load_node_config();
 	const Json::Value &node_misc = NODE_CONFIG->node_misc();
@@ -10,11 +18,11 @@ Msg_Tool::Msg_Tool()
 	}
 }
 
-Msg_Tool::~Msg_Tool() {
+Struct_Tool::~Struct_Tool() {
 
 }
 
-int Msg_Tool::write_struct() {
+int Struct_Tool::write_struct() {
 	char temp[64] = {};
 	sprintf(temp, "js/struct.js");
 	FILE *fp = fopen(temp, "w");
@@ -35,12 +43,11 @@ int Msg_Tool::write_struct() {
 	write_to_message(fp);
 	fclose(fp);
 
-	LOG_DEBUG("write to js/struct.js && js/message.js success!");
-
+	LOG_INFO("write to js/struct.js && js/message.js success!");
 	return 0;
 }
 
-int Msg_Tool::write_to_struct(FILE *fp) {
+int Struct_Tool::write_to_struct(FILE *fp) {
 	Struct_Manager::Struct_Name_Map msg_struct_map = STRUCT_MANAGER->msg_struct_name_map();
 	char temp[256] = {};
 	for(Struct_Manager::Struct_Name_Map::iterator iter = msg_struct_map.begin();
@@ -82,7 +89,7 @@ int Msg_Tool::write_to_struct(FILE *fp) {
 	return 0;
 }
 
-int Msg_Tool::write_to_message(FILE *fp) {
+int Struct_Tool::write_to_message(FILE *fp) {
 	Struct_Manager::Struct_Name_Map msg_struct_map = STRUCT_MANAGER->msg_struct_name_map();
 	char temp[256] = {};
 	memset(temp, 0, 256);
