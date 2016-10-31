@@ -94,7 +94,7 @@ function send_db_msg(cid, msg_id, sid, msg) {
 }
 
 function send_error_msg(cid, sid, error_code) {
-	var msg_res = new node_0();
+	var msg_res = new node_1();
 	msg_res.error_code = error_code;
 	send_msg(Endpoint.DATA_SERVER, cid, Msg.SYNC_ERROR_CODE, Msg_Type.NODE_MSG, sid, msg_res);
 }

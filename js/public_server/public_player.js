@@ -37,7 +37,7 @@ Public_Player.prototype.send_success_msg = function(msg_id, msg) {
 }
 
 Public_Player.prototype.send_error_msg = function(error_code) {
-	var msg = new s2c_4();
+	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
 }

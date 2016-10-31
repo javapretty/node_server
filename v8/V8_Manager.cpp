@@ -133,7 +133,7 @@ int V8_Manager::process_list(void) {
 				//gate消息直接发送，不经过脚本层
 				if (NODE_MANAGER->node_info().node_type == GATE_SERVER
 						&& (msg_type == C2S || msg_type == NODE_S2C)
-						&& msg_id >= 3 && msg_id <= 255) {
+						&& msg_id >= 4 && msg_id <= 255) {
 					NODE_MANAGER->transmit_msg(eid, cid, msg_id, msg_type, sid, buffer);
 					NODE_MANAGER->push_buffer(eid, cid, buffer);
 					continue;

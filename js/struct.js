@@ -60,6 +60,124 @@ function Client_Role_Info() {
 	this.career = 0;
 }
 
+function s2c_5() {
+	this.error_code = 0;
+}
+
+function c2s_8() {
+	this.mail_id = 0;
+}
+
+function Logout_Info() {
+	this.role_id = 0;
+	this.account = "";
+	this.role_name = "";
+	this.level = 0;
+	this.client_ip = "";
+	this.login_time = 0;
+	this.logout_time = 0;
+}
+
+function node_208() {
+	this.data_type = 0;
+	this.guild_list = new Array();
+	this.rank_list = new Array();
+}
+
+function Rank_Info() {
+	this.rank_type = 0;
+	this.min_value = 0;
+	this.min_role_id = 0;
+	this.member_map = new Map();
+}
+
+function c2s_202() {
+}
+
+function node_3() {
+	this.account = "";
+	this.token = "";
+	this.game_nid = 0;
+}
+
+function Guild_Info() {
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.chief_id = 0;
+	this.create_time = 0;
+	this.member_list = new Array();
+}
+
+function c2s_5() {
+	this.account = "";
+	this.role_name = "";
+	this.gender = 0;
+	this.career = 0;
+}
+
+function Token_Info() {
+	this.cid = 0;
+	this.token = "";
+	this.token_time = 0;
+}
+
+function Mail_Info() {
+	this.role_id = 0;
+	this.total_count = 0;
+	this.mail_map = new Map();
+}
+
+function node_200() {
+	this.account = "";
+	this.role_name = "";
+	this.gender = 0;
+	this.career = 0;
+}
+
+function Idx_Info() {
+	this.type = "";
+	this.value = 0;
+}
+
+function Bag_Info() {
+	this.role_id = 0;
+	this.copper = 0;
+	this.gold = 0;
+	this.item_map = new Map();
+}
+
+function Role_Info() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.account = "";
+	this.client_ip = "";
+	this.agent_num = 0;
+	this.server_num = 0;
+	this.level = 0;
+	this.exp = 0;
+	this.gender = 0;
+	this.career = 0;
+	this.create_time = 0;
+	this.login_time = 0;
+	this.logout_time = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.scene_id = 0;
+	this.pos_x = 0;
+	this.pos_y = 0;
+	this.pos_z = 0;
+}
+
+function s2c_7() {
+	this.mail_id_list = new Array();
+}
+
+function Player_Data() {
+	this.role_info = new Role_Info();
+	this.mail_info = new Mail_Info();
+	this.bag_info = new Bag_Info();
+}
+
 function Public_Player_Info() {
 	this.role_id = 0;
 	this.account = "";
@@ -71,29 +189,9 @@ function Public_Player_Info() {
 	this.guild_name = "";
 }
 
-function c2s_5() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
-}
-
-function Mail_Info() {
-	this.role_id = 0;
-	this.total_count = 0;
-	this.mail_map = new Map();
-}
-
-function Token_Info() {
-	this.cid = 0;
-	this.token = "";
-	this.token_time = 0;
-}
-
 function Node_Info() {
 	this.node_type = 0;
 	this.node_id = 0;
-	this.endpoint_gid = 0;
 	this.node_name = "";
 	this.node_ip = "";
 	this.script_path = "";
@@ -135,19 +233,6 @@ function node_209() {
 	this.role_id = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
-}
-
-function Rank_Info() {
-	this.rank_type = 0;
-	this.min_value = 0;
-	this.min_role_id = 0;
-	this.member_map = new Map();
-}
-
-function node_208() {
-	this.data_type = 0;
-	this.guild_list = new Array();
-	this.rank_list = new Array();
 }
 
 function node_207() {
@@ -194,25 +279,6 @@ function node_201() {
 	this.account = "";
 }
 
-function Idx_Info() {
-	this.type = "";
-	this.value = 0;
-}
-
-function Bag_Info() {
-	this.role_id = 0;
-	this.copper = 0;
-	this.gold = 0;
-	this.item_map = new Map();
-}
-
-function node_200() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
-}
-
 function node_5() {
 	this.login = 0;
 	this.player_info = new Public_Player_Info();
@@ -220,23 +286,6 @@ function node_5() {
 
 function node_4() {
 	this.gate_nid = 0;
-}
-
-function c2s_202() {
-}
-
-function Guild_Info() {
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.chief_id = 0;
-	this.create_time = 0;
-	this.member_list = new Array();
-}
-
-function node_3() {
-	this.account = "";
-	this.token = "";
-	this.game_nid = 0;
 }
 
 function c2s_2() {
@@ -253,56 +302,6 @@ function s2c_1() {
 
 function node_1() {
 	this.error_code = 0;
-}
-
-function s2c_5() {
-	this.error_code = 0;
-}
-
-function c2s_8() {
-	this.mail_id = 0;
-}
-
-function Logout_Info() {
-	this.role_id = 0;
-	this.account = "";
-	this.role_name = "";
-	this.level = 0;
-	this.client_ip = "";
-	this.login_time = 0;
-	this.logout_time = 0;
-}
-
-function Role_Info() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.account = "";
-	this.client_ip = "";
-	this.agent_num = 0;
-	this.server_num = 0;
-	this.level = 0;
-	this.exp = 0;
-	this.gender = 0;
-	this.career = 0;
-	this.create_time = 0;
-	this.login_time = 0;
-	this.logout_time = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.scene_id = 0;
-	this.pos_x = 0;
-	this.pos_y = 0;
-	this.pos_z = 0;
-}
-
-function s2c_7() {
-	this.mail_id_list = new Array();
-}
-
-function Player_Data() {
-	this.role_info = new Role_Info();
-	this.mail_info = new Mail_Info();
-	this.bag_info = new Bag_Info();
 }
 
 function s2c_202() {

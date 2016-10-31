@@ -69,7 +69,7 @@ function on_tick(timer_id) {
 
 function on_close_session(account, cid, error_code) {
 	account_token_map.delete(account);
-	var msg = new s2c_4();
+	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
 	//关闭网络层链接
@@ -91,7 +91,7 @@ function select_gate(msg) {
 	token_info.token_time = util.now_sec;
 	account_token_map.set(msg.account, token_info);
 	
-	var msg_res = new s2c_1();
+	var msg_res = new s2c_2();
 	msg_res.gate_ip = gate_info.endpoint_list[0].server_ip;
 	msg_res.gate_port = gate_info.endpoint_list[0].server_port;
 	msg_res.token = token_info.token;
@@ -112,14 +112,14 @@ function verify_token(msg) {
 	var token_info = account_token_map.get(msg.account);
 	if (!token_info || token_info.token != msg.token) {		
 		log_error('verify_token, token error, account:', msg.account, ' token:', msg.token);
-		var msg_res = new s2c_4();
+		var msg_res = new s2c_5();
 		msg_res.error_code = Error_Code.TOKEN_NOT_EXIST;
 		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
 	}
 
 	var index = hash(msg.account) % (game_list.length);
 	var game_info = game_list[index];
-	var msg_res = new node_2();
+	var msg_res = new node_3();
 	msg_res.account = msg.account;
 	msg_res.game_nid = game_info.node_id;
 	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);

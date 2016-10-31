@@ -64,13 +64,16 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 		}
 	}
 
-	if(bspecial) {
-		return 1;
+	if (node_type > 0 && node_id > 0) {
+		LOG_WARN("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
+		NODE_MANAGER->init(node_type, node_id, endpoint_gid, node_name);
+		NODE_MANAGER->thr_create();
+	} else {
+		if(bspecial) {
+			return 1;
+		}
+		LOG_FATAL("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 	}
-
-	LOG_WARN("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
-	NODE_MANAGER->init(node_type, node_id, endpoint_gid, node_name);
-	NODE_MANAGER->thr_create();
 
 	return 0;
 }

@@ -18,18 +18,18 @@ enum Msg_Type {
 	NODE_C2S	= 3,	//客户端经过gate中转发到后端服务器的消息
 	NODE_S2C	= 4,	//后端服务器经过gate中转发到gate的消息
 	NODE_MSG	= 5,	//服务器进程节点间通信的消息
-	HTTP_MSG = 6,	//http消息
+	HTTP_MSG 	= 6,	//http消息
 };
 
 enum Node_Type {
-	CENTER_SERVER 	= 0,
-	GATE_SERVER 		= 1,
-	DATA_SERVER 		= 2,
-	DB_SERVER				= 3,
-	LOG_SERVER 			= 4,
-	MASTER_SERVER 	= 5,
-	PUBLIC_SERVER 	= 6,
-	GAME_SERVER 		= 7,
+	CENTER_SERVER 	= 1,
+	GATE_SERVER 		= 2,
+	DATA_SERVER 		= 3,
+	DB_SERVER				= 4,
+	LOG_SERVER 			= 5,
+	MASTER_SERVER 	= 6,
+	PUBLIC_SERVER 	= 7,
+	GAME_SERVER 		= 8,
 };
 
 struct Session {
@@ -52,7 +52,6 @@ typedef std::vector<Endpoint_Info> Endpoint_List;
 struct Node_Info {
 	int node_type;									//节点类型
 	int node_id;										//节点id
-	int endpoint_gid;							//端点组id
 	std::string node_name;					//节点名称
 	std::string node_ip;						//节点ip
 	std::string script_path;			//启动的js脚本路径

@@ -20,7 +20,7 @@ Mail.prototype.save_data = function(msg) {
 
 Mail.prototype.fetch_mail = function() {
 	log_debug('fetch_mail_info, role_id:', this.game_player.role_info.role_id, " role_name:", this.game_player.role_info.role_name);
-	var msg_res = new s2c_5();
+	var msg_res = new s2c_6();
 	for (var value of this.mail_info.mail_map.values()) {
   		msg_res.mail_list.push(value);
 	}
@@ -29,7 +29,7 @@ Mail.prototype.fetch_mail = function() {
 
 Mail.prototype.pickup_mail = function(msg) {
 	log_debug('pickup_mail, role_id:', this.game_player.role_info.role_id, " role_name:", this.game_player.role_info.role_name);
-	var msg_res = new s2c_6();
+	var msg_res = new s2c_7();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);
@@ -53,7 +53,7 @@ Mail.prototype.pickup_mail = function(msg) {
 
 Mail.prototype.delete_mail = function(msg) {
 	log_debug('delete_mail, role_id:', this.game_player.role_info.role_id, " role_name:", this.game_player.role_info.role_name);
-	var msg_res = new s2c_7();
+	var msg_res = new s2c_8();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);

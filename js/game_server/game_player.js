@@ -61,13 +61,13 @@ Game_Player.prototype.send_success_msg = function(msg_id, msg) {
 }
 
 Game_Player.prototype.send_error_msg = function(error_code) {
-	var msg = new s2c_4();
+	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(this.gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
 Game_Player.prototype.sync_login_to_client = function() {
-	var msg = new s2c_3();
+	var msg = new s2c_4();
 	msg.role_info.role_id = this.role_info.role_id;
 	msg.role_info.account = this.role_info.account;
 	msg.role_info.role_name = this.role_info.role_name;
@@ -79,7 +79,7 @@ Game_Player.prototype.sync_login_to_client = function() {
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
-	var msg = new node_4();
+	var msg = new node_5();
 	msg.login = login;
 	msg.player_info.role_id = this.role_info.role_id;
 	msg.player_info.account = this.role_info.account;

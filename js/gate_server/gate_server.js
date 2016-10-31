@@ -42,7 +42,7 @@ function init(node_info) {
 	max_idx = sid_idx + 1000000;
 	//初始化game node_id对应的endpoint map
 
-	var msg = new node_1();
+	var msg = new node_2();
 	msg.node_info = node_info;
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
@@ -50,7 +50,7 @@ function init(node_info) {
 function on_drop(cid) {
 	var session = cid_session_map.get(cid);
 	if (session) {
-		var msg = new node_5();
+		var msg = new node_6();
 		send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg);
 		
 		on_remove_session(session);
@@ -96,12 +96,12 @@ function on_add_session(session) {
 	add_session(session);
 
 	//通知game
-	var msg_3 = new node_3();
+	var msg_3 = new node_4();
 	msg_3.gate_nid = gate_node_info.node_id;
 	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_3);
 	
 	//通知client
-	var msg_res = new s2c_2();
+	var msg_res = new s2c_3();
 	msg_res.account = session.account;
 	send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, msg_res);
 }
@@ -114,7 +114,7 @@ function on_remove_session(session) {
 }
 
 function on_close_session(cid, error_code) {
-	var msg = new s2c_4();
+	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
 	//关闭网络层链接
@@ -165,7 +165,7 @@ function connect_gate(msg) {
 		return on_close_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
 	}
 	
-	var msg_res = new node_2();
+	var msg_res = new node_3();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);

@@ -39,7 +39,7 @@ function init(node_info) {
 	timer.init(Node_Type.GAME_SERVER);
 	game_node_info = node_info;
 
-	var msg = new node_1();
+	var msg = new node_2();
 	msg.node_info = node_info;
 	send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 	send_msg(Endpoint.GAME_GATE1_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
@@ -99,7 +99,7 @@ function on_remove_session(sid, error_code) {
 		gate_eid = sid_gate_eid_map.get(sid);
 	}
 	//session移除时候通知gate
-	var msg = new node_5();
+	var msg = new node_6();
 	msg.error_code = error_code;
 	send_msg(gate_eid, 0, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, sid, msg);
 	sid_gate_eid_map.delete(sid);
@@ -173,7 +173,7 @@ function process_error_code(msg) {
 	case Error_Code.NEED_CREATE_ROLE:
 	case Error_Code.ROLE_HAS_EXIST: {
 		var gate_eid = sid_gate_eid_map.get(msg.sid);
-		var msg_res = new s2c_4();
+		var msg_res = new s2c_5();
 		msg_res.error_code = msg.error_code;
 		send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
 		break;

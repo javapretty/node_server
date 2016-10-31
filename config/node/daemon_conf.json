@@ -5,62 +5,62 @@
 	//默认启动的node列表
 	"node_list" : [
 		{
-			"node_type" : 0,	
-			"node_id" : 1,
+			"node_type" : 1,	
+			"node_id" : 10001,
 			"endpoint_gid" : 1,
 			"node_name" : "center_server"
 		},
 		{
-			"node_type" : 1,	
-			"node_id" : 10001,
+			"node_type" : 2,	
+			"node_id" : 20001,
 			"endpoint_gid" : 1,
 			"node_name" : "gate_server1"
 		},
 		{
-			"node_type" : 1,
-			"node_id" : 10002,
+			"node_type" : 2,
+			"node_id" : 20002,
 			"endpoint_gid" : 2,
 			"node_name" : "gate_server2"
-		},
-		{
-			"node_type" : 2,
-			"node_id" : 20001,
-			"endpoint_gid" : 1,
-			"node_name" : "data_server"
 		},
 		{
 			"node_type" : 3,
 			"node_id" : 30001,
 			"endpoint_gid" : 1,
+			"node_name" : "data_server"
+		},
+		{
+			"node_type" : 4,
+			"node_id" : 40001,
+			"endpoint_gid" : 1,
 			"node_name" : "db_server"
 		},
 		{
-			"node_type" : 4,	
-			"node_id" : 40001,
-			"endpoint_gid" : 1,
-			"node_name" : "log_server"
-		},
-		{
-			"node_type" : 5,
+			"node_type" : 5,	
 			"node_id" : 50001,
 			"endpoint_gid" : 1,
-			"node_name" : "master_server"
+			"node_name" : "log_server"
 		},
 		{
 			"node_type" : 6,
 			"node_id" : 60001,
 			"endpoint_gid" : 1,
-			"node_name" : "public_server"
+			"node_name" : "master_server"
 		},
 		{
 			"node_type" : 7,
 			"node_id" : 70001,
 			"endpoint_gid" : 1,
+			"node_name" : "public_server"
+		},
+		{
+			"node_type" : 8,
+			"node_id" : 80001,
+			"endpoint_gid" : 1,
 			"node_name" : "game_server1"
 		},
 		{
-			"node_type" : 7,
-			"node_id" : 70002,
+			"node_type" : 8,
+			"node_id" : 80002,
 			"endpoint_gid" : 1,
 			"node_name" : "game_server2"
 		}

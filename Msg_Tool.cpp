@@ -35,6 +35,8 @@ int Msg_Tool::write_struct() {
 	write_to_message(fp);
 	fclose(fp);
 
+	LOG_DEBUG("write to js/struct.js && js/message.js success!");
+
 	return 0;
 }
 
@@ -90,7 +92,6 @@ int Msg_Tool::write_to_message(FILE *fp) {
 		iter != msg_struct_map.end(); iter++){
 		Base_Struct *base_struct = iter->second;
 		if(base_struct->msg_id() > 0) {
-			LOG_DEBUG("proc %s, msg_id is %d", base_struct->struct_name().c_str(), base_struct->msg_id());
 			memset(temp, 0, 256);
 			sprintf(temp, MESSAGE_BODY, base_struct->msg_name().c_str(), base_struct->msg_id());
 			fputs(temp, fp);

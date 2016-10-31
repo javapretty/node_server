@@ -3,3 +3,4 @@
 /obj/
 /natives_blob.bin
 /snapshot_blob.bin
+/node_server

@@ -60,6 +60,12 @@
     <ClInclude Include="db\DB_Operator.h" />
     <ClInclude Include="db\Mongo_Operator.h" />
     <ClInclude Include="db\Mysql_Operator.h" />
+	<ClInclude Include="node\Node_Config.h" />
+    <ClInclude Include="node\Node_Define.h" />
+    <ClInclude Include="node\Node_Manager.h" />
+    <ClInclude Include="node\Node_Timer.h" />
+    <ClInclude Include="v8\V8_Manager.h" />
+    <ClInclude Include="v8\V8_Wrap.h" />
     <ClInclude Include="include\cppconn\build_config.h" />
     <ClInclude Include="include\cppconn\config.h" />
     <ClInclude Include="include\cppconn\connection.h" />
@@ -262,12 +268,6 @@
     <ClInclude Include="include\nodelib\xml\tinystr.h" />
     <ClInclude Include="include\nodelib\xml\tinyxml.h" />
     <ClInclude Include="include\nodelib\xml\Xml.h" />
-    <ClInclude Include="node\Node_Config.h" />
-    <ClInclude Include="node\Node_Define.h" />
-    <ClInclude Include="node\Node_Manager.h" />
-    <ClInclude Include="node\Node_Timer.h" />
-    <ClInclude Include="v8\V8_Manager.h" />
-    <ClInclude Include="v8\V8_Wrap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="config\struct\message.define" />

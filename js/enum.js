@@ -40,19 +40,19 @@ if (typeof Msg_Type == "undefined") {
 	Msg_Type.NODE_C2S	= 3;	//客户端经过gate中转发到后端服务器的消息
 	Msg_Type.NODE_S2C	= 4;	//后端服务器经过gate中转发到gate的消息
 	Msg_Type.NODE_MSG	= 5;	//服务器进程节点间通信的消息
-	Msg_Type.HTTP_MSG	= 6;//http消息
+	Msg_Type.HTTP_MSG	= 6;	//http消息
 }
 
 if (typeof Node_Type == "undefined") {
 	var Node_Type = {};
-	Node_Type.CENTER_SERVER = 0;
-	Node_Type.GATE_SERVER 	= 1;
-	Node_Type.DATA_SERVER		= 2;
-	Node_Type.DB_SERVER			= 3;
-	Node_Type.LOG_SERVER		= 4;
-	Node_Type.MASTER_SERVER	= 5;
-	Node_Type.PUBLIC_SERVER	= 6;
-	Node_Type.GAME_SERVER		= 7;
+	Node_Type.CENTER_SERVER = 1;
+	Node_Type.GATE_SERVER 	= 2;
+	Node_Type.DATA_SERVER		= 3;
+	Node_Type.DB_SERVER			= 4;
+	Node_Type.LOG_SERVER		= 5;
+	Node_Type.MASTER_SERVER	= 6;
+	Node_Type.PUBLIC_SERVER	= 7;
+	Node_Type.GAME_SERVER		= 8;
 }
 
 if (typeof Endpoint == "undefined") {
