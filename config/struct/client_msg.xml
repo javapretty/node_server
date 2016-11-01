@@ -2,12 +2,12 @@
 
 	<c2s_1>
 		<head msg_id="1" msg_name="REQ_HEARTBEAT"/>
-    	<arg type="int32" name="client_time"/>
+    	<arg type="int" bit="32" name="client_time"/>
 	</c2s_1>
 
 	<s2c_1>
 		<head msg_id="1" msg_name="RES_HEARTBEAT"/>
-		<arg type="int32" name="server_time"/>
+		<arg type="int" bit="32" name="server_time"/>
 	</s2c_1>
 	
 	<c2s_2>
@@ -17,8 +17,8 @@
 
 	<s2c_2>
 		<head msg_id="2" msg_name="RES_SELECT_GATE"/>
-   		<arg type="string" name="gate_ip"/>
-    	<arg type="uint16" name="gate_port"/>
+   	<arg type="string" name="gate_ip"/>
+    	<arg type="uint" bit="16" name="gate_port"/>
     	<arg type="string" name="token"/>
 	</s2c_2>
 
@@ -46,13 +46,13 @@
 		<head msg_id="5" msg_name="REQ_CREATE_ROLE"/>
 		<arg type="string" name="account"/>
 		<arg type="string" name="role_name"/>
-		<arg type="int8" name="gender"/>
-		<arg type="int8" name="career"/>
+		<arg type="uint" bit=1 name="gender"/>
+		<arg type="uint" bit=2 name="career"/>
 	</c2s_5>
 	
 	<s2c_5>
 		<head msg_id="5" msg_name="RES_ERROR_CODE"/>
-		<arg type="int16" name="error_code"/>
+		<arg type="uint" bit=16 name="error_code"/>
 	</s2c_5>
 
 	<c2s_6>
@@ -61,27 +61,27 @@
 
 	<s2c_6>
 		<head msg_id="6" msg_name="RES_MAIL_INFO"/>
-		<vector type="Mail_Detail" name="mail_list"/>
+		<vector vbit="8" type="Client_Mail_Detail" name="mail_list"/>
 	</s2c_6>
 
 	<c2s_7>
 		<head msg_id="7" msg_name="REQ_PICKUP_MAIL"/>
-		<arg type="int32" name="mail_id" desc="收取所有邮件时候id为0"/>
+		<arg type="int" bit="32" name="mail_id" desc="收取所有邮件时候id为0"/>
 	</c2s_7>
 
 	<s2c_7>
 		<head msg_id="7" msg_name="RES_PICKUP_MAIL"/>
-		<vector type="int32" name="mail_id_list"/>
+		<vector vbit="8" type="int" bit="32" name="mail_id_list"/>
 	</s2c_7>
 
 	<c2s_8>
 		<head msg_id="8" msg_name="REQ_DEL_MAIL"/>
-		<arg type="int32" name="mail_id" desc="删除所有邮件时候id为0"/>
+		<arg type="int" bit="32" name="mail_id" desc="删除所有邮件时候id为0"/>
 	</c2s_8>
 
 	<s2c_8>
 		<head msg_id="8" msg_name="RES_DEL_MAIL"/>
-		<vector type="int32" name="mail_id_list"/>
+		<vector vbit="8" type="int" bit="32" name="mail_id_list"/>
 	</s2c_8>
 	
 	<c2s_9>
@@ -90,7 +90,7 @@
 
 	<s2c_9>
 		<head msg_id="9" msg_name="RES_FETCH_BAG"/>
-		<vector type="Item_Info" name="item_list"/>
+		<vector vbit="16" type="Client_Item_Info" name="item_list"/>
 	</s2c_9>
 
 	<c2s_201>

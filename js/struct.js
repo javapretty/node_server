@@ -1,19 +1,5 @@
 
-function Client_Guild_Info() {
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.chief_id = 0;
-	this.create_time = 0;
-	this.member_list = new Array();
-}
-
-function Rank_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.value = 0;
-}
-
-function Mail_Detail() {
+function Client_Mail_Detail() {
 	this.pickup = 0;
 	this.mail_id = 0;
 	this.send_time = 0;
@@ -27,24 +13,21 @@ function Mail_Detail() {
 	this.item_info = new Array();
 }
 
-function s2c_9() {
-	this.item_list = new Array();
-}
-
-function Item_Info() {
+function Client_Item_Info() {
 	this.item_id = 0;
 	this.amount = 0;
 	this.bind_type = 0;
 }
 
-function s2c_3() {
+function Client_Guild_Info() {
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.chief_id = 0;
+	this.create_time = 0;
+	this.member_list = new Array();
 }
 
-function c2s_4() {
-	this.account = "";
-}
-
-function Guild_Member_Detail() {
+function Client_Guild_Member_Detail() {
 	this.role_id = 0;
 	this.role_name = "";
 	this.level = 0;
@@ -60,14 +43,6 @@ function Client_Role_Info() {
 	this.career = 0;
 }
 
-function s2c_5() {
-	this.error_code = 0;
-}
-
-function c2s_8() {
-	this.mail_id = 0;
-}
-
 function Logout_Info() {
 	this.role_id = 0;
 	this.account = "";
@@ -78,26 +53,11 @@ function Logout_Info() {
 	this.logout_time = 0;
 }
 
-function node_208() {
-	this.data_type = 0;
-	this.guild_list = new Array();
-	this.rank_list = new Array();
-}
-
 function Rank_Info() {
 	this.rank_type = 0;
 	this.min_value = 0;
 	this.min_role_id = 0;
 	this.member_map = new Map();
-}
-
-function c2s_202() {
-}
-
-function node_3() {
-	this.account = "";
-	this.token = "";
-	this.game_nid = 0;
 }
 
 function Guild_Info() {
@@ -108,35 +68,10 @@ function Guild_Info() {
 	this.member_list = new Array();
 }
 
-function c2s_5() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
-}
-
-function Token_Info() {
-	this.cid = 0;
-	this.token = "";
-	this.token_time = 0;
-}
-
 function Mail_Info() {
 	this.role_id = 0;
 	this.total_count = 0;
 	this.mail_map = new Map();
-}
-
-function node_200() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
-}
-
-function Idx_Info() {
-	this.type = "";
-	this.value = 0;
 }
 
 function Bag_Info() {
@@ -168,14 +103,27 @@ function Role_Info() {
 	this.pos_z = 0;
 }
 
-function s2c_7() {
-	this.mail_id_list = new Array();
+function Idx_Info() {
+	this.type = "";
+	this.value = 0;
 }
 
 function Player_Data() {
 	this.role_info = new Role_Info();
 	this.mail_info = new Mail_Info();
 	this.bag_info = new Bag_Info();
+}
+
+function Rank_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.value = 0;
+}
+
+function Guild_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.level = 0;
 }
 
 function Public_Player_Info() {
@@ -187,6 +135,32 @@ function Public_Player_Info() {
 	this.career = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
+}
+
+function Mail_Detail() {
+	this.pickup = 0;
+	this.mail_id = 0;
+	this.send_time = 0;
+	this.sender_type = 0;
+	this.sender_id = 0;
+	this.sender_name = "";
+	this.mail_title = "";
+	this.mail_content = "";
+	this.copper = 0;
+	this.gold = 0;
+	this.item_info = new Array();
+}
+
+function Item_Info() {
+	this.item_id = 0;
+	this.amount = 0;
+	this.bind_type = 0;
+}
+
+function Token_Info() {
+	this.cid = 0;
+	this.token = "";
+	this.token_time = 0;
 }
 
 function Node_Info() {
@@ -210,19 +184,11 @@ function Endpoint_Info() {
 	this.receive_timeout = 0;
 }
 
-function s2c_6() {
-	this.mail_list = new Array();
-}
-
 function http_1() {
 	this.node_type = 0;
 	this.node_id = 0;
 	this.endpoint_gid = 0;
 	this.node_name = "";
-}
-
-function s2c_8() {
-	this.mail_id_list = new Array();
 }
 
 function node_210() {
@@ -233,6 +199,12 @@ function node_209() {
 	this.role_id = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
+}
+
+function node_208() {
+	this.data_type = 0;
+	this.guild_list = new Array();
+	this.rank_list = new Array();
 }
 
 function node_207() {
@@ -246,13 +218,6 @@ function node_206() {
 	this.rank_list = new Array();
 }
 
-function c2s_9() {
-}
-
-function node_203() {
-	this.player_data = new Player_Data();
-}
-
 function node_205() {
 	this.data_type = 0;
 }
@@ -262,8 +227,8 @@ function node_204() {
 	this.chief_id = 0;
 }
 
-function s2c_201() {
-	this.guild_info = new Client_Guild_Info();
+function node_203() {
+	this.player_data = new Player_Data();
 }
 
 function node_202() {
@@ -271,12 +236,19 @@ function node_202() {
 	this.player_data = new Player_Data();
 }
 
-function node_6() {
-	this.error_code = 0;
-}
-
 function node_201() {
 	this.account = "";
+}
+
+function node_200() {
+	this.account = "";
+	this.role_name = "";
+	this.gender = 0;
+	this.career = 0;
+}
+
+function node_6() {
+	this.error_code = 0;
 }
 
 function node_5() {
@@ -288,16 +260,14 @@ function node_4() {
 	this.gate_nid = 0;
 }
 
-function c2s_2() {
+function node_3() {
 	this.account = "";
+	this.token = "";
+	this.game_nid = 0;
 }
 
 function node_2() {
 	this.node_info = new Node_Info();
-}
-
-function s2c_1() {
-	this.server_time = 0;
 }
 
 function node_1() {
@@ -308,19 +278,67 @@ function s2c_202() {
 	this.guild_id = 0;
 }
 
+function c2s_202() {
+}
+
+function s2c_201() {
+	this.guild_info = new Client_Guild_Info();
+}
+
 function c2s_201() {
 	this.guild_name = "";
+}
+
+function s2c_9() {
+	this.item_list = new Array();
+}
+
+function c2s_9() {
+}
+
+function s2c_8() {
+	this.mail_id_list = new Array();
+}
+
+function c2s_8() {
+	this.mail_id = 0;
+}
+
+function s2c_7() {
+	this.mail_id_list = new Array();
 }
 
 function c2s_7() {
 	this.mail_id = 0;
 }
 
+function s2c_6() {
+	this.mail_list = new Array();
+}
+
 function c2s_6() {
+}
+
+function s2c_5() {
+	this.error_code = 0;
+}
+
+function c2s_5() {
+	this.account = "";
+	this.role_name = "";
+	this.gender = 0;
+	this.career = 0;
 }
 
 function s2c_4() {
 	this.role_info = new Client_Role_Info();
+}
+
+function c2s_4() {
+	this.account = "";
+}
+
+function s2c_3() {
 }
 
 function c2s_3() {
@@ -332,6 +350,14 @@ function s2c_2() {
 	this.gate_ip = "";
 	this.gate_port = 0;
 	this.token = "";
+}
+
+function c2s_2() {
+	this.account = "";
+}
+
+function s2c_1() {
+	this.server_time = 0;
 }
 
 function c2s_1() {

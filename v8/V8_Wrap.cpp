@@ -149,7 +149,13 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct != nullptr) {
-		msg_struct->build_byte_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), buffer);
+		if (msg_type == S2C || msg_type == NODE_S2C || msg_type == NODE_C2S) {
+			Bit_Buffer bit_buffer;
+			msg_struct->build_bit_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), bit_buffer);
+			buffer.copy(bit_buffer.data(), bit_buffer.get_byte_size());
+		} else {
+			msg_struct->build_byte_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), buffer);
+		}
 	}
 	NODE_MANAGER->send_msg(eid, cid, msg_id, msg_type, sid, &buffer);
 }

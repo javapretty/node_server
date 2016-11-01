@@ -142,7 +142,14 @@ int V8_Manager::process_list(void) {
 				std::string struct_name = get_struct_name(msg_type, msg_id);
 				Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 				if (msg_struct) {
-					argv[0] = msg_struct->build_msg_object(isolate_, cid, msg_id, msg_type, sid, *buffer);
+					//收到客户端发来的消息或者发向客户端的消息都是bit流，内部消息是byte流
+					if (msg_type == C2S || msg_type == NODE_C2S || msg_type == NODE_S2C) {
+						Bit_Buffer bit_buffer;
+						bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
+						argv[0] = msg_struct->build_msg_bit_object(isolate_, cid, msg_id, msg_type, sid, bit_buffer);
+					} else {
+						argv[0] = msg_struct->build_msg_byte_object(isolate_, cid, msg_id, msg_type, sid, *buffer);
+					}
 				} else {
 					continue;
 				}

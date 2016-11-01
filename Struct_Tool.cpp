@@ -13,8 +13,8 @@ Struct_Tool::Struct_Tool()
 {
 	NODE_CONFIG->load_node_config();
 	const Json::Value &node_misc = NODE_CONFIG->node_misc();
-	for (uint i = 0; i < node_misc["msg_struct_path"].size(); ++i) {
-		STRUCT_MANAGER->init_struct(node_misc["msg_struct_path"][i].asCString(), MSG_STRUCT);
+	for (uint i = 0; i < node_misc["base_struct_path"].size(); ++i) {
+		STRUCT_MANAGER->init_struct(node_misc["base_struct_path"][i].asCString(), BASE_STRUCT);
 	}
 }
 
@@ -48,10 +48,9 @@ int Struct_Tool::write_struct() {
 }
 
 int Struct_Tool::write_to_struct(FILE *fp) {
-	Struct_Manager::Struct_Name_Map msg_struct_map = STRUCT_MANAGER->msg_struct_name_map();
 	char temp[256] = {};
-	for(Struct_Manager::Struct_Name_Map::iterator iter = msg_struct_map.begin();
-			iter != msg_struct_map.end(); iter++){
+	for(Struct_Manager::Struct_Name_Map::const_iterator iter = STRUCT_MANAGER->base_struct_name_map().begin();
+			iter != STRUCT_MANAGER->base_struct_name_map().end(); iter++){
 		Base_Struct *base_struct = iter->second;
 		memset(temp, 0, 256);
 		sprintf(temp, BEGIN_IMPLEMENT, base_struct->struct_name().c_str());
@@ -72,8 +71,7 @@ int Struct_Tool::write_to_struct(FILE *fp) {
 			else if(info.field_label == "vector") {
 				sprintf(temp, RESET_VECTOR, info.field_name.c_str());
 			}
-			else if(info.field_label == "map" ||
-					info.field_label == "unordered_map") {
+			else if(info.field_label == "map") {
 				sprintf(temp, RESET_MAP, info.field_name.c_str());
 			}
 			else if(info.field_label == "struct") {
@@ -90,13 +88,12 @@ int Struct_Tool::write_to_struct(FILE *fp) {
 }
 
 int Struct_Tool::write_to_message(FILE *fp) {
-	Struct_Manager::Struct_Name_Map msg_struct_map = STRUCT_MANAGER->msg_struct_name_map();
 	char temp[256] = {};
 	memset(temp, 0, 256);
 	sprintf(temp, BEGIN_MESSAGE);
 	fputs(temp, fp);
-	for(Struct_Manager::Struct_Name_Map::iterator iter = msg_struct_map.begin();
-		iter != msg_struct_map.end(); iter++){
+	for(Struct_Manager::Struct_Name_Map::const_iterator iter = STRUCT_MANAGER->base_struct_name_map().begin();
+		iter != STRUCT_MANAGER->base_struct_name_map().end(); iter++){
 		Base_Struct *base_struct = iter->second;
 		if(base_struct->msg_id() > 0) {
 			memset(temp, 0, 256);

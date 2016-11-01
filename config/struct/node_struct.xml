@@ -27,6 +27,26 @@
 		<arg type="int32" name="token_time"/>
 	</Token_Info>
 	
+	<Item_Info>
+		<arg type="int32" name="item_id"/>
+		<arg type="int32" name="amount"/>
+		<arg type="int8" name="bind_type"/>
+	</Item_Info>
+	
+	<Mail_Detail>
+		<arg type="bool" name="pickup"/>
+		<arg type="int32" name="mail_id"/>
+		<arg type="int32" name="send_time"/>
+		<arg type="int32" name="sender_type"/>
+		<arg type="int64" name="sender_id"/>
+		<arg type="string" name="sender_name"/>
+		<arg type="string" name="mail_title"/>
+		<arg type="string" name="mail_content"/>
+		<arg type="int32" name="copper"/>
+		<arg type="int32" name="gold"/>
+		<vector type="Item_Info" name="item_info"/>
+	</Mail_Detail>
+	
 	<Public_Player_Info>
     	<arg type="int64" name="role_id"/>
     	<arg type="string" name="account"/>
@@ -37,6 +57,18 @@
     	<arg type="int64" name="guild_id"/>
 		<arg type="string" name="guild_name"/>
 	</Public_Player_Info>
+	
+	<Guild_Member_Detail>
+		<arg type="int64" name="role_id"/>
+		<arg type="string" name="role_name"/>
+		<arg type="int8" name="level"/>
+	</Guild_Member_Detail>
+	
+	<Rank_Member_Detail>
+		<arg type="int64" name="role_id"/>
+		<arg type="string" name="role_name"/>
+		<arg type="int32" name="value"/>
+	</Rank_Member_Detail>
 	
 	<!--数据库相关的结构体-->
 	<Player_Data>
