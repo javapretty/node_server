@@ -284,6 +284,9 @@ function node_200() {
 	this.career = 0;
 }
 
+function node_7() {
+}
+
 function node_6() {
 	this.error_code = 0;
 }
@@ -300,6 +303,7 @@ function node_4() {
 function node_3() {
 	this.account = "";
 	this.token = "";
+	this.client_cid = 0;
 	this.game_nid = 0;
 }
 

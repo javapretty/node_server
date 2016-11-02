@@ -12,11 +12,6 @@ require('util.js');
 require('timer.js');
 require('gate_server/session.js');
 
-//sid idx
-var sid_idx = 0;
-var max_idx = 0;
-//sid set
-var sid_set = new Set();
 //gate node_info
 var gate_node_info = null;
 //game_node_id--game_cid
@@ -36,11 +31,7 @@ function init(node_info) {
 	log_info('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.GATE_SERVER);
-
 	gate_node_info = node_info;
-	sid_idx = node_info.node_id % 10000 * 1000000;
-	max_idx = sid_idx + 1000000;
-	//初始化game node_id对应的endpoint map
 
 	var msg = new node_2();
 	msg.node_info = node_info;
@@ -69,26 +60,7 @@ function on_msg(msg) {
 
 function on_tick(timer_id) {}
 
-function get_sid(cid) {
-	var count = 0;
-	do {
-		count++;
-		sid_idx++;
-		if (sid_idx >= max_idx) {
-			sid_idx = max_idx - 1000000;
-		}
-	} while (sid_set.has(sid_idx) && count < 10000)
-
-	if (count >= 10000) {
-		log_error('get_sid error, cal count:', count, ' cid:', cid); 
-		on_close_session(cid, Error_Code.DISCONNECT_SELF);
-		return -1;
-	}
-	return sid_idx;
-}
-
 function on_add_session(session) {
-	sid_set.add(session.sid);
 	cid_session_map.set(session.client_cid, session);
 	sid_session_map.set(session.sid, session);
 	account_session_map.set(session.account, session);
@@ -107,10 +79,13 @@ function on_add_session(session) {
 }
 
 function on_remove_session(session) {
-	sid_set.delete(session.sid);
+	//通知center
+	var msg = new node_7();
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, msg);	
+	
 	cid_session_map.delete(session.client_cid);
 	sid_session_map.delete(session.sid);
-	account_session_map.delete(session.account);	
+	account_session_map.delete(session.account);
 }
 
 function on_close_session(cid, error_code) {
@@ -168,7 +143,8 @@ function connect_gate(msg) {
 	var msg_res = new node_3();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
+	msg_res.client_cid = msg.cid;
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, 0, msg_res);
 }
 
 function set_node_info(msg) {
@@ -178,10 +154,10 @@ function set_node_info(msg) {
 function verify_token(msg) {
 	var session = new Session();
 	session.client_eid = Endpoint.GATE_CLIENT_SERVER;
-	session.client_cid = msg.sid;
+	session.client_cid = msg.client_cid;
 	session.game_eid = Endpoint.GATE_NODE_SERVER;
 	session.game_cid = game_nid_cid_map.get(msg.game_nid);
-	session.sid = get_sid(msg.sid);
+	session.sid = msg.sid;
 	session.account = msg.account;
 	on_add_session(session);
 }

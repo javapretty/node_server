@@ -13,6 +13,7 @@
 		<head msg_id="3" msg_name="SYNC_GATE_CENTER_VERIFY_TOKEN"/>
 		<arg type="string" name="account"/>
 		<arg type="string" name="token"/>
+		<arg type="int" bit="32" name="client_cid"/>
 		<arg type="int" bit="32" name="game_nid"/>
 	</node_3>
 
@@ -31,6 +32,10 @@
 		<head msg_id="6" msg_name="SYNC_GAME_GATE_LOGOUT"/>
 		<arg type="uint" bit="16" name="error_code"/>
 	</node_6>
+	
+	<node_7>
+		<head msg_id="7" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION"/>
+	</node_7>
 	
 	<node_200>
 		<head msg_id="200" msg_name="SYNC_GAME_DB_CREATE_PLAYER"/>

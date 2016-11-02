@@ -11,6 +11,10 @@ require('config.js');
 require('util.js');
 require('timer.js');
 
+//sid idx
+var sid_idx = 0;
+//sid set
+var sid_set = new Set();
 //node_id--node_info
 var node_map = new Map();
 //gate列表
@@ -52,6 +56,9 @@ function on_msg(msg) {
 			break;		
 		case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
 			verify_token(msg);
+			break;
+		case Msg.SYNC_GATE_CENTER_REMOVE_SESSION:
+			sid_set.delete(msg.sid);
 			break;
 		default:
 			log_error('center_server process node msg, msg_id not exist:', msg.msg_id);
@@ -117,10 +124,16 @@ function verify_token(msg) {
 		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
 	}
 
+	++sid_idx;
+	if (sid_idx > 4294967295) {
+		sid_idx = 0;
+	}
+	sid_set.add(sid_idx);
 	var index = hash(msg.account) % (game_list.length);
 	var game_info = game_list[index];
 	var msg_res = new node_3();
 	msg_res.account = msg.account;
+	msg_res.client_cid = msg.client_cid;
 	msg_res.game_nid = game_info.node_id;
-	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.sid, msg_res);
+	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, sid_idx, msg_res);
 }
