@@ -21,9 +21,6 @@ CREATE TABLE `role` (
   role_id bigint(20) NOT NULL auto_increment,
   role_name varchar(120) NOT NULL default '', 
   account varchar(120) NOT NULL default '',
-  client_ip varchar(120) NOT NULL default '',
-  agent_num int(11) NOT NULL default '0',
-  server_num int(11) NOT NULL default '0',
   level int(11) NOT NULL default '0',
   exp int(11) NOT NULL default '0',
   gender tinyint(3) NOT NULL default '0',
@@ -33,10 +30,6 @@ CREATE TABLE `role` (
   logout_time int(11) NOT NULL default '0',
   guild_id bigint(20) NOT NULL default '0',
   guild_name varchar(120) NOT NULL default '',
-  scene_id int(11) NOT NULL default '0',
-  pos_x int(11) NOT NULL default '0',
-  pos_y int(11) NOT NULL default '0',
-  pos_z int(11) NOT NULL default '0',
   PRIMARY KEY (role_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

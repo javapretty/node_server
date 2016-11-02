@@ -130,7 +130,7 @@ function process_public_node_msg(msg) {
 			if (public_player == null) {
 				public_player = new Public_Player();
 			}
-			public_player.login(msg.cid, msg.sid, msg.player_info);	
+			public_player.login(msg.cid, msg.sid, msg.role_info);	
 		} 
 		else {
 			var public_player = sid_public_player_map.get(msg.sid);

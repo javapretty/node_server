@@ -128,18 +128,9 @@ int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, s
 	return len;
 }
 
-int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
+int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, int64_t index) {
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
-	int rdx = buffer->get_read_idx();
-	uint16_t len = 0;
-	buffer->read_uint16(len);
-	for(uint i = 0; i < len; i++){
-		int64_t key = 0;
-		buffer->read_int64(key);
-		record_buffer_map->erase(key);
-	}
-	buffer->set_read_idx(rdx);
-	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, buffer);
+	record_buffer_map->erase(index);
 	return 0;
 }
 

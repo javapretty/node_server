@@ -117,7 +117,7 @@ function create_player(msg) {
 		msg_res.player_data.bag_info.role_id = role_id;
 		msg_res.player_data.mail_info.role_id = role_id;
 		//将玩家数据写到数据库
-		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "Player_Data", msg_res.player_data);
+		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "DB_Player_Data", msg_res.player_data);
 		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	}
 }
@@ -126,7 +126,7 @@ function load_player(msg) {
 	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
 	if (role_id > 0) {
 		var msg_res = new node_203();
-		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
+		msg_res.player_data = load_db_data(DB_Id.GAME, "DB_Player_Data", role_id);
 		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	} else {
 		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
@@ -134,7 +134,7 @@ function load_player(msg) {
 }
 
 function save_player(msg) {
-	save_db_data(Save_Flag.SAVE_DB, DB_Id.GAME, "Player_Data", msg.player_data);
+	save_db_data(Save_Flag.SAVE_DB, DB_Id.GAME, "DB_Player_Data", msg.player_data);
 	if (msg.logout) {
 		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
 	}

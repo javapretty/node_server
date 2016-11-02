@@ -68,25 +68,14 @@ Game_Player.prototype.send_error_msg = function(error_code) {
 
 Game_Player.prototype.sync_login_to_client = function() {
 	var msg = new s2c_4();
-	msg.role_info.role_id = this.role_info.role_id;
-	msg.role_info.account = this.role_info.account;
-	msg.role_info.role_name = this.role_info.role_name;
-	msg.role_info.level = this.role_info.level;
-	msg.role_info.exp = this.role_info.exp;
-	msg.role_info.career = this.role_info.career;
-	msg.role_info.gender = this.role_info.gender;
+	msg.role_info = this.role_info;
 	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
 	var msg = new node_5();
 	msg.login = login;
-	msg.player_info.role_id = this.role_info.role_id;
-	msg.player_info.account = this.role_info.account;
-	msg.player_info.role_name = this.role_info.role_name;
-	msg.player_info.level = this.role_info.level;
-	msg.player_info.gender = this.role_info.gender;
-	msg.player_info.career = this.role_info.career;
+	msg.role_info = this.role_info;
 	send_msg_to_public(Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, msg);
 }
 
@@ -107,7 +96,8 @@ Game_Player.prototype.sync_logout_to_log = function() {
 	msg.logout_info.role_name = this.role_info.role_name;
 	msg.logout_info.account = this.role_info.account;
 	msg.logout_info.level = this.role_info.level;
-	msg.logout_info.client_ip = this.role_info.client_ip;
+	msg.logout_info.exp = this.role_info.exp;
+	msg.logout_info.create_time = this.role_info.create_time;
 	msg.logout_info.login_time = this.role_info.login_time;
 	msg.logout_info.logout_time = this.role_info.logout_time;
 	send_msg_to_log(Msg.SYNC_LOG_PLAYER_LOGOUT, this.sid, msg);
