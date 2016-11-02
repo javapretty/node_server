@@ -103,7 +103,7 @@
 		<head msg_id="1" msg_name="HTTP_CREATE_NODE_PROCESS"/>
 		<arg type="int" bit="32" name="node_type"/>
 		<arg type="int" bit="32" name="node_id"/>
-		<arg type="uint" bit="8" name="endpoint_gid"/>
+		<arg type="int" bit="32" name="endpoint_gid"/>
 		<arg type="string" name="node_name"/>
 	</http_1>
 </root>
