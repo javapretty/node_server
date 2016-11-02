@@ -1,152 +1,75 @@
 <root>
 
 	<Endpoint_Info>
-		<arg type="int32" name="endpoint_type"/>
-		<arg type="int32" name="endpoint_gid"/>
-		<arg type="int32" name="endpoint_id"/>
+		<arg type="int" bit="32" name="endpoint_type"/>
+		<arg type="int" bit="32" name="endpoint_gid"/>
+		<arg type="int" bit="32" name="endpoint_id"/>
 		<arg type="string" name="endpoint_name"/>
 		<arg type="string" name="server_ip"/>
-		<arg type="int32" name="server_port"/>
-		<arg type="int32" name="protocol_type"/>
-		<arg type="int32" name="receive_timeout"/>
+		<arg type="int" bit="32" name="server_port"/>
+		<arg type="int" bit="32" name="protocol_type"/>
+		<arg type="int" bit="32" name="receive_timeout"/>
 	</Endpoint_Info>
 	
 	<Node_Info>
-		<arg type="int32" name="node_type"/>
-		<arg type="int32" name="node_id"/>
+		<arg type="int" bit="32" name="node_type"/>
+		<arg type="int" bit="32" name="node_id"/>
 		<arg type="string" name="node_name"/>
 		<arg type="string" name="node_ip"/>
 		<arg type="string" name="script_path"/>
-		<vector type="string" name="plugin_list"/>
-		<vector type="Endpoint_Info" name="endpoint_list"/>
+		<vector vbit="8" type="string" name="plugin_list"/>
+		<vector vbit="8" type="Endpoint_Info" name="endpoint_list"/>
 	</Node_Info>
 
 	<Token_Info>
-		<arg type="int32" name="cid"/>
+		<arg type="int" bit="32" name="cid"/>
 		<arg type="string" name="token"/>
-		<arg type="int32" name="token_time"/>
+		<arg type="int" bit="32" name="token_time"/>
 	</Token_Info>
-	
-	<Item_Info>
-		<arg type="int32" name="item_id"/>
-		<arg type="int32" name="amount"/>
-		<arg type="int8" name="bind_type"/>
-	</Item_Info>
-	
-	<Mail_Detail>
-		<arg type="bool" name="pickup"/>
-		<arg type="int32" name="mail_id"/>
-		<arg type="int32" name="send_time"/>
-		<arg type="int32" name="sender_type"/>
-		<arg type="int64" name="sender_id"/>
-		<arg type="string" name="sender_name"/>
-		<arg type="string" name="mail_title"/>
-		<arg type="string" name="mail_content"/>
-		<arg type="int32" name="copper"/>
-		<arg type="int32" name="gold"/>
-		<vector type="Item_Info" name="item_info"/>
-	</Mail_Detail>
-	
-	<Public_Player_Info>
-    	<arg type="int64" name="role_id"/>
-    	<arg type="string" name="account"/>
-    	<arg type="string" name="role_name"/>
-    	<arg type="int8" name="level"/>
-    	<arg type="int8" name="gender"/>
-    	<arg type="int8" name="career"/>
-    	<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
-	</Public_Player_Info>
-	
-	<Guild_Member_Detail>
-		<arg type="int64" name="role_id"/>
-		<arg type="string" name="role_name"/>
-		<arg type="int8" name="level"/>
-	</Guild_Member_Detail>
 	
 	<Rank_Member_Detail>
 		<arg type="int64" name="role_id"/>
 		<arg type="string" name="role_name"/>
-		<arg type="int32" name="value"/>
+		<arg type="int" bit="32" name="value"/>
 	</Rank_Member_Detail>
 	
-	<!--数据库相关的结构体-->
 	<Player_Data>
 		<struct type="Role_Info" name="role_info"/>
 		<struct type="Mail_Info" name="mail_info"/>
 		<struct type="Bag_Info" name="bag_info"/>
 	</Player_Data>
-	
-	<Idx_Info>
-		<head table_name="game.idx" index_name="type"/>
-		<arg type="string" name="type"/>
-		<arg type="int32" name="value"/>
-	</Idx_Info>
-	
-	<Role_Info>
-		<head table_name="game.role" index_name="role_id"/>
-		<arg type="int64" name="role_id"/>
-		<arg type="string" name="role_name"/>
-		<arg type="string" name="account"/>
-		<arg type="string" name="client_ip"/>
-		<arg type="int32" name="agent_num"/>
-		<arg type="int32" name="server_num"/>
-		<arg type="int8" name="level"/>
-		<arg type="int32" name="exp"/>
-		<arg type="int8" name="gender"/>
-		<arg type="int8" name="career"/>
-		<arg type="int32" name="create_time"/>
-		<arg type="int32" name="login_time"/>
-		<arg type="int32" name="logout_time"/>
-		<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
-		<arg type="int32" name="scene_id"/>
-		<arg type="int32" name="pos_x"/>
-		<arg type="int32" name="pos_y"/>
-		<arg type="int32" name="pos_z"/>
-	</Role_Info>
 
 	<Bag_Info>
-		<head table_name="game.bag" index_name="role_id"/>
 		<arg type="int64" name="role_id"/>
-		<arg type="int32" name="copper"/>
-		<arg type="int32" name="gold"/>
-		<map type="Item_Info" key_type="int32" key_name="item_id" name="item_map"/>
+		<arg type="int" bit="32" name="copper"/>
+		<arg type="int" bit="32" name="gold"/>
+		<map vbit="16" type="Item_Info" key_type="int" key_bit="32" key_name="item_id" name="item_map"/>
 	</Bag_Info>
 	
 	<Mail_Info>
-		<head table_name="game.mail" index_name="role_id"/>
 		<arg type="int64" name="role_id"/>
-		<arg type="int32" name="total_count"/>
-		<map type="Mail_Detail" key_type="int32" key_name="mail_id" name="mail_map"/>
+		<arg type="int" bit="32" name="total_count"/>
+		<map vbit="16" type="Mail_Detail" key_type="int" key_bit="32" key_name="mail_id" name="mail_map"/>
 	</Mail_Info>
-	
-	<Guild_Info>
-		<head table_name="game.guild" index_name="guild_id"/>
-		<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
-		<arg type="int64" name="chief_id"/>
-		<arg type="int32" name="create_time"/>
-		<vector type="Guild_Member_Detail" name="member_list"/>
-	</Guild_Info>
 
 	<Rank_Info>
-		<head table_name="game.rank" index_name="rank_type"/>
 		<arg type="int64" name="rank_type"/>
-		<arg type="int32" name="min_value"/>
 		<arg type="int64" name="min_role_id"/>
-		<map type="Rank_Member_Detail" key_type="int64" key_name="role_id" name="member_map"/>
+		<arg type="int" bit="32" name="min_value"/>
+		<map vbit="16" type="Rank_Member_Detail" key_type="int64" key_name="role_id" name="member_map"/>
 	</Rank_Info>
 
 	<Logout_Info>
-		<head table_name="log.logout" index_name="role_id"/>
 		<arg type="int64" name="role_id"/>
-		<arg type="string" name="account"/>
-		<arg type="string" name="role_name"/>
-		<arg type="int8" name="level"/>
-		<arg type="string" name="client_ip"/>
-		<arg type="int32" name="login_time"/>
-		<arg type="int32" name="logout_time"/>
+    	<arg type="string" name="role_name"/>
+    	<arg type="string" name="account"/>
+    	<arg type="uint" bit="8" name="level"/>
+    	<arg type="uint" bit="32" name="exp"/>
+    	<arg type="uint" bit="1" name="gender"/>
+    	<arg type="uint" bit="2" name="career"/>
+    	<arg type="int" bit="32" name="create_time"/>
+		<arg type="int" bit="32" name="login_time"/>
+		<arg type="int" bit="32" name="logout_time"/>
 	</Logout_Info>	
 	
 </root>

@@ -58,8 +58,8 @@ struct Node_Info {
 	std::vector<std::string> plugin_list; //插件列表
 	Endpoint_List endpoint_list;	//线程列表
 
-	void serialize(Byte_Buffer &buffer);
-	void deserialize(Byte_Buffer &buffer);
+	void serialize(Bit_Buffer &buffer);
+	void deserialize(Bit_Buffer &buffer);
 	void reset(void);
 };
 

@@ -1,5 +1,78 @@
 
-function Client_Mail_Detail() {
+function DB_Logout_Info() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.account = "";
+	this.level = 0;
+	this.exp = 0;
+	this.gender = 0;
+	this.career = 0;
+	this.create_time = 0;
+	this.login_time = 0;
+	this.logout_time = 0;
+}
+
+function DB_Rank_Info() {
+	this.rank_type = 0;
+	this.min_value = 0;
+	this.min_role_id = 0;
+	this.member_map = new Map();
+}
+
+function DB_Guild_Info() {
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.chief_id = 0;
+	this.create_time = 0;
+	this.member_list = new Array();
+}
+
+function DB_Mail_Info() {
+	this.role_id = 0;
+	this.total_count = 0;
+	this.mail_map = new Map();
+}
+
+function DB_Bag_Info() {
+	this.role_id = 0;
+	this.copper = 0;
+	this.gold = 0;
+	this.item_map = new Map();
+}
+
+function DB_Role_Info() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.account = "";
+	this.level = 0;
+	this.exp = 0;
+	this.gender = 0;
+	this.career = 0;
+	this.create_time = 0;
+	this.login_time = 0;
+	this.logout_time = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
+}
+
+function DB_Idx_Info() {
+	this.type = "";
+	this.value = 0;
+}
+
+function DB_Rank_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.value = 0;
+}
+
+function DB_Guild_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.level = 0;
+}
+
+function DB_Mail_Detail() {
 	this.pickup = 0;
 	this.mail_id = 0;
 	this.send_time = 0;
@@ -13,27 +86,19 @@ function Client_Mail_Detail() {
 	this.item_info = new Array();
 }
 
-function Client_Item_Info() {
+function DB_Item_Info() {
 	this.item_id = 0;
 	this.amount = 0;
 	this.bind_type = 0;
 }
 
-function Client_Guild_Info() {
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.chief_id = 0;
-	this.create_time = 0;
-	this.member_list = new Array();
+function DB_Player_Data() {
+	this.role_info = new DB_Role_Info();
+	this.mail_info = new DB_Mail_Info();
+	this.bag_info = new DB_Bag_Info();
 }
 
-function Client_Guild_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.level = 0;
-}
-
-function Client_Role_Info() {
+function Logout_Info() {
 	this.role_id = 0;
 	this.role_name = "";
 	this.account = "";
@@ -41,31 +106,16 @@ function Client_Role_Info() {
 	this.exp = 0;
 	this.gender = 0;
 	this.career = 0;
-}
-
-function Logout_Info() {
-	this.role_id = 0;
-	this.account = "";
-	this.role_name = "";
-	this.level = 0;
-	this.client_ip = "";
+	this.create_time = 0;
 	this.login_time = 0;
 	this.logout_time = 0;
 }
 
 function Rank_Info() {
 	this.rank_type = 0;
-	this.min_value = 0;
 	this.min_role_id = 0;
+	this.min_value = 0;
 	this.member_map = new Map();
-}
-
-function Guild_Info() {
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.chief_id = 0;
-	this.create_time = 0;
-	this.member_list = new Array();
 }
 
 function Mail_Info() {
@@ -81,33 +131,6 @@ function Bag_Info() {
 	this.item_map = new Map();
 }
 
-function Role_Info() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.account = "";
-	this.client_ip = "";
-	this.agent_num = 0;
-	this.server_num = 0;
-	this.level = 0;
-	this.exp = 0;
-	this.gender = 0;
-	this.career = 0;
-	this.create_time = 0;
-	this.login_time = 0;
-	this.logout_time = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.scene_id = 0;
-	this.pos_x = 0;
-	this.pos_y = 0;
-	this.pos_z = 0;
-}
-
-function Idx_Info() {
-	this.type = "";
-	this.value = 0;
-}
-
 function Player_Data() {
 	this.role_info = new Role_Info();
 	this.mail_info = new Mail_Info();
@@ -118,43 +141,6 @@ function Rank_Member_Detail() {
 	this.role_id = 0;
 	this.role_name = "";
 	this.value = 0;
-}
-
-function Guild_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.level = 0;
-}
-
-function Public_Player_Info() {
-	this.role_id = 0;
-	this.account = "";
-	this.role_name = "";
-	this.level = 0;
-	this.gender = 0;
-	this.career = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
-}
-
-function Mail_Detail() {
-	this.pickup = 0;
-	this.mail_id = 0;
-	this.send_time = 0;
-	this.sender_type = 0;
-	this.sender_id = 0;
-	this.sender_name = "";
-	this.mail_title = "";
-	this.mail_content = "";
-	this.copper = 0;
-	this.gold = 0;
-	this.item_info = new Array();
-}
-
-function Item_Info() {
-	this.item_id = 0;
-	this.amount = 0;
-	this.bind_type = 0;
 }
 
 function Token_Info() {
@@ -182,6 +168,57 @@ function Endpoint_Info() {
 	this.server_port = 0;
 	this.protocol_type = 0;
 	this.receive_timeout = 0;
+}
+
+function Mail_Detail() {
+	this.pickup = 0;
+	this.mail_id = 0;
+	this.send_time = 0;
+	this.sender_type = 0;
+	this.sender_id = 0;
+	this.sender_name = "";
+	this.mail_title = "";
+	this.mail_content = "";
+	this.copper = 0;
+	this.gold = 0;
+	this.item_info = new Array();
+}
+
+function Item_Info() {
+	this.item_id = 0;
+	this.amount = 0;
+	this.bind_type = 0;
+}
+
+function Guild_Info() {
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.chief_id = 0;
+	this.create_time = 0;
+	this.member_list = new Array();
+}
+
+function Guild_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.level = 0;
+}
+
+function Role_Info() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.account = "";
+	this.level = 0;
+	this.exp = 0;
+	this.gender = 0;
+	this.career = 0;
+	this.create_time = 0;
+	this.login_time = 0;
+	this.logout_time = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
+	this.guild_id = 0;
+	this.guild_name = "";
 }
 
 function http_1() {
@@ -253,7 +290,7 @@ function node_6() {
 
 function node_5() {
 	this.login = 0;
-	this.player_info = new Public_Player_Info();
+	this.role_info = new Role_Info();
 }
 
 function node_4() {
@@ -282,7 +319,7 @@ function c2s_202() {
 }
 
 function s2c_201() {
-	this.guild_info = new Client_Guild_Info();
+	this.guild_info = new Guild_Info();
 }
 
 function c2s_201() {
@@ -331,7 +368,7 @@ function c2s_5() {
 }
 
 function s2c_4() {
-	this.role_info = new Client_Role_Info();
+	this.role_info = new Role_Info();
 }
 
 function c2s_4() {

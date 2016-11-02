@@ -47,6 +47,8 @@ Local<Context> create_context(Isolate* isolate) {
 		FunctionTemplate::New(isolate, require));
 	global->Set(String::NewFromUtf8(isolate, "read_json", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, read_json));
+	global->Set(String::NewFromUtf8(isolate, "read_xml", NewStringType::kNormal).ToLocalChecked(),
+		FunctionTemplate::New(isolate, read_xml));
 	global->Set(String::NewFromUtf8(isolate, "hash", NewStringType::kNormal).ToLocalChecked(),
 		FunctionTemplate::New(isolate, hash));
 	global->Set(String::NewFromUtf8(isolate, "generate_token", NewStringType::kNormal).ToLocalChecked(),
@@ -148,14 +150,10 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	Byte_Buffer buffer;
 	std::string struct_name = get_struct_name(msg_type, msg_id);
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
-	if (msg_struct != nullptr) {
-		if (msg_type == S2C || msg_type == NODE_S2C || msg_type == NODE_C2S) {
-			Bit_Buffer bit_buffer;
-			msg_struct->build_bit_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), bit_buffer);
-			buffer.copy(bit_buffer.data(), bit_buffer.get_byte_size());
-		} else {
-			msg_struct->build_byte_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), buffer);
-		}
+	if (msg_struct) {
+		Bit_Buffer bit_buffer;
+		msg_struct->build_bit_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), bit_buffer);
+		buffer.copy(bit_buffer.data(), bit_buffer.get_byte_size());
 	}
 	NODE_MANAGER->send_msg(eid, cid, msg_id, msg_type, sid, &buffer);
 }
@@ -404,9 +402,7 @@ void delete_db_data(const FunctionCallbackInfo<Value>& args) {
 	std::string table_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
-	Byte_Buffer buffer;
-	db_struct->build_byte_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), buffer);
-	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, &buffer);
+	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked());
 }
 
 void set_runtime_data(const FunctionCallbackInfo<Value>& args) {

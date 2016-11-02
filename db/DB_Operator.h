@@ -20,15 +20,16 @@ public:
 	virtual int64_t generate_table_index(int db_id, DB_Struct *db_struct, std::string &type) { return 0; }
 	virtual int64_t select_table_index(int db_id, DB_Struct *db_struct,  std::string &query_name, std::string &query_value) { return 0; }
 
-	//数据与V8 Object互转
+	//数据库加载出来的数据转换城js object，保存数据时候通过object取数据
 	virtual v8::Local<v8::Object> load_data(int db_id, DB_Struct *db_struct, Isolate* isolate, int64_t key_index) { return v8::Local<v8::Object>(); };
 	virtual void save_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
-	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
-	
-	//数据与Buffer互转
+
+	///数据库加载出来的数据转换城buffer，缓存在内存中，保存数据时候通过buffer取数据
 	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec) { return 0;};
 	virtual void save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {};
-	virtual void delete_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {};
+
+	//删除数据时候传入索引数组
+	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
 
 protected:
 	MUTEX connection_map_lock_;

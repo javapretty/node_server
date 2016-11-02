@@ -47,7 +47,7 @@ Guild.prototype.save_data_handler = function() {
 
 Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
 	var msg = new node_209();
-	msg.role_id = player.player_info.role_id;
+	msg.role_id = player.role_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
 	send_public_msg(player.game_cid, Msg.SYNC_PUBLIC_GAME_GUILD_INFO, player.sid, msg);
@@ -55,20 +55,20 @@ Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name)
 
 Guild.prototype.member_join_guild = function(player, guild_info) {
 	var member_detail = new Guild_Member_Detail();
-	member_detail.role_id = player.player_info.role_id;
-	member_detail.role_name = player.player_info.role_name;
-	member_detail.level = player.player_info.level;
+	member_detail.role_id = player.role_info.role_id;
+	member_detail.role_name = player.role_info.role_name;
+	member_detail.level = player.role_info.level;
 	guild_info.member_list.push(member_detail);
-	player.player_info.guild_id = guild_info.guild_id;
-	player.player_info.guild_name = guild_info.guild_name;
+	player.role_info.guild_id = guild_info.guild_id;
+	player.role_info.guild_name = guild_info.guild_name;
 	this.is_change = true;
 }
 
 Guild.prototype.create_guild = function(player, msg) {
-	log_debug('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.player_info.role_id);
+	log_debug('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.role_info.role_id);
 	var msg_res = new node_204();
 	msg_res.guild_name = msg.guild_name;
-	msg_res.chief_id = player.player_info.role_id;
+	msg_res.chief_id = player.role_info.role_id;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_CREATE_GUILD, msg.sid, msg_res);
 }
 
@@ -89,8 +89,8 @@ Guild.prototype.db_create_guild = function(msg) {
 }
 
 Guild.prototype.dissove_guild = function(player, msg) {
-	log_debug('dissove_guild, role_id:', player.player_info.role_id, ' role_name:', player.player_info.role_name);
-	var guild_info = this.guild_map.get(player.player_info.guild_id);
+	log_debug('dissove_guild, role_id:', player.role_info.role_id, ' role_name:', player.role_info.role_name);
+	var guild_info = this.guild_map.get(player.role_info.guild_id);
 	if(guild_info == null){
 		return player.send_error_msg(Error_Code.GUILD_NOT_EXIST);
 	}

@@ -18,7 +18,7 @@ std::string get_struct_name(int msg_type, int msg_id);
 
 //创建v8运行环境
 Local<Context> create_context(Isolate* isolate);
-////函数说明：创建进程		参数：1.node_info 返回值：无
+////函数说明：创建进程		参数：1.node_type 2.node_id 3.endpoint_gid 4.node_name 返回值：无
 void fork_process(const FunctionCallbackInfo<Value>& args);
 //函数说明：注册定时器到c++层		参数：1.定时器id 2.定时器间隔(毫秒单位) 3.从注册定时器到下次定时器到期中间间隔秒数	返回值：无
 void register_timer(const FunctionCallbackInfo<Value>& args);

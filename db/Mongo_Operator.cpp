@@ -48,7 +48,8 @@ int64_t Mongo_Operator::generate_table_index(int db_id, DB_Struct *db_struct, st
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
-	int serial = 1;
+
+	int idx = 1;
 	BSONObj result;
 	char str_json[128] = {0};
 	sprintf(str_json, "{findandmodify:'%s', query:{type:'%s'}, update:{$inc:{value:1}}, upsert:true}",
@@ -58,9 +59,8 @@ int64_t Mongo_Operator::generate_table_index(int db_id, DB_Struct *db_struct, st
 		return -1;
 	}
 
-	serial = result.getFieldDotted("value.value").numberLong() + 1;
-
-	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), serial);
+	idx = result.getFieldDotted("value.value").numberLong() + 1;
+	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), idx);
 	return id;
 }
 
@@ -77,6 +77,7 @@ int64_t Mongo_Operator::select_table_index(int db_id, DB_Struct *db_struct,  std
 	}
 }
 
+/////////////////////////////////数据转成object///////////////////////////
 v8::Local<v8::Object> Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, Isolate* isolate, int64_t key_index) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
@@ -141,19 +142,77 @@ void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 			BSON("$set" << set_builder.obj() ), true);
 }
 
+/////////////////////////////////数据转成buffer///////////////////////////
+int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec) {
+	if(!db_struct->db_init()) {
+		init_db(db_id, db_struct);
+	}
+	int len = 0;
+	if(key_index == 0) {
+		//加载整张表数据
+		std::vector<BSONObj> record;
+		len = get_connection(db_id).count(db_struct->table_name());
+		if(len > 0) {
+			get_connection(db_id).findN(record, db_struct->table_name(), Query(), len);
+		}
+		for (int i = 0; i < len; ++i) {
+			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			load_data_single(db_struct, record[i], *buffer);
+			buffer_vec.push_back(buffer);
+		}
+	} else {
+		//加载单条数据
+		BSONObj bsonobj = get_connection(db_id).findOne(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index));
+		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
+		load_data_single(db_struct, bsonobj, *buffer);
+		buffer_vec.push_back(buffer);
+		len = 1;
+	}
+	return len;
+}
+
+void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
+	if(!db_struct->db_init()) {
+		init_db(db_id, db_struct);
+	}
+	BSONObjBuilder set_builder;
+	int64_t key_index = 0;
+	buffer->peek_int64(key_index);
+	LOG_INFO("table %s save key_index:%ld", db_struct->table_name().c_str(), key_index);
+	if (key_index <= 0) {
+		return;
+	}
+
+	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
+			iter != db_struct->field_vec().end(); iter++) {
+		if(iter->field_label == "arg") {
+			save_data_arg(db_struct, *iter, set_builder, *buffer);
+		}
+		else if(iter->field_label == "vector" || iter->field_label == "map") {
+			save_data_vector(db_struct, *iter, set_builder, *buffer);
+		}
+		else if(iter->field_label == "struct") {
+			save_data_struct(db_struct, *iter, set_builder, *buffer);
+		}
+	}
+	get_connection(db_id).update(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index),
+			BSON("$set" << set_builder.obj() ), true);
+}
+
 void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {
 	if (!object->IsArray()) {
-		LOG_ERROR("delete_data, object is not array");
+		LOG_ERROR("delete_data, object is not array, struct_name:%s", db_struct->struct_name().c_str());
 		return;
 	}
 
 	Local<Context> context(isolate->GetCurrentContext());
 	v8::Local<v8::Array> array = v8::Local<v8::Array>::Cast(object);
-	int16_t len = array->Length();
-	for (int i = 0; i < len; ++i) {
+	uint16_t len = array->Length();
+	for (uint i = 0; i < len; ++i) {
 		v8::Local<v8::Value> value = array->Get(context, i).ToLocalChecked();
 		int64_t key_index = value->NumberValue(context).FromJust();
 		get_connection(db_id).remove(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)(key_index)));
+		DATA_MANAGER->delete_db_data(db_id, db_struct, key_index);
 	}
 }
 
@@ -243,7 +302,8 @@ v8::Local<v8::Value> Mongo_Operator::load_data_arg(DB_Struct *db_struct, Isolate
 		value = String::NewFromUtf8(isolate, val.c_str(), NewStringType::kNormal).ToLocalChecked();
 	}
 	else {
-		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
+				field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 		return handle_scope.Escape(Local<Value>());
 	}
 
@@ -447,7 +507,8 @@ void Mongo_Operator::save_data_arg(DB_Struct *db_struct, Isolate* isolate, const
 		builder << field_info.field_name << val;
 	}
 	else {
-		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
+				field_info.field_name.c_str(), field_info.field_type.c_str(), db_struct->struct_name().c_str());
 	}
 }
 
@@ -455,7 +516,7 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, Isolate* isolate, co
 	std::vector<BSONObj> bson_vec;
 
 	if (!value->IsArray()) {
-		LOG_ERROR("field_name:%s is not array, struct_name:%s", field_info.field_name.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("field_type:%s, field_name:%s is not array, struct_name:%s", field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 		builder << field_info.field_name << bson_vec;
 		return;
 	}
@@ -483,7 +544,7 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, Isolate* isolate, co
 void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObjBuilder &builder, v8::Local<v8::Value> value) {
 	std::vector<BSONObj> bson_vec;
 	if (!value->IsMap()) {
-		LOG_ERROR("field_name:%s is not map, struct_name:%s", field_info.field_name.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("field_type:%s, field_name:%s is not map, struct_name:%s", field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 		builder << field_info.field_name << bson_vec;
 		return;
 	}
@@ -521,7 +582,7 @@ void Mongo_Operator::save_data_map(DB_Struct *db_struct, Isolate* isolate, const
 
 void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObjBuilder &builder, v8::Local<v8::Value> value) {
 	if (!value->IsObject()) {
-		LOG_ERROR("field_type:%s field_name:%s is not object, struct_name:%s", field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("field_type:%s, field_name:%s is not object, struct_name:%s", field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 		return;
 	}
 
@@ -552,72 +613,6 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, co
 	}
 
 	builder << field_info.field_name << obj_builder.obj();
-}
-
-int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec) {
-	if(!db_struct->db_init()) {
-		init_db(db_id, db_struct);
-	}
-	int len = 0;
-	if(key_index == 0) {
-		//加载整张表数据
-		std::vector<BSONObj> record;
-		len = get_connection(db_id).count(db_struct->table_name());
-		if(len > 0) {
-			get_connection(db_id).findN(record, db_struct->table_name(), Query(), len);
-		}
-		for (int i = 0; i < len; ++i) {
-			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
-			load_data_single(db_struct, record[i], *buffer);
-			buffer_vec.push_back(buffer);
-		}
-	} else {
-		//加载单条数据
-		BSONObj bsonobj = get_connection(db_id).findOne(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index));
-		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
-		load_data_single(db_struct, bsonobj, *buffer);
-		buffer_vec.push_back(buffer);
-		len = 1;
-	}
-	return len;
-}
-
-void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
-	if(!db_struct->db_init()) {
-		init_db(db_id, db_struct);
-	}
-	BSONObjBuilder set_builder;
-	int64_t key_index = 0;
-	buffer->peek_int64(key_index);
-	LOG_INFO("table %s save key_index:%ld", db_struct->table_name().c_str(), key_index);
-	if (key_index <= 0) {
-		return;
-	}
-
-	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
-			iter != db_struct->field_vec().end(); iter++) {
-		if(iter->field_label == "arg") {
-			save_data_arg(db_struct, *iter, set_builder, *buffer);
-		}
-		else if(iter->field_label == "vector" || iter->field_label == "map") {
-			save_data_vector(db_struct, *iter, set_builder, *buffer);
-		}
-		else if(iter->field_label == "struct") {
-			save_data_struct(db_struct, *iter, set_builder, *buffer);
-		}
-	}
-	get_connection(db_id).update(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index),
-			BSON("$set" << set_builder.obj() ), true);
-}
-
-void Mongo_Operator::delete_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
-	uint16_t len = 0;
-	buffer->read_uint16(len);
-	for (uint i = 0; i < len; ++i) {
-		int64_t key_index = 0;
-		buffer->read_int64(key_index);
-		get_connection(db_id).remove(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)(key_index)));
-	}
 }
 
 void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Byte_Buffer &buffer) {
@@ -681,7 +676,8 @@ void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 		buffer.write_string(val);
 	}
 	else {
-		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
+				field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 	}
 }
 
@@ -713,7 +709,6 @@ void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &fi
 	}
 
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_type);
-
 	std::vector<Field_Info> field_vec = sub_struct->field_vec();
 	for(std::vector<Field_Info>::const_iterator iter = field_vec.begin();
 			iter != field_vec.end(); iter++) {
@@ -786,7 +781,8 @@ void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field
 		builder << field_info.field_name << val;
 	}
 	else {
-		LOG_ERROR("Can not find the field_type:%s, struct_name:%s", field_info.field_type.c_str(), db_struct->struct_name().c_str());
+		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
+				field_info.field_type.c_str(), field_info.field_name.c_str(), db_struct->struct_name().c_str());
 	}
 }
 

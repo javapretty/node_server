@@ -27,7 +27,7 @@ public:
 	DB_Operator *db_operator(int type);
 	int save_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer, int flag);
 	int load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Byte_Buffer *> &buffer_vec);
-	int delete_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer);
+	int delete_db_data(int db_id, DB_Struct *db_struct, int64_t index);
 
 	void set_runtime_data(int64_t index, DB_Struct *db_struct, Byte_Buffer *buffer);
 	Byte_Buffer *get_runtime_data(int64_t index, DB_Struct *db_struct);

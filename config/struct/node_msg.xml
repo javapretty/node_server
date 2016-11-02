@@ -1,7 +1,7 @@
 <root>
 	<node_1>
 		<head msg_id="1" msg_name="SYNC_ERROR_CODE"/>
-		<arg type="int16" name="error_code"/>
+		<arg type="uint" bit="16" name="error_code"/>
 	</node_1>
 	
 	<node_2>
@@ -13,31 +13,31 @@
 		<head msg_id="3" msg_name="SYNC_GATE_CENTER_VERIFY_TOKEN"/>
 		<arg type="string" name="account"/>
 		<arg type="string" name="token"/>
-		<arg type="int32" name="game_nid"/>
+		<arg type="int" bit="32" name="game_nid"/>
 	</node_3>
 
 	<node_4>
 		<head msg_id="4" msg_name="SYNC_GATE_GAME_ADD_SESSION"/>
-		<arg type="int32" name="gate_nid"/>
+		<arg type="int" bit="32" name="gate_nid"/>
 	</node_4>
 	
 	<node_5>
 		<head msg_id="5" msg_name="SYNC_GAME_PUBLIC_LOGIN_LOGOUT"/>
 		<arg type="bool" name="login"/>
-		<struct type="Public_Player_Info" name="player_info"/>
+		<struct type="Role_Info" name="role_info"/>
 	</node_5>
 
 	<node_6>
 		<head msg_id="6" msg_name="SYNC_GAME_GATE_LOGOUT"/>
-		<arg type="int16" name="error_code"/>
+		<arg type="uint" bit="16" name="error_code"/>
 	</node_6>
 	
 	<node_200>
 		<head msg_id="200" msg_name="SYNC_GAME_DB_CREATE_PLAYER"/>
 		<arg type="string" name="account"/>
     	<arg type="string" name="role_name"/>
-    	<arg type="int8" name="gender"/>
-    	<arg type="int8" name="career"/>
+    	<arg type="uint" bit="1" name="gender"/>
+    	<arg type="uint" bit="2" name="career"/>
 	</node_200>
 
 	<node_201>
@@ -64,27 +64,27 @@
 
 	<node_205>
 		<head msg_id="205" msg_name="SYNC_PUBLIC_DB_LOAD_DATA"/>
-		<arg type="int8" name="data_type"/>
+		<arg type="uint" bit="4" name="data_type"/>
 	</node_205>
 
 	<node_206>
 		<head msg_id="206" msg_name="SYNC_PUBLIC_DB_SAVE_DATA"/>
-		<arg type="int8" name="data_type"/>
-		<vector type="Guild_Info" name="guild_list"/>
-		<vector type="Rank_Info" name="rank_list"/>
+		<arg type="uint" bit="4" name="data_type"/>
+		<vector vbit="16" type="Guild_Info" name="guild_list"/>
+		<vector vbit="8" type="Rank_Info" name="rank_list"/>
 	</node_206>
 
 	<node_207>
 		<head msg_id="207" msg_name="SYNC_PUBLIC_DB_DELETE_DATA"/>
-		<arg type="int8" name="data_type"/>
-		<vector type="int64" name="index_list"/>
+		<arg type="uint" bit="4" name="data_type"/>
+		<vector vbit="16" type="int64" name="index_list"/>
 	</node_207>
 
 	<node_208>
 		<head msg_id="208" msg_name="SYNC_DB_PUBLIC_DATA"/>
-		<arg type="int8" name="data_type"/>
-		<vector type="Guild_Info" name="guild_list"/>
-		<vector type="Rank_Info" name="rank_list"/>
+		<arg type="uint" bit="4" name="data_type"/>
+		<vector vbit="16" type="Guild_Info" name="guild_list"/>
+		<vector vbit="8" type="Rank_Info" name="rank_list"/>
 	</node_208>
 	
 	<node_209>
@@ -101,9 +101,9 @@
 	
 	<http_1>
 		<head msg_id="1" msg_name="HTTP_CREATE_NODE_PROCESS"/>
-		<arg type="int32" name="node_type"/>
-		<arg type="int32" name="node_id"/>
-		<arg type="int32" name="endpoint_gid"/>
+		<arg type="int" bit="32" name="node_type"/>
+		<arg type="int" bit="32" name="node_id"/>
+		<arg type="uint" bit="8" name="endpoint_gid"/>
 		<arg type="string" name="node_name"/>
 	</http_1>
 </root>

@@ -31,7 +31,7 @@ Rank.prototype.get_rank_value = function(type, player) {
 	var rank_value = 0;
 	switch(type) {
 	case Rank_Type.LEVEL_RANK:
-		rank_value = player.player_info.level;
+		rank_value = player.role_info.level;
 		break;
 	case Rank_Type.COMBAT_RANK:
 		rank_value = 1;
@@ -54,11 +54,11 @@ Rank.prototype.update_rank = function(type, player) {
 	}
 	
 	var rank_value = this.get_rank_value(type, player);
-	var rank_member = rank_info.member_map.get(player.player_info.role_id);
+	var rank_member = rank_info.member_map.get(player.role_info.role_id);
 	if(rank_member == null) {
 		rank_member = new Rank_Member_Detail();
-		rank_member.role_id = player.player_info.role_id;
-		rank_member.role_name = player.player_info.role_name;
+		rank_member.role_id = player.role_info.role_id;
+		rank_member.role_name = player.role_info.role_name;
 		rank_member.value = rank_value;
 		if(rank_info.member_map.size < 100) {
 			rank_info.member_map.set(rank_member.role_id, rank_member);

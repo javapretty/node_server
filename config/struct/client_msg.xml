@@ -39,7 +39,7 @@
 
 	<s2c_4>
 		<head msg_id="4" msg_name="RES_ROLE_INFO"/>
-		<struct type="Client_Role_Info" name="role_info"/>
+		<struct type="Role_Info" name="role_info"/>
 	</s2c_4>
 
 	<c2s_5>
@@ -61,7 +61,7 @@
 
 	<s2c_6>
 		<head msg_id="6" msg_name="RES_MAIL_INFO"/>
-		<vector vbit="8" type="Client_Mail_Detail" name="mail_list"/>
+		<vector vbit="8" type="Mail_Detail" name="mail_list"/>
 	</s2c_6>
 
 	<c2s_7>
@@ -90,7 +90,7 @@
 
 	<s2c_9>
 		<head msg_id="9" msg_name="RES_FETCH_BAG"/>
-		<vector vbit="16" type="Client_Item_Info" name="item_list"/>
+		<vector vbit="16" type="Item_Info" name="item_list"/>
 	</s2c_9>
 
 	<c2s_201>
@@ -100,7 +100,7 @@
 
 	<s2c_201>
 		<head msg_id="201" msg_name="RES_CREATE_GUILD"/>
-	  	<struct type="Client_Guild_Info" name="guild_info"/>
+	  	<struct type="Guild_Info" name="guild_info"/>
 	</s2c_201>
 
 	<c2s_202>
