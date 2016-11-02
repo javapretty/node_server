@@ -295,56 +295,17 @@ void load_db_data(const FunctionCallbackInfo<Value>& args) {
 
 		for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 				iter != db_struct->field_vec().end(); ++iter) {
-
 			DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(iter->field_type);
-			std::vector<Byte_Buffer *> buffer_vec;
-			DATA_MANAGER->load_db_data(db_id, sub_struct, key_index, buffer_vec);
-			if(key_index == 0) {
-				Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
-				uint i = 0;
-				for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
-						iter != buffer_vec.end(); iter++){
-					Local<Object> sub_object = sub_struct->build_byte_object(args.GetIsolate(), *(*iter));
-					if (!sub_object.IsEmpty()) {
-						array->Set(i, sub_object);
-					}
-					i++;
-				}
-				object->Set(context,
-						String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-						array).FromJust();
-			}
-			else {
-				Local<Object> sub_object = sub_struct->build_byte_object(args.GetIsolate(), *buffer_vec[0]);
-				if (!sub_object.IsEmpty()) {
-					object->Set(context,
-							String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
-							sub_object).FromJust();
-				}
+			v8::Local<v8::Object> sub_object = load_single_data(args.GetIsolate(), db_id, sub_struct, key_index);
+			object->Set(context,
+					String::NewFromUtf8(args.GetIsolate(), iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked(),
+					sub_object).FromJust();
 			}
 			args.GetReturnValue().Set(object);
-		}
 	}
 	else {
-		std::vector<Byte_Buffer *> buffer_vec;
-		DATA_MANAGER->load_db_data(db_id, db_struct, key_index, buffer_vec);
-		if(key_index == 0) {
-			Local<Array> array = Array::New(args.GetIsolate(), buffer_vec.size());
-			uint i = 0;
-			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
-					iter != buffer_vec.end(); iter++){
-				Local<v8::Object> obj = db_struct->build_byte_object(args.GetIsolate(), *(*iter));
-				if (!obj.IsEmpty()) {
-					array->Set(i, obj);
-				}
-				i++;
-			}
-			args.GetReturnValue().Set(array);
-		}
-		else {
-			Local<v8::Object> obj = db_struct->build_byte_object(args.GetIsolate(), *buffer_vec[0]);
-			args.GetReturnValue().Set(obj);
-		}
+		v8::Local<v8::Object> object = load_single_data(args.GetIsolate(), db_id, db_struct, key_index);
+		args.GetReturnValue().Set(object);
 	}
 }
 
@@ -370,6 +331,41 @@ void save_db_data(const FunctionCallbackInfo<Value>& args) {
 	}
 }
 
+void delete_db_data(const FunctionCallbackInfo<Value>& args) {
+	Local<Context> context(args.GetIsolate()->GetCurrentContext());
+
+	int db_id = args[0]->Int32Value(context).FromMaybe(0);
+	String::Utf8Value table_str(args[1]->ToString(context).ToLocalChecked());
+	std::string table_name = to_string(table_str);
+
+	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
+	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked());
+}
+
+v8::Local<v8::Object> load_single_data(Isolate* isolate, int db_id, DB_Struct *db_struct, int64_t key_index) {
+	EscapableHandleScope handle_scope(isolate);
+
+	std::vector<Bit_Buffer *> buffer_vec;
+	DATA_MANAGER->load_db_data(db_id, db_struct, key_index, buffer_vec);
+	//索引为0，表示加载整张表
+	if(key_index == 0) {
+		uint length = buffer_vec.size();
+		Local<Array> array = Array::New(isolate, length);
+		for (uint i = 0; i < length; ++i) {
+			Local<Object> sub_object = db_struct->build_bit_object(isolate, *buffer_vec[i]);
+			if (!sub_object.IsEmpty()) {
+				array->Set(i, sub_object);
+			}
+		}
+		return handle_scope.Escape(array);
+	}
+	//按照索引加载表里的数据
+	else {
+		Local<Object> object = db_struct->build_bit_object(isolate, *buffer_vec[0]);
+		return handle_scope.Escape(object);
+	}
+}
+
 void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Local<Object> object, int flag) {
 	Local<Context> context(isolate->GetCurrentContext());
 
@@ -383,26 +379,15 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			//从object中取出子对象进行保存操作，子对象是单张表单条记录
 			Local<Value> value = object->Get(context, String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(context).ToLocalChecked();
-			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
-			sub_struct->build_byte_buffer(isolate, sub_object, *buffer);
+			Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			sub_struct->build_bit_buffer(isolate, sub_object, *buffer);
 			DATA_MANAGER->save_db_data(db_id, sub_struct, buffer, flag);
 		}
 	} else {
-		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
-		db_struct->build_byte_buffer(isolate, object, *buffer);
+		Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
+		db_struct->build_bit_buffer(isolate, object, *buffer);
 		DATA_MANAGER->save_db_data(db_id, db_struct, buffer, flag);
 	}
-}
-
-void delete_db_data(const FunctionCallbackInfo<Value>& args) {
-	Local<Context> context(args.GetIsolate()->GetCurrentContext());
-
-	int db_id = args[0]->Int32Value(context).FromMaybe(0);
-	String::Utf8Value table_str(args[1]->ToString(context).ToLocalChecked());
-	std::string table_name = to_string(table_str);
-
-	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
-	DB_OPERATOR(db_id)->delete_data(db_id, db_struct, args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked());
 }
 
 void set_runtime_data(const FunctionCallbackInfo<Value>& args) {
@@ -413,8 +398,8 @@ void set_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
-	db_struct->build_byte_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), *buffer);
+	Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
+	db_struct->build_bit_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), *buffer);
 	DATA_MANAGER->set_runtime_data(index, db_struct, buffer);
 }
 
@@ -426,12 +411,13 @@ void get_runtime_data(const FunctionCallbackInfo<Value>& args) {
 	std::string struct_name = to_string(table_str);
 
 	DB_Struct *db_struct = STRUCT_MANAGER->get_db_struct(struct_name);
-	Byte_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
-	Local<Object> obj = Local<Object>();
-	if(buffer != nullptr) {
-		obj = db_struct->build_byte_object(args.GetIsolate(), *buffer);
+	Bit_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
+	if(buffer) {
+		Local<Object> object = db_struct->build_bit_object(args.GetIsolate(), *buffer);
+		args.GetReturnValue().Set(object);
+	}  else {
+		args.GetReturnValue().SetNull();
 	}
-	args.GetReturnValue().Set(obj);
 }
 
 void delete_runtime_data(const FunctionCallbackInfo<Value>& args) {

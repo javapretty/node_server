@@ -9,10 +9,7 @@
 #include "Base_Function.h"
 #include "Mysql_Operator.h"
 #include "Data_Manager.h"
-
-#ifdef MONGO_DB_IMPLEMENT
-	#include "Mongo_Operator.h"
-#endif
+#include "Mongo_Operator.h"
 
 Data_Manager::Data_Manager(void) :
 	db_operator_map_(get_hash_table_size(512)),
@@ -48,9 +45,8 @@ DB_Operator *Data_Manager::db_operator(int type) {
 	return nullptr;
 }
 
-int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer, int flag) {
-	int64_t index = 0;
-	buffer->peek_int64(index);
+int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Bit_Buffer *buffer, int flag) {
+	int64_t index = buffer->peek_int64();
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 
 	Record_Buffer_Map::iterator it = record_buffer_map->find(index);
@@ -89,17 +85,16 @@ int Data_Manager::save_db_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buf
 	return 0;
 }
 
-int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Byte_Buffer *> &buffer_vec) {
+int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, std::vector<Bit_Buffer *> &buffer_vec) {
 	Record_Buffer_Map *record_buffer_map = get_record_map(db_id, db_struct->table_name());
 	int len = 0;
 	if(index == 0) {
 		if(record_buffer_map->empty()) {
 			DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
-			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
+			for(std::vector<Bit_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
-				int64_t ind = 0;
-				(*iter)->peek_int64(ind);
-				(*	record_buffer_map)[ind] = (*iter);
+				int64_t record_index = (*iter)->peek_int64();
+				(*record_buffer_map)[record_index] = (*iter);
 			}
 		}
 		else {
@@ -113,11 +108,10 @@ int Data_Manager::load_db_data(int db_id, DB_Struct *db_struct, int64_t index, s
 		Record_Buffer_Map::iterator iter;
 		if((iter = record_buffer_map->find(index)) == record_buffer_map->end()){
 			DB_OPERATOR(db_id)->load_data(db_id, db_struct, index, buffer_vec);
-			for(std::vector<Byte_Buffer *>::iterator iter = buffer_vec.begin();
+			for(std::vector<Bit_Buffer *>::iterator iter = buffer_vec.begin();
 					iter != buffer_vec.end(); iter++){
-				int64_t ind = 0;
-				(*iter)->peek_int64(ind);
-				(*	record_buffer_map)[ind] = (*iter);
+				int64_t record_index = (*iter)->peek_int64();
+				(*record_buffer_map)[record_index] = (*iter);
 			}
 		}
 		else {
@@ -134,7 +128,7 @@ int Data_Manager::delete_db_data(int db_id, DB_Struct *db_struct, int64_t index)
 	return 0;
 }
 
-void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Byte_Buffer *buffer) {
+void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Bit_Buffer *buffer) {
 	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
 	if(iter == runtime_data_map_.end()) {
 		runtime_data_map_[index] = buffer;
@@ -145,7 +139,7 @@ void Data_Manager::set_runtime_data(int64_t index, DB_Struct *db_struct, Byte_Bu
 	}
 }
 
-Byte_Buffer *Data_Manager::get_runtime_data(int64_t index, DB_Struct *db_struct) {
+Bit_Buffer *Data_Manager::get_runtime_data(int64_t index, DB_Struct *db_struct) {
 	Runtime_Data_Map::iterator iter = runtime_data_map_.find(index);
 	if(iter != runtime_data_map_.end()) {
 		return iter->second;

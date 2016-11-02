@@ -31,14 +31,21 @@ void Node_Info::serialize(Bit_Buffer &buffer) {
 void Node_Info::deserialize(Bit_Buffer &buffer) {
 	node_type = buffer.read_int(32);
 	node_id = buffer.read_int(32);
-	buffer.read_str((char*)node_name.c_str(), 1024);
-	buffer.read_str((char*)node_ip.c_str(), 1024);
-	buffer.read_str((char*)script_path.c_str(), 1024);
+	char temp[1024] = {};
+	buffer.read_str(temp, 1024);
+	node_name = temp;
+	memset(temp, 0, 4096);
+	buffer.read_str(temp, 1024);
+	node_ip = temp;
+	memset(temp, 0, 4096);
+	buffer.read_str(temp, 1024);
+	script_path = temp;
 
 	uint plugin_size = buffer.read_uint(8);
 	for (uint i = 0; i < plugin_size; ++i) {
-		std::string plugin_name = "";
-		buffer.read_str((char*)plugin_name.c_str(), 1024);
+		char temp[1024] = {};
+		buffer.read_str(temp, 1024);
+		std::string plugin_name = temp;
 		plugin_list.push_back(plugin_name);
 	}
 

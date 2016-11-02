@@ -8,8 +8,7 @@
 		"config/struct/client_msg.xml",
 		"config/struct/node_msg.xml",
 		"config/struct/public_struct.xml",
-		"config/struct/node_struct.xml",
-		"config/struct/db_struct.xml"
+		"config/struct/node_struct.xml"
 	],
 	"msg_struct_path" : [
 		"config/struct/client_msg.xml",
@@ -18,7 +17,8 @@
 		"config/struct/node_struct.xml"
 	],
 	"db_struct_path" : [
-		"config/struct/db_struct.xml"
+		"config/struct/public_struct.xml",
+		"config/struct/node_struct.xml"
 	]
 }
 

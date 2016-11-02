@@ -1,103 +1,4 @@
 
-function DB_Logout_Info() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.account = "";
-	this.level = 0;
-	this.exp = 0;
-	this.gender = 0;
-	this.career = 0;
-	this.create_time = 0;
-	this.login_time = 0;
-	this.logout_time = 0;
-}
-
-function DB_Rank_Info() {
-	this.rank_type = 0;
-	this.min_value = 0;
-	this.min_role_id = 0;
-	this.member_map = new Map();
-}
-
-function DB_Guild_Info() {
-	this.guild_id = 0;
-	this.guild_name = "";
-	this.chief_id = 0;
-	this.create_time = 0;
-	this.member_list = new Array();
-}
-
-function DB_Mail_Info() {
-	this.role_id = 0;
-	this.total_count = 0;
-	this.mail_map = new Map();
-}
-
-function DB_Bag_Info() {
-	this.role_id = 0;
-	this.copper = 0;
-	this.gold = 0;
-	this.item_map = new Map();
-}
-
-function DB_Role_Info() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.account = "";
-	this.level = 0;
-	this.exp = 0;
-	this.gender = 0;
-	this.career = 0;
-	this.create_time = 0;
-	this.login_time = 0;
-	this.logout_time = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
-}
-
-function DB_Idx_Info() {
-	this.type = "";
-	this.value = 0;
-}
-
-function DB_Rank_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.value = 0;
-}
-
-function DB_Guild_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.level = 0;
-}
-
-function DB_Mail_Detail() {
-	this.pickup = 0;
-	this.mail_id = 0;
-	this.send_time = 0;
-	this.sender_type = 0;
-	this.sender_id = 0;
-	this.sender_name = "";
-	this.mail_title = "";
-	this.mail_content = "";
-	this.copper = 0;
-	this.gold = 0;
-	this.item_info = new Array();
-}
-
-function DB_Item_Info() {
-	this.item_id = 0;
-	this.amount = 0;
-	this.bind_type = 0;
-}
-
-function DB_Player_Data() {
-	this.role_info = new DB_Role_Info();
-	this.mail_info = new DB_Mail_Info();
-	this.bag_info = new DB_Bag_Info();
-}
-
 function Logout_Info() {
 	this.role_id = 0;
 	this.role_name = "";
@@ -129,6 +30,11 @@ function Bag_Info() {
 	this.copper = 0;
 	this.gold = 0;
 	this.item_map = new Map();
+}
+
+function Idx_Info() {
+	this.type = "";
+	this.value = 0;
 }
 
 function Player_Data() {
@@ -190,18 +96,18 @@ function Item_Info() {
 	this.bind_type = 0;
 }
 
+function Guild_Member_Detail() {
+	this.role_id = 0;
+	this.role_name = "";
+	this.level = 0;
+}
+
 function Guild_Info() {
 	this.guild_id = 0;
 	this.guild_name = "";
 	this.chief_id = 0;
 	this.create_time = 0;
 	this.member_list = new Array();
-}
-
-function Guild_Member_Detail() {
-	this.role_id = 0;
-	this.role_name = "";
-	this.level = 0;
 }
 
 function Role_Info() {
@@ -215,8 +121,6 @@ function Role_Info() {
 	this.create_time = 0;
 	this.login_time = 0;
 	this.logout_time = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
 	this.guild_id = 0;
 	this.guild_name = "";
 }
