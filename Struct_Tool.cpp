@@ -23,32 +23,22 @@ Struct_Tool::~Struct_Tool() {
 }
 
 int Struct_Tool::write_struct() {
-	char temp[64] = {};
+	write_to_struct();
+	write_to_message();
+	write_to_sql();
+
+	LOG_INFO("write to file success!");
+	return 0;
+}
+
+int Struct_Tool::write_to_struct() {
+	char temp[256] = {};
 	sprintf(temp, "js/struct.js");
 	FILE *fp = fopen(temp, "w");
 	if(fp == NULL){
 		LOG_ERROR("open js/struct.js error!");
 		return -1;
 	}
-	write_to_struct(fp);
-	fclose(fp);
-
-	memset(temp, 0, 64);
-	sprintf(temp, "js/message.js");
-	fp = fopen(temp, "w");
-	if(fp == NULL){
-		LOG_ERROR("open js/message.js error!");
-		return -1;
-	}
-	write_to_message(fp);
-	fclose(fp);
-
-	LOG_INFO("write to js/struct.js && js/message.js success!");
-	return 0;
-}
-
-int Struct_Tool::write_to_struct(FILE *fp) {
-	char temp[256] = {};
 	for(Struct_Manager::Struct_Name_Map::const_iterator iter = STRUCT_MANAGER->base_struct_name_map().begin();
 			iter != STRUCT_MANAGER->base_struct_name_map().end(); iter++){
 		Base_Struct *base_struct = iter->second;
@@ -84,11 +74,18 @@ int Struct_Tool::write_to_struct(FILE *fp) {
 		sprintf(temp, END_IMPLEMENT);
 		fputs(temp, fp);
 	}
+	fclose(fp);
 	return 0;
 }
 
-int Struct_Tool::write_to_message(FILE *fp) {
+int Struct_Tool::write_to_message() {
 	char temp[256] = {};
+	sprintf(temp, "js/message.js");
+	FILE *fp = fopen(temp, "w");
+	if(fp == NULL){
+		LOG_ERROR("open js/message.js error!");
+		return -1;
+	}
 	memset(temp, 0, 256);
 	sprintf(temp, BEGIN_MESSAGE);
 	fputs(temp, fp);
@@ -104,6 +101,69 @@ int Struct_Tool::write_to_message(FILE *fp) {
 	memset(temp, 0, 256);
 	sprintf(temp, END_MESSAGE);
 	fputs(temp, fp);
+	fclose(fp);
+	return 0;
+}
+
+int Struct_Tool::write_to_sql() {
+	system("rm -f ./config/sql/*");
+	char temp[256] = {};
+	for(Struct_Manager::Struct_Name_Map::const_iterator iter = STRUCT_MANAGER->base_struct_name_map().begin();
+		iter != STRUCT_MANAGER->base_struct_name_map().end(); iter++){
+		Base_Struct *base_struct = iter->second;
+		std::string db_table = base_struct->table_name();
+		int npos = db_table.find('.');
+		std::string db_name = db_table.substr(0, npos);
+		std::string table_name = db_table.substr(npos + 1, db_table.size());
+		if(base_struct->table_name() != "") {
+			memset(temp, 0, 256);
+			sprintf(temp, "config/sql/%s.sql", db_name.c_str());
+			FILE *fp = fopen(temp, "rb+");
+			if(fp == NULL) {
+				fp = fopen(temp, "w");
+				memset(temp, 0, 256);
+				sprintf(temp, SQL_HEAD, db_name.c_str(), db_name.c_str());
+				fputs(temp, fp);
+			}
+			else {
+				fseek(fp, 0, SEEK_END);
+			}
+			memset(temp, 0, 256);
+			sprintf(temp, TABLE_HEAD, table_name.c_str(), table_name.c_str());
+			fputs(temp, fp);
+			for(std::vector<Field_Info>::const_iterator it = base_struct->field_vec().begin();
+					it != base_struct->field_vec().end(); it++) {
+				Field_Info info = *it;
+				if(info.field_label == "arg") {
+					if(info.field_type == "int64" || info.field_type == "uint64") {
+						sprintf(temp, SQL_BIGINT, info.field_name.c_str());
+					}
+					else if(info.field_type == "bool") {
+						sprintf(temp, SQL_INT_2, info.field_name.c_str());
+					}
+					else if(info.field_type == "string") {
+						sprintf(temp, SQL_VARCHAR, info.field_name.c_str());
+					}
+					else {
+						sprintf(temp, SQL_INT_11, info.field_name.c_str());
+					}
+				}
+				else if(info.field_label == "vector" ||
+						info.field_label == "map" ||
+						info.field_label == "struct") {
+					sprintf(temp, SQL_TEXT, info.field_name.c_str());
+				}
+				fputs(temp, fp);
+			}
+			memset(temp, 0, 256);
+			sprintf(temp, PRIMARY_KEY, base_struct->index_name().c_str());
+			fputs(temp, fp);
+			memset(temp, 0, 256);
+			sprintf(temp, TABLE_END);
+			fputs(temp, fp);
+			fclose(fp);
+		}
+	}
 	return 0;
 }
 

@@ -21,6 +21,18 @@
 #define MESSAGE_BODY "\tMsg.%s = %d;\n"
 #define END_MESSAGE END_IMPLEMENT
 
+#define SQL_HEAD "CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8;\n"\
+								"USE %s\n"
+#define TABLE_HEAD "\nDROP TABLE IF EXISTS `%s`;\n"\
+									"CREATE TABLE `%s` (\n"
+#define TABLE_END ")ENGINE=InnoDB DEFAULT CHARSET=utf8;\n"
+#define SQL_INT_11 "\t%s int(11) NOT NULL default '0',\n"
+#define SQL_INT_2 "\t%s int(2) NOT NULL default '0',\n"
+#define SQL_BIGINT "\t%s bigint(20) NOT NULL default '0',\n"
+#define SQL_VARCHAR "\t%s varchar(120) NOT NULL default '',\n"
+#define SQL_TEXT "\t%s text NOT NULL,\n"
+#define PRIMARY_KEY "\tPRIMARY KEY (%s)\n"
+
 class Struct_Tool {
 public:
 	Struct_Tool();
@@ -28,8 +40,9 @@ public:
 	int write_struct();
 
 private:
-	int write_to_struct(FILE *fp);
-	int write_to_message(FILE *fp);
+	int write_to_struct();
+	int write_to_message();
+	int write_to_sql();
 };
 
 #endif
