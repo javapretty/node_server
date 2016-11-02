@@ -8,6 +8,8 @@
 #ifndef MOMGO_OPERATOR_H_
 #define MONGO_OPERATOR_H_
 
+#ifdef MONGO_DB_IMPLEMENT
+
 #include "mongo/client/dbclient.h"
 #include <unordered_map>
 #include "Object_Pool.h"
@@ -70,5 +72,7 @@ private:
 	Connection_Pool connection_pool_;
 	Connection_Map connection_map_;
 };
+
+#endif
 
 #endif /* MONGO_OPERATOR_H_ */

@@ -7,9 +7,12 @@
 
 #include "Base_Enum.h"
 #include "Base_Function.h"
-#include "Mongo_Operator.h"
 #include "Mysql_Operator.h"
 #include "Data_Manager.h"
+
+#ifdef MONGO_DB_IMPLEMENT
+	#include "Mongo_Operator.h"
+#endif
 
 Data_Manager::Data_Manager(void) :
 	db_operator_map_(get_hash_table_size(512)),
@@ -28,10 +31,12 @@ Data_Manager *Data_Manager::instance(void) {
 }
 
 int Data_Manager::init_db_operator() {
+#ifdef MONGO_DB_IMPLEMENT
 	Mongo_Operator *mongo = new Mongo_Operator();
+	db_operator_map_[MONGO] = mongo;
+#endif
 	Mysql_Operator *mysql = new Mysql_Operator();
 	db_operator_map_[MYSQL] = mysql;
-	db_operator_map_[MONGO] = mongo;
 	return 0;
 }
 

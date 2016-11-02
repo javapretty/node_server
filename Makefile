@@ -30,20 +30,34 @@ LIB=-lnodelib\
 	-lv8_libplatform\
 	-lcurl\
 	-lcrypto\
-	-lmongoclient\
 	-lmysqlcppconn\
 	-ljsoncpp\
-	-lboost_filesystem\
-	-lboost_thread-mt\
-	-ldl
+	-ldl\
+	$(MONGO_LIB)
 
 CC=g++
 
 DEPENS=-MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
 
-DEBUGFLAG=-O0 -g3 -Wall -c -fmessage-length=0 -std=c++11
+ifeq ($(MODE), DEBUG)
+DEBUG_FLAG = -O0 -g3
+else
+DEBUG_FLAG = -O3
+endif
 
-RELEASEFLAG=-O3 -Wall -c -fmessage-length=0 -std=c++11
+ifeq ($(MONGO), TRUE)
+MONGO_DB_IMPLENENT=-D MONGO_DB_IMPLEMENT
+MONGO_LIB=-lmongoclient\
+		  -lboost_filesystem\
+		  -lboost_thread-mt
+else
+MONGO_DB_IMPLENENT=
+MONGO_LIB=
+endif
+
+CONDITION=$(MONGO_DB_IMPLENENT)
+
+COM_FLAG=-Wall -c -fmessage-length=0 -std=c++11
 
 LDFLAG=
 
@@ -60,6 +74,7 @@ all:mkobjdir $(BIN_TARGET)
 -include $(OBJECTS:.o=.d)
 
 $(BIN_TARGET):$(OBJECTS)
+	@echo "Linking target $@"
 	$(CC) $(LDFLAG) -o $@ $^ $(LIBDIR) $(LIB)
 	@echo " "
 	@echo "Finished building target: $(TARGET_NAME)"
@@ -69,11 +84,10 @@ $(BIN_TARGET):$(OBJECTS)
 $(OBJDIR)%.o:%.cpp
 ifeq ($(MODE), DEBUG)
 	@echo "Building DEBUG MODE target $@"
-	$(CC) $(INCLUDE) $(DEBUGFLAG) $(DEPENS) -o "$(@)" "$(<)"
 else
 	@echo "Building RELEASE MODE target $@"
-	$(CC) $(INCLUDE) $(RELEASEFLAG) $(DEPENS) -o "$(@)" "$(<)"
 endif
+	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENS) $(CONDITION) -o "$(@)" "$(<)"
 	@echo " "
 
 mkobjdir:

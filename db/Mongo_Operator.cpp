@@ -5,6 +5,8 @@
  *      Author: zhangyalei
  */
 
+#ifdef MONGO_DB_IMPLEMENT
+
 #include "Base_Function.h"
 #include "Base_V8.h"
 #include "Data_Manager.h"
@@ -834,3 +836,6 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &fi
 
 	builder << field_info.field_name << obj_builder.obj();
 }
+
+#endif
+
