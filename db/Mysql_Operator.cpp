@@ -597,7 +597,7 @@ void Mysql_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 		int32_t val = result->getInt(field_info.field_name);
 		buffer.write_int(val, field_info.field_bit);
 	}
-	else if(field_info.field_type == "uint32") {
+	else if(field_info.field_type == "uint") {
 		uint32_t val = result->getUInt(field_info.field_name);
 		buffer.write_uint(val, field_info.field_bit);
 	}
