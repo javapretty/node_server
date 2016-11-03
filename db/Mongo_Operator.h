@@ -36,8 +36,8 @@ public:
 	virtual void save_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
 
 	///数据库加载出来的数据转换城buffer，缓存在内存中，保存数据时候通过buffer取数据
-	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec);
-	virtual void save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer);
+	virtual int load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Bit_Buffer *> &buffer_vec);
+	virtual void save_data(int db_id, DB_Struct *db_struct, Bit_Buffer *buffer);
 
 	//删除数据时候传入索引数组
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object);
@@ -59,15 +59,15 @@ private:
 	void save_data_struct(DB_Struct *db_struct, Isolate* isolate, const Field_Info &field_info, BSONObjBuilder &builder, v8::Local<v8::Value> value);
 
 	//数据输入：bsonobj  数据输出：buffer
-	void load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Byte_Buffer &buffer);
-	void load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer);
-	void load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer);
-	void load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer);
+	void load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Bit_Buffer &buffer);
+	void load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer);
+	void load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer);
+	void load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer);
 
 		//数据输入：buffer  数据输出：builder
-	void save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer);
-	void save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer);
-	void save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer);
+	void save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer);
+	void save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer);
+	void save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer);
 
 private:
 	Connection_Pool connection_pool_;

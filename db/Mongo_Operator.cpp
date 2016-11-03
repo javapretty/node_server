@@ -145,7 +145,7 @@ void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Isolate* isolate
 }
 
 /////////////////////////////////数据转成buffer///////////////////////////
-int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Byte_Buffer *> &buffer_vec) {
+int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index, std::vector<Bit_Buffer *> &buffer_vec) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
@@ -158,14 +158,14 @@ int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 			get_connection(db_id).findN(record, db_struct->table_name(), Query(), len);
 		}
 		for (int i = 0; i < len; ++i) {
-			Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
+			Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
 			load_data_single(db_struct, record[i], *buffer);
 			buffer_vec.push_back(buffer);
 		}
 	} else {
 		//加载单条数据
 		BSONObj bsonobj = get_connection(db_id).findOne(db_struct->table_name(), MONGO_QUERY(db_struct->index_name() << (long long int)key_index));
-		Byte_Buffer *buffer = DATA_MANAGER->pop_buffer();
+		Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
 		load_data_single(db_struct, bsonobj, *buffer);
 		buffer_vec.push_back(buffer);
 		len = 1;
@@ -173,13 +173,12 @@ int Mongo_Operator::load_data(int db_id, DB_Struct *db_struct, int64_t key_index
 	return len;
 }
 
-void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Byte_Buffer *buffer) {
+void Mongo_Operator::save_data(int db_id, DB_Struct *db_struct, Bit_Buffer *buffer) {
 	if(!db_struct->db_init()) {
 		init_db(db_id, db_struct);
 	}
 	BSONObjBuilder set_builder;
-	int64_t key_index = 0;
-	buffer->peek_int64(key_index);
+	int64_t key_index = buffer->peek_int64();
 	LOG_INFO("table %s save key_index:%ld", db_struct->table_name().c_str(), key_index);
 	if (key_index <= 0) {
 		return;
@@ -617,7 +616,7 @@ void Mongo_Operator::save_data_struct(DB_Struct *db_struct, Isolate* isolate, co
 	builder << field_info.field_name << obj_builder.obj();
 }
 
-void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Byte_Buffer &buffer) {
+void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, Bit_Buffer &buffer) {
 	for(std::vector<Field_Info>::const_iterator iter = db_struct->field_vec().begin();
 			iter != db_struct->field_vec().end(); ++iter) {
 		if(iter->field_label == "arg") {
@@ -632,42 +631,30 @@ void Mongo_Operator::load_data_single(DB_Struct *db_struct, BSONObj &bsonobj, By
 	}
 }
 
-void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
-	if(field_info.field_type == "int8") {
+void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer) {
+	if(field_info.field_type == "int") {
 		int8_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_int8(val);
+		buffer.write_int(val, field_info.field_bit);
 	}
-	else if(field_info.field_type == "int16") {
-		int16_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_int16(val);
-	}
-	else if(field_info.field_type == "int32") {
-		int32_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_int32(val);
+	else if(field_info.field_type == "uint") {
+		uint8_t val = bsonobj[field_info.field_name].numberInt();
+		buffer.write_uint(val, field_info.field_bit);
 	}
 	else if(field_info.field_type == "int64") {
 		int64_t val = bsonobj[field_info.field_name].numberLong();
 		buffer.write_int64(val);
 	}
-	else if(field_info.field_type == "uint8") {
-		uint8_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_uint8(val);
-	}
-	else if(field_info.field_type == "uint16") {
-		uint16_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_uint16(val);
-	}
-	else if(field_info.field_type == "uint32") {
-		uint32_t val = bsonobj[field_info.field_name].numberInt();
-		buffer.write_uint32(val);
-	}
 	else if(field_info.field_type == "uint64") {
-		int64_t val = bsonobj[field_info.field_name].numberLong();
+		uint64_t val = bsonobj[field_info.field_name].numberLong();
 		buffer.write_uint64(val);
 	}
-	else if(field_info.field_type == "double") {
+	else if(field_info.field_type == "decimal") {
 		double val = bsonobj[field_info.field_name].numberDouble();
-		buffer.write_double(val);
+		buffer.write_decimal(val, field_info.field_bit);
+	}
+	else if(field_info.field_type == "udecimal") {
+		double val = bsonobj[field_info.field_name].numberDouble();
+		buffer.write_udecimal(val, field_info.field_bit);
 	}
 	else if(field_info.field_type == "bool") {
 		bool val = bsonobj[field_info.field_name].booleanSafe();
@@ -675,7 +662,7 @@ void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 	else if(field_info.field_type == "string") {
 		std::string val = bsonobj[field_info.field_name].valuestrsafe();
-		buffer.write_string(val);
+		buffer.write_str(val.c_str());
 	}
 	else {
 		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
@@ -683,13 +670,13 @@ void Mongo_Operator::load_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 }
 
-void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
+void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer) {
 	BSONObj fieldobj = bsonobj.getObjectField(field_info.field_name);
 	uint16_t len = fieldobj.nFields();
 	BSONObjIterator field_iter(fieldobj);
 	BSONObj obj;
 
-	buffer.write_uint16(len);
+	buffer.write_uint(len, field_info.field_vbit);
 	if(db_struct->is_struct(field_info.field_type)) {
 		for(int i = 0; i < len; ++i) {
 			obj = field_iter.next().embeddedObject();
@@ -704,7 +691,7 @@ void Mongo_Operator::load_data_vector(DB_Struct *db_struct, const Field_Info &fi
 	}
 }
 
-void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Byte_Buffer &buffer) {
+void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObj &bsonobj, Bit_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if(db_struct == nullptr){
 		return;
@@ -726,60 +713,38 @@ void Mongo_Operator::load_data_struct(DB_Struct *db_struct, const Field_Info &fi
 	}
 }
 
-void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
-	if(field_info.field_type == "int8") {
-		int8_t val = 0;
-		buffer.read_int8(val);
+void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer) {
+	if(field_info.field_type == "int") {
+		int8_t val = buffer.read_int(field_info.field_bit);
 		builder << field_info.field_name << (int)val;
 	}
-	else if(field_info.field_type == "int16") {
-		int16_t val = 0;
-		buffer.read_int16(val);
-		builder << field_info.field_name << (int)val;
-	}
-	else if(field_info.field_type == "int32") {
-		int32_t val = 0;
-		buffer.read_int32(val);
-		builder << field_info.field_name << (int)val;
+	else if(field_info.field_type == "uint") {
+		uint8_t val = buffer.read_uint(field_info.field_bit);
+		builder << field_info.field_name << (uint)val;
 	}
 	else if(field_info.field_type == "int64") {
-		int64_t val = 0;
-		buffer.read_int64(val);
+		int64_t val = buffer.read_int64();
 		builder << field_info.field_name << (long long int)val;
-	}
-	else if(field_info.field_type == "uint8") {
-		uint8_t val = 0;
-		buffer.read_uint8(val);
-		builder << field_info.field_name << (uint)val;
-	}
-	else if(field_info.field_type == "uint16") {
-		uint16_t val = 0;
-		buffer.read_uint16(val);
-		builder << field_info.field_name << (uint)val;
-	}
-	else if(field_info.field_type == "uint32") {
-		uint32_t val = 0;
-		buffer.read_uint32(val);
-		builder << field_info.field_name << (uint)val;
 	}
 	else if(field_info.field_type == "uint64") {
-		uint64_t val = 0;
-		buffer.read_uint64(val);
+		uint64_t val = buffer.read_uint64();
 		builder << field_info.field_name << (long long int)val;
 	}
-	else if(field_info.field_type == "double") {
-		double val = 0;
-		buffer.read_double(val);
+	else if(field_info.field_type == "decimal") {
+		double val = buffer.read_decimal(field_info.field_bit);
+		builder << field_info.field_name << val;
+	}
+	else if(field_info.field_type == "udecimal") {
+		double val = buffer.read_udecimal(field_info.field_bit);
 		builder << field_info.field_name << val;
 	}
 	else if(field_info.field_type == "bool") {
-		bool val = 0;
-		buffer.read_bool(val);
+		bool val = buffer.read_bool();
 		builder << field_info.field_name << val;
 	}
 	else if(field_info.field_type == "string") {
 		std::string val = "";
-		buffer.read_string(val);
+		buffer.read_str(val);
 		builder << field_info.field_name << val;
 	}
 	else {
@@ -788,11 +753,10 @@ void Mongo_Operator::save_data_arg(DB_Struct *db_struct, const Field_Info &field
 	}
 }
 
-void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
+void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer) {
 	std::vector<BSONObj> bson_vec;
 
-	uint16_t len = 0;
-	buffer.read_uint16(len);
+	uint16_t len = buffer.read_uint(field_info.field_vbit);
 	for (uint i = 0; i < len; ++i) {
 		if(db_struct->is_struct(field_info.field_type)) {
 			BSONObjBuilder obj_builder;
@@ -809,7 +773,7 @@ void Mongo_Operator::save_data_vector(DB_Struct *db_struct, const Field_Info &fi
 	builder << field_info.field_name << bson_vec;
 }
 
-void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Byte_Buffer &buffer) {
+void Mongo_Operator::save_data_struct(DB_Struct *db_struct, const Field_Info &field_info, BSONObjBuilder &builder, Bit_Buffer &buffer) {
 	DB_Struct *sub_struct = STRUCT_MANAGER->get_db_struct(field_info.field_type);
 	if (sub_struct == nullptr) {
 		return;
