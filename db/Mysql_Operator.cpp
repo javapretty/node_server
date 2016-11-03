@@ -399,8 +399,8 @@ void Mysql_Operator::save_data(int db_id, DB_Struct *db_struct, Bit_Buffer *buff
 				pstmt->setBoolean(param_index + param_len, val);
 			}
 			else if(iter->field_type == "string") {
-				char val[4096] = {};
-				buffer->read_str(val, 4096);
+				std::string val = "";
+				buffer->read_str(val);
 				pstmt->setString(param_index, val);
 				pstmt->setString(param_index + param_len, val);
 			}
@@ -863,11 +863,10 @@ int Mysql_Operator::build_byte_buffer_arg(DB_Struct *db_struct, const Field_Info
 		byte_buffer.write_bool(val);
 	}
 	else if(field_info.field_type == "string") {
-		char val[4096] = {};
-		bit_buffer.read_str(val, 4096);
-		std::string str = val;
+		std::string val = "";
+		bit_buffer.read_str(val);
 		byte_buffer.write_string(val);
-		field_len = sizeof(uint16_t) + str.length();
+		field_len = sizeof(uint16_t) + val.length();
 	}
 	else {
 		LOG_ERROR("Can not find the field_type:%s, field_name:%s, struct_name:%s",
