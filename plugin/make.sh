@@ -1,0 +1,2 @@
+cd database && make
+cd ../

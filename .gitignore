@@ -5,3 +5,4 @@
 /snapshot_blob.bin
 /node_server
 /plugin/database/obj/
+/plugin/*.so
