@@ -9,7 +9,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "Base_Function.h"
-#include "Data_Manager.h"
 #include "Struct_Manager.h"
 #include "Node_Timer.h"
 #include "Node_Config.h"
@@ -73,7 +72,6 @@ int Node_Manager::init(int node_type, int node_id, int endpoint_gid, const std::
 	for (uint i = 0; i < node_misc["db_struct_path"].size(); ++i) {
 		STRUCT_MANAGER->init_struct(node_misc["db_struct_path"][i].asCString(), DB_STRUCT);
 	}
-	DATA_MANAGER->init_db_operator();
 
 	//启动server线程
 	for (Endpoint_List::iterator iter = node_info_.endpoint_list.begin(); iter != node_info_.endpoint_list.end(); ++iter) {

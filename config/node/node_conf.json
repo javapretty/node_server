@@ -98,6 +98,11 @@
 		{
 			"node_type" : 3,
 			"script_path" : "js/data_server/data_server.js",
+			"plugin" : [
+				{
+					"path" : "plugin/dbplugin.so"
+				}
+			],
 			"endpoint" : [
 				{
 					"endpoint_type" : 2,
@@ -125,6 +130,11 @@
 		{
 			"node_type" : 4,
 			"script_path" : "js/data_server/data_server.js",
+			"plugin" : [
+				{
+					"path" : "plugin/dbplugin.so"
+				}
+			],
 			"endpoint" : [
 				{
 					"endpoint_type" : 3,
@@ -152,6 +162,11 @@
 		{
 			"node_type" : 5,
 			"script_path" : "js/log_server/log_server.js",
+			"plugin" : [
+				{
+					"path" : "plugin/dbplugin.so"
+				}
+			],
 			"endpoint" : [
 				{
 					"endpoint_type" : 2,

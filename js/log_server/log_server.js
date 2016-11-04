@@ -21,6 +21,7 @@ function init(node_info) {
 	config.init();
 	timer.init(Node_Type.LOG_SERVER);	
 	//连接log数据库
+	init_db_operator();
 	init_db_connect();
 }
 

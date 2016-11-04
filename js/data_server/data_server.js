@@ -20,6 +20,7 @@ function init(node_info) {
 	log_info('data_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.DATA_SERVER);	
+	init_db_operator();
 	//连接game数据库
 	init_db_connect();
 }
