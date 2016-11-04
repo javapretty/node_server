@@ -17,6 +17,7 @@
 
 Node_Manager::Node_Manager(void):
 	tick_time_(Time_Value::zero),
+	msg_filter_count_(0),
 	endpoint_map_(get_hash_table_size(256)),
 	cid_session_map_(10000),
 	sid_session_map_(10000),
@@ -50,6 +51,7 @@ int Node_Manager::init(int node_type, int node_id, int endpoint_gid, const std::
 		node_info_ = iter->second;
 		node_info_.node_id = node_id;
 		node_info_.node_name = node_name;
+		msg_filter_count_ = node_info_.filter_list.size();
 	} else {
 		LOG_ERROR("can't init node, node_type:%d error, node_id:%d, node_name:%s", node_type, node_id, node_name.c_str());
 		return -1;
@@ -130,9 +132,19 @@ int Node_Manager::init_node_info(void) {
 			node_info.plugin_list.push_back(plugin_path);
 		}
 
+		const Json::Value &filter_conf = node_conf[i]["msg_filter"];
+		for (uint j = 0; j < filter_conf.size(); ++j) {
+			Msg_Filter msg_filter;
+			msg_filter.msg_type = filter_conf[j]["msg_type"].asInt();
+			msg_filter.min_msg_id = filter_conf[j]["min_msg_id"].asInt();
+			msg_filter.max_msg_id = filter_conf[j]["max_msg_id"].asInt();
+			node_info.filter_list.push_back(msg_filter);
+		}
+
+		Endpoint_Info endpoint_info;
 		const Json::Value &endpoint_conf = node_conf[i]["endpoint"];
 		for (uint j = 0; j < endpoint_conf.size();++j) {
-			Endpoint_Info endpoint_info;
+			endpoint_info.reset();
 			endpoint_info.endpoint_type = endpoint_conf[j]["endpoint_type"].asInt();
 			endpoint_info.endpoint_gid = endpoint_conf[j]["endpoint_gid"].asInt();
 			endpoint_info.endpoint_id = endpoint_conf[j]["endpoint_id"].asInt();

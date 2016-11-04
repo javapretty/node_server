@@ -48,14 +48,27 @@ struct Drop_Info {
 	Drop_Info(void) : eid(0), cid(-1), drop_time(Time_Value::gettimeofday()) {}
 };
 
+//消息过滤器，被过滤的消息，不会抛给脚本层，直接由C++处理
+struct Msg_Filter {
+	int msg_type;				//消息类型
+	int min_msg_id;			//最小消息id
+	int max_msg_id;			//最大消息id
+
+	void serialize(Bit_Buffer &buffer);
+	void deserialize(Bit_Buffer &buffer);
+	void reset(void);
+};
+
+typedef std::vector<Msg_Filter> Filter_List;
 typedef std::vector<Endpoint_Info> Endpoint_List;
 struct Node_Info {
-	int node_type;									//节点类型
-	int node_id;										//节点id
-	std::string node_name;					//节点名称
-	std::string node_ip;						//节点ip
-	std::string script_path;			//启动的js脚本路径
+	int node_type;										//节点类型
+	int node_id;											//节点id
+	std::string node_name;						//节点名称
+	std::string node_ip;							//节点ip
+	std::string script_path;					//启动的js脚本路径
 	std::vector<std::string> plugin_list; //插件列表
+	Filter_List filter_list;					//消息过滤器列表
 	Endpoint_List endpoint_list;	//线程列表
 
 	void serialize(Bit_Buffer &buffer);

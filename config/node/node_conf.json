@@ -30,6 +30,18 @@
 		{
 			"node_type" : 2,
 			"script_path" : "js/gate_server/gate_server.js",
+			"msg_filter" : [
+				{
+					"msg_type" : 1,
+					"min_msg_id" : 4,
+					"max_msg_id" : 255
+				},
+				{
+					"msg_type" : 4,
+					"min_msg_id" : 4,
+					"max_msg_id" : 255
+				}	
+			],
 			"endpoint" : [
 				{
 					"endpoint_type" : 1,

@@ -62,7 +62,14 @@ function Node_Info() {
 	this.node_ip = "";
 	this.script_path = "";
 	this.plugin_list = new Array();
+	this.filter_list = new Array();
 	this.endpoint_list = new Array();
+}
+
+function Msg_Filter() {
+	this.msg_type = 0;
+	this.min_msg_id = 0;
+	this.max_msg_id = 0;
 }
 
 function Endpoint_Info() {

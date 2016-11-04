@@ -38,7 +38,6 @@ public:
 	//通知daemon创建进程
 	int fork_process(int node_type, int node_id, int endpoint_gid, std::string &node_name);
 
-
 	virtual void run_handler(void);
 	virtual int process_list(void);
 
@@ -55,6 +54,8 @@ public:
 	inline Byte_Buffer *pop_buffer(void);
 	//回收消息buffer
 	inline int push_buffer(int eid, int cid, Byte_Buffer *buffer);
+	//消息过滤器，被过滤的消息，不会抛给脚本层，直接由C++处理
+	inline bool msg_filter(int msg_type, int msg_id);
 
 	//传递消息，用于路由节点
 	int transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer);
@@ -112,12 +113,13 @@ private:
 	Int_List tick_list_;				//定时器列表
 
 	Time_Value tick_time_;			//节点tick时间
-	Time_Value node_info_tick_;//节点信息tick
+	Time_Value node_info_tick_;	//节点信息tick
 
 	Server_Pool server_pool_;
 	Connector_Pool connector_pool_;
 	Session_Pool session_pool_;
 
+	int msg_filter_count_;					//消息过滤器数量
 	Node_Info node_info_;					//本进程节点信息
 	Node_Map node_map_;						//节点信息
 	Endpoint_Map endpoint_map_;		//通信端信息
@@ -165,5 +167,14 @@ int Node_Manager::push_buffer(int eid, int cid, Byte_Buffer *buffer) {
 	return 0;
 }
 
-#endif /* NODE_MANAGER_H_ */
+bool Node_Manager::msg_filter(int msg_type, int msg_id) {
+	for (int i = 0; i < msg_filter_count_; ++i) {
+		if (msg_type == node_info_.filter_list[i].msg_type && msg_id >= node_info_.filter_list[i].min_msg_id
+				&& msg_id <= node_info_.filter_list[i].max_msg_id) {
+			return true;
+		}
+	}
+	return false;
+}
 
+#endif /* NODE_MANAGER_H_ */

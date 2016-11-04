@@ -15,6 +15,7 @@
 #include "include/libplatform/libplatform.h"
 #include "Thread.h"
 #include "List.h"
+#include "Buffer_List.h"
 #include "Node_Define.h"
 
 using namespace v8;
@@ -32,6 +33,7 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 
 class V8_Manager: public Thread {
 public:
+	typedef Buffer_List<Thread_Mutex> Data_List;
 	typedef List<int, Thread_Mutex> Int_List;
 	typedef std::unordered_map<const char *, void *> Plugin_Handle_Map;
 public:
@@ -42,6 +44,7 @@ public:
 	int init(const Node_Info &node_info);
 	int fini(void);
 
+	inline Byte_Buffer *pop_filter_buffer() { return filter_buffer_list_.pop_front(); }
 	inline void push_timer(int timer_id) { timer_list_.push_back(timer_id); }
 	inline Plugin_Handle_Map &plugin_handle_map() {return plugin_handle_map_;}
 
@@ -56,8 +59,9 @@ private:
 	Platform* platform_;
 	Isolate* isolate_;
 	Global<Context> context_;
-	Node_Info node_info_;		//节点信息
-	Int_List timer_list_;		//定时器编号
+	Node_Info node_info_;					//节点信息
+	Data_List filter_buffer_list_;	//过滤的消息列表
+	Int_List timer_list_;					//定时器编号
 	Plugin_Handle_Map plugin_handle_map_;
 };
 

@@ -112,6 +112,7 @@ int V8_Manager::process_list(void) {
 			uint8_t msg_id = 0;
 			uint8_t msg_type = 0;
 			uint32_t sid = 0;
+			int read_idx = buffer->get_read_idx();
 			buffer->read_int32(eid);
 			buffer->read_int32(cid);
 			buffer->read_uint8(protocol);
@@ -128,14 +129,16 @@ int V8_Manager::process_list(void) {
 					buffer->read_uint8(msg_type);
 					buffer->read_uint32(sid);
 				}
-				NODE_MANAGER->add_msg_count(msg_id);
 
-				//gate消息直接发送，不经过脚本层
-				if (NODE_MANAGER->node_info().node_type == GATE_SERVER
-						&& (msg_type == C2S || msg_type == NODE_S2C)
-						&& msg_id >= 4 && msg_id <= 255) {
-					NODE_MANAGER->transmit_msg(eid, cid, msg_id, msg_type, sid, buffer);
-					NODE_MANAGER->push_buffer(eid, cid, buffer);
+				//消息被过滤，不经过js层，直接由C++处理
+				if (NODE_MANAGER->msg_filter(msg_type, msg_id)) {
+					if (NODE_MANAGER->node_info().node_type == GATE_SERVER) {
+						NODE_MANAGER->transmit_msg(eid, cid, msg_id, msg_type, sid, buffer);
+						NODE_MANAGER->push_buffer(eid, cid, buffer);
+					} else {
+						buffer->set_read_idx(read_idx);
+						filter_buffer_list_.push_back(buffer);
+					}
 					continue;
 				}
 
@@ -161,7 +164,6 @@ int V8_Manager::process_list(void) {
 
 				msg_id = value["msg_id"].asInt();
 				msg_type = HTTP_MSG;
-				NODE_MANAGER->add_msg_count(msg_id);
 				std::string struct_name = get_struct_name(msg_type, msg_id);
 				Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 				if (msg_struct) {
