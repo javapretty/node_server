@@ -227,6 +227,8 @@
     <ClInclude Include="include\nodelib\base\Base_Enum.h" />
     <ClInclude Include="include\nodelib\base\Base_Function.h" />
     <ClInclude Include="include\nodelib\base\Base_V8.h" />
+	<ClInclude Include="include\nodelib\base\Byte_Buffer.h" />
+	<ClInclude Include="include\nodelib\base\Bit_Buffer.h" />
     <ClInclude Include="include\nodelib\base\Block_List.h" />
     <ClInclude Include="include\nodelib\base\Block_Pool_Group.h" />
     <ClInclude Include="include\nodelib\base\Config.h" />
@@ -242,7 +244,6 @@
     <ClInclude Include="include\nodelib\base\Thread_Mutex.h" />
     <ClInclude Include="include\nodelib\base\Time_Value.h" />
     <ClInclude Include="include\nodelib\network\Accept.h" />
-    <ClInclude Include="include\nodelib\network\Block_Buffer.h" />
     <ClInclude Include="include\nodelib\network\Connect.h" />
     <ClInclude Include="include\nodelib\network\Endpoint.h" />
     <ClInclude Include="include\nodelib\network\Epoll_Watcher.h" />
@@ -268,11 +269,6 @@
     <ClInclude Include="include\nodelib\xml\tinystr.h" />
     <ClInclude Include="include\nodelib\xml\tinyxml.h" />
     <ClInclude Include="include\nodelib\xml\Xml.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="config\struct\message.define" />
-    <None Include="natives_blob.bin" />
-    <None Include="snapshot_blob.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
