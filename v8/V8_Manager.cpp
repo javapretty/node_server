@@ -71,7 +71,7 @@ int V8_Manager::process_list(void) {
 	if (msg_struct) {
 		Bit_Buffer buffer;
 		node_info_.serialize(buffer);
-		argv[0] = msg_struct->build_bit_object(isolate_, buffer);
+		argv[0] = msg_struct->build_bit_object(isolate_, msg_struct->field_vec(), buffer);
 	} else {
 		fini();
 		return -1;

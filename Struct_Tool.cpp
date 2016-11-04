@@ -46,7 +46,7 @@ int Struct_Tool::write_to_struct() {
 		sprintf(temp, BEGIN_IMPLEMENT, base_struct->struct_name().c_str());
 		fputs(temp, fp);
 
-		for(std::vector<Field_Info>::const_iterator it = base_struct->field_vec().begin();
+		for(Field_Vec::const_iterator it = base_struct->field_vec().begin();
 				it != base_struct->field_vec().end(); it++) {
 			Field_Info info = *it;
 			memset(temp, 0, 256);
@@ -131,7 +131,7 @@ int Struct_Tool::write_to_sql() {
 			memset(temp, 0, 256);
 			sprintf(temp, TABLE_HEAD, table_name.c_str(), table_name.c_str());
 			fputs(temp, fp);
-			for(std::vector<Field_Info>::const_iterator it = base_struct->field_vec().begin();
+			for(Field_Vec::const_iterator it = base_struct->field_vec().begin();
 					it != base_struct->field_vec().end(); it++) {
 				Field_Info info = *it;
 				if(info.field_label == "arg") {

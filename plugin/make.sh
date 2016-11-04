@@ -1,2 +1,0 @@
-cd database && make
-cd ../

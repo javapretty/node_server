@@ -69,6 +69,7 @@ $(BIN_TARGET):$(OBJECTS)
 	@echo "Finished building target: $(TARGET_NAME)"
 	@echo " "
 	@-cp -f $(BIN_TARGET) $(BIN)
+	@-sh make_plugin.sh
 
 $(OBJDIR)%.o:%.cpp
 ifeq ($(MODE), DEBUG)
