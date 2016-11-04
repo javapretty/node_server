@@ -12,14 +12,23 @@
 #include "Object_Pool.h"
 #include "DB_Operator.h"
 
+enum SAVE_FLAG {
+	SAVE_BUFFER = 0,
+	SAVE_BUFFER_DB = 1,
+	SAVE_DB = 2,
+};
+
 class Data_Manager {
 public:
 	typedef std::unordered_map<int, DB_Operator *> DB_Operator_Map;					//db_id--DB_Operator
 	typedef std::unordered_map<int64_t, Bit_Buffer *> Record_Buffer_Map; 	//index--buffer
 	typedef std::unordered_map<std::string, Record_Buffer_Map *> Table_Buffer_Map;//table_name--record
 	typedef std::unordered_map<int, Table_Buffer_Map *> DB_Buffer_Map; 			//db_id--table_buffer
-	typedef std::unordered_map<int64_t, Bit_Buffer *> Runtime_Data_Map;		//index--buffer
+	typedef std::unordered_map<int64_t, Bit_Buffer *> Runtime_Buffer_Map;		//index--buffer
+	typedef std::unordered_map<std::string, Runtime_Buffer_Map *> Runtime_Data_Map; //key_name--buffer_map
 	typedef Object_Pool<Bit_Buffer, Thread_Mutex> Buffer_Pool;
+
+	typedef std::unordered_map<std::string, int> TABLE_MAP;
 public:
 	static Data_Manager *instance(void);
 
@@ -31,7 +40,7 @@ public:
 
 	void set_runtime_data(int64_t index, DB_Struct *db_struct, Bit_Buffer *buffer);
 	Bit_Buffer *get_runtime_data(int64_t index, DB_Struct *db_struct);
-	void delete_runtime_data(int64_t index);
+	void delete_runtime_data(int64_t index, DB_Struct *db_struct);
 
 	inline Bit_Buffer *pop_buffer() { return buffer_pool_.pop(); };
 	inline void push_buffer(Bit_Buffer *buffer) {
@@ -46,6 +55,7 @@ private:
 	const Data_Manager &operator=(const Data_Manager &);
 
 	Record_Buffer_Map *get_record_map(int db_id, std::string table_name);
+	Runtime_Buffer_Map *get_runtime_buffer_map(std::string key_name);
 private:
 	static Data_Manager *instance_;
 	DB_Operator_Map db_operator_map_;

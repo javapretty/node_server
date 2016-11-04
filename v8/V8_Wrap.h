@@ -49,11 +49,11 @@ v8::Local<v8::Object> load_single_data(Isolate* isolate, int db_id, DB_Struct *d
 //函数说明：保存单张表数据		参数：1.db_id 2.table_name 3.数据object	返回值：无
 void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Local<v8::Object> object, int flag);
 
-//函数说明：保存运行时数据		参数：1.index 2.struct_name 3.数据object		返回值：无
+//函数说明：保存运行时数据		参数：1.key_name, 2.index 3.数据object		返回值：无
 void set_runtime_data(const FunctionCallbackInfo<Value>& args);
-//函数说明：获取运行时数据		参数：1.index 2.struct_name	返回值：无
+//函数说明：获取运行时数据		参数：1.key_name, 2.index	返回值：无
 void get_runtime_data(const FunctionCallbackInfo<Value>& args);
-//函数说明：删除运行时数据		参数：1.index 返回值：无
+//函数说明：删除运行时数据		参数：1.key_name, 2.index 返回值：无
 void delete_runtime_data(const FunctionCallbackInfo<Value>& args);
 
 #endif /* V8_WRAP_H_ */
