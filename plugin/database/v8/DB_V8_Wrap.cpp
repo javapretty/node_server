@@ -6,10 +6,10 @@
  */
 
 #include <sstream>
-#include "Base_V8.h"
+#include "V8_Base.h"
 #include "Data_Manager.h"
 #include "Struct_Manager.h"
-#include "V8_Wrap.h"
+#include "DB_V8_Wrap.h"
 
 void init_db_operator(const FunctionCallbackInfo<Value>& args) {
 	DATA_MANAGER->init_db_operator();
