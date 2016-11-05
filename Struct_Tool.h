@@ -8,6 +8,7 @@
 #define STRUCT_TOOL_
 
 #include <stdlib.h>
+#include "Base_Define.h"
 
 #define BEGIN_IMPLEMENT "\nfunction %s() {\n"
 #define END_IMPLEMENT "}\n"
@@ -41,6 +42,7 @@ public:
 
 private:
 	int write_to_struct();
+	int write_field_struct(FILE *fp, Field_Vec field_vec);
 	int write_to_message();
 	int write_to_sql();
 };

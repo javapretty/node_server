@@ -200,6 +200,8 @@ void delete_db_data(const FunctionCallbackInfo<Value>& args) {
 
 v8::Local<v8::Object> load_single_data(Isolate* isolate, int db_id, DB_Struct *db_struct, int64_t key_index) {
 	EscapableHandleScope handle_scope(isolate);
+	Local<Context> context(isolate->GetCurrentContext());
+	v8::Local<v8::ObjectTemplate> localTemplate = ObjectTemplate::New(isolate);
 
 	std::vector<Bit_Buffer *> buffer_vec;
 	DATA_MANAGER->load_db_data(db_id, db_struct, key_index, buffer_vec);
@@ -208,16 +210,18 @@ v8::Local<v8::Object> load_single_data(Isolate* isolate, int db_id, DB_Struct *d
 		uint length = buffer_vec.size();
 		Local<Array> array = Array::New(isolate, length);
 		for (uint i = 0; i < length; ++i) {
-			Local<Object> sub_object = db_struct->build_bit_object(isolate, db_struct->field_vec(), *buffer_vec[i]);
-			if (!sub_object.IsEmpty()) {
-				array->Set(i, sub_object);
+			v8::Local<v8::Object> object = localTemplate->NewInstance(context).ToLocalChecked();
+			db_struct->build_bit_object(isolate, db_struct->field_vec(), *buffer_vec[i], object);
+			if (!object.IsEmpty()) {
+				array->Set(i, object);
 			}
 		}
 		return handle_scope.Escape(array);
 	}
 	//按照索引加载表里的数据
 	else {
-		Local<Object> object = db_struct->build_bit_object(isolate, db_struct->field_vec(), *buffer_vec[0]);
+		v8::Local<v8::Object> object = localTemplate->NewInstance(context).ToLocalChecked();
+		db_struct->build_bit_object(isolate, db_struct->field_vec(), *buffer_vec[0], object);
 		return handle_scope.Escape(object);
 	}
 }
@@ -244,12 +248,12 @@ void save_single_data(Isolate* isolate, int db_id, std::string &table_name, Loca
 			Local<Value> value = object->Get(context, String::NewFromUtf8(isolate, iter->field_name.c_str(), NewStringType::kNormal).ToLocalChecked()).ToLocalChecked();
 			Local<Object> sub_object = value->ToObject(context).ToLocalChecked();
 			Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
-			sub_struct->build_bit_buffer(isolate, sub_object, sub_struct->field_vec(), *buffer);
+			sub_struct->build_bit_buffer(isolate, sub_struct->field_vec(), *buffer, sub_object);
 			DATA_MANAGER->save_db_data(db_id, sub_struct, buffer, flag);
 		}
 	} else {
 		Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
-		db_struct->build_bit_buffer(isolate, object, db_struct->field_vec(), *buffer);
+		db_struct->build_bit_buffer(isolate, db_struct->field_vec(), *buffer, object);
 		DATA_MANAGER->save_db_data(db_id, db_struct, buffer, flag);
 	}
 }
@@ -268,7 +272,7 @@ void set_runtime_data(const FunctionCallbackInfo<Value>& args) {
 		return;
 	}
 	Bit_Buffer *buffer = DATA_MANAGER->pop_buffer();
-	db_struct->build_bit_buffer(args.GetIsolate(), args[2]->ToObject(context).ToLocalChecked(), db_struct->field_vec(), *buffer);
+	db_struct->build_bit_buffer(args.GetIsolate(), db_struct->field_vec(), *buffer, args[2]->ToObject(context).ToLocalChecked());
 	DATA_MANAGER->set_runtime_data(index, db_struct, buffer);
 }
 
@@ -285,9 +289,12 @@ void get_runtime_data(const FunctionCallbackInfo<Value>& args) {
 		LOG_ERROR("db_struct %s is NULL", key_name.c_str());
 		return;
 	}
+
 	Bit_Buffer *buffer = DATA_MANAGER->get_runtime_data(index, db_struct);
 	if(buffer) {
-		Local<Object> object = db_struct->build_bit_object(args.GetIsolate(), db_struct->field_vec(), *buffer);
+		v8::Local<v8::ObjectTemplate> localTemplate = ObjectTemplate::New(args.GetIsolate());
+		v8::Local<v8::Object> object = localTemplate->NewInstance(context).ToLocalChecked();
+		db_struct->build_bit_object(args.GetIsolate(), db_struct->field_vec(), *buffer, object);
 		args.GetReturnValue().Set(object);
 	}  else {
 		args.GetReturnValue().SetNull();

@@ -71,7 +71,10 @@ int V8_Manager::process_list(void) {
 	if (msg_struct) {
 		Bit_Buffer buffer;
 		node_info_.serialize(buffer);
-		argv[0] = msg_struct->build_bit_object(isolate_, msg_struct->field_vec(), buffer);
+		v8::Local<v8::ObjectTemplate> localTemplate = ObjectTemplate::New(isolate_);
+		v8::Local<v8::Object> object = localTemplate->NewInstance(context).ToLocalChecked();
+		msg_struct->build_bit_object(isolate_, msg_struct->field_vec(), buffer, object);
+		argv[0] = object;
 	} else {
 		fini();
 		return -1;

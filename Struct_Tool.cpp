@@ -42,39 +42,55 @@ int Struct_Tool::write_to_struct() {
 	for(Struct_Manager::Struct_Name_Map::const_iterator iter = STRUCT_MANAGER->base_struct_name_map().begin();
 			iter != STRUCT_MANAGER->base_struct_name_map().end(); iter++){
 		Base_Struct *base_struct = iter->second;
+		//写结构体头部
 		memset(temp, 0, 256);
 		sprintf(temp, BEGIN_IMPLEMENT, base_struct->struct_name().c_str());
 		fputs(temp, fp);
-
-		for(Field_Vec::const_iterator it = base_struct->field_vec().begin();
-				it != base_struct->field_vec().end(); it++) {
-			Field_Info info = *it;
-			memset(temp, 0, 256);
-			if(info.field_label == "arg") {
-				if(info.field_type == "string") {
-					sprintf(temp, RESET_STRING, info.field_name.c_str());
-				}
-				else {
-					sprintf(temp, RESET_ZERO, info.field_name.c_str());
-				}
-			}
-			else if(info.field_label == "vector") {
-				sprintf(temp, RESET_VECTOR, info.field_name.c_str());
-			}
-			else if(info.field_label == "map") {
-				sprintf(temp, RESET_MAP, info.field_name.c_str());
-			}
-			else if(info.field_label == "struct") {
-				sprintf(temp, RESET_STRUCT, info.field_name.c_str(), info.field_type.c_str());
-			}
-			fputs(temp, fp);
-		}
-
+		//写结构体内容
+		write_field_struct(fp, base_struct->field_vec());
+		//写结构体尾部
 		memset(temp, 0, 256);
 		sprintf(temp, END_IMPLEMENT);
 		fputs(temp, fp);
 	}
 	fclose(fp);
+	return 0;
+}
+
+int Struct_Tool::write_field_struct(FILE *fp, Field_Vec field_vec) {
+	char temp[256] = {};
+	for(Field_Vec::const_iterator iter = field_vec.begin();
+			iter != field_vec.end(); iter++) {
+		memset(temp, 0, 256);
+		if(iter->field_label == "arg") {
+			if(iter->field_type == "string") {
+				sprintf(temp, RESET_STRING, iter->field_name.c_str());
+			}
+			else {
+				sprintf(temp, RESET_ZERO, iter->field_name.c_str());
+			}
+		}
+		else if(iter->field_label == "vector") {
+			sprintf(temp, RESET_VECTOR, iter->field_name.c_str());
+		}
+		else if(iter->field_label == "map") {
+			sprintf(temp, RESET_MAP, iter->field_name.c_str());
+		}
+		else if(iter->field_label == "struct") {
+			sprintf(temp, RESET_STRUCT, iter->field_name.c_str(), iter->field_type.c_str());
+		}
+		else if(iter->field_label == "if") {
+			write_field_struct(fp, iter->children);
+		}
+		else if(iter->field_label == "switch") {
+			write_field_struct(fp, iter->children);
+			sprintf(temp, RESET_ZERO, iter->field_name.c_str());
+		}
+		else if(iter->field_label == "case") {
+			write_field_struct(fp, iter->children);
+		}
+		fputs(temp, fp);
+	}
 	return 0;
 }
 

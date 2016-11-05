@@ -130,7 +130,7 @@ void send_msg(const FunctionCallbackInfo<Value>& args) {
 	Msg_Struct *msg_struct = STRUCT_MANAGER->get_msg_struct(struct_name);
 	if (msg_struct) {
 		Bit_Buffer bit_buffer;
-		msg_struct->build_bit_buffer(args.GetIsolate(), args[5]->ToObject(context).ToLocalChecked(), msg_struct->field_vec(), bit_buffer);
+		msg_struct->build_bit_buffer(args.GetIsolate(), msg_struct->field_vec(), bit_buffer, args[5]->ToObject(context).ToLocalChecked());
 		buffer.copy(bit_buffer.data(), bit_buffer.get_byte_size());
 	}
 	NODE_MANAGER->send_msg(eid, cid, msg_id, msg_type, sid, &buffer);
