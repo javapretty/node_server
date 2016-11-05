@@ -53,10 +53,6 @@ struct Msg_Filter {
 	int msg_type;				//消息类型
 	int min_msg_id;			//最小消息id
 	int max_msg_id;			//最大消息id
-
-	void serialize(Bit_Buffer &buffer);
-	void deserialize(Bit_Buffer &buffer);
-	void reset(void);
 };
 
 typedef std::vector<Msg_Filter> Filter_List;

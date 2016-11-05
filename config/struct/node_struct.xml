@@ -11,20 +11,11 @@
 		<arg type="int" bit="32" name="receive_timeout"/>
 	</Endpoint_Info>
 	
-	<Msg_Filter>
-		<arg type="int" bit="32" name="msg_type"/>
-		<arg type="int" bit="32" name="min_msg_id"/>
-		<arg type="int" bit="32" name="max_msg_id"/>
-	</Msg_Filter>
-	
 	<Node_Info>
 		<arg type="int" bit="32" name="node_type"/>
 		<arg type="int" bit="32" name="node_id"/>
 		<arg type="string" name="node_name"/>
 		<arg type="string" name="node_ip"/>
-		<arg type="string" name="script_path"/>
-		<vector vbit="8" type="string" name="plugin_list"/>
-		<vector vbit="8" type="Msg_Filter" name="filter_list"/>
 		<vector vbit="8" type="Endpoint_Info" name="endpoint_list"/>
 	</Node_Info>
 
