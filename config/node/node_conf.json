@@ -12,7 +12,7 @@
 					"server_ip" : "127.0.0.1",	
 					"server_port" : 8000,
 					"protocol_type" : 0,
-					"receive_timeout" : 10
+					"receive_timeout" : 60
 				},
 				{
 					"endpoint_type" : 2,
