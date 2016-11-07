@@ -32,7 +32,7 @@ public:
 	virtual void delete_data(int db_id, DB_Struct *db_struct, Isolate* isolate, v8::Local<v8::Object> object) {};
 
 protected:
-	MUTEX connection_map_lock_;
+	MUTEX_LOCK connection_map_lock_;
 };
 
 #endif /* DB_OPERATOR_H_ */

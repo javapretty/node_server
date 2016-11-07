@@ -26,7 +26,7 @@ public:
 	typedef std::unordered_map<int, Table_Buffer_Map *> DB_Buffer_Map; 			//db_id--table_buffer
 	typedef std::unordered_map<int64_t, Bit_Buffer *> Runtime_Buffer_Map;		//index--buffer
 	typedef std::unordered_map<std::string, Runtime_Buffer_Map *> Runtime_Data_Map; //key_name--buffer_map
-	typedef Object_Pool<Bit_Buffer, Thread_Mutex> Buffer_Pool;
+	typedef Object_Pool<Bit_Buffer, Mutex_Lock> Buffer_Pool;
 
 	typedef std::unordered_map<std::string, int> TABLE_MAP;
 public:

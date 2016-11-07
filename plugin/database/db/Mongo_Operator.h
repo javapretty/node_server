@@ -21,7 +21,7 @@ class Mongo_Operator : public DB_Operator {
 public:
 	typedef std::unordered_map<int, DBClientConnection *> Connection_Map;
 	//typedef std::unordered_map<std::string, Connection_Map *> DB_Connection_Map;
-	typedef Object_Pool<DBClientConnection, Thread_Mutex> Connection_Pool;
+	typedef Object_Pool<DBClientConnection, Mutex_Lock> Connection_Pool;
 
 	Mongo_Operator(void);
 	virtual ~Mongo_Operator(void);
