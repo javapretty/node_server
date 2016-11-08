@@ -1,11 +1,11 @@
 
 function Logout_Info() {
-	this.role_id = 0;
 	this.role_name = "";
-	this.account = "";
 	this.level = 0;
+	this.role_id = 0;
 	this.exp = 0;
 	this.gender = 0;
+	this.account = "";
 	this.career = 0;
 	this.create_time = 0;
 	this.login_time = 0;
@@ -13,8 +13,8 @@ function Logout_Info() {
 }
 
 function Rank_Info() {
-	this.rank_type = 0;
 	this.min_role_id = 0;
+	this.rank_type = 0;
 	this.min_value = 0;
 	this.member_map = new Map();
 }
@@ -66,26 +66,26 @@ function Node_Info() {
 function Endpoint_Info() {
 	this.endpoint_type = 0;
 	this.endpoint_gid = 0;
-	this.endpoint_id = 0;
-	this.endpoint_name = "";
 	this.server_ip = "";
 	this.server_port = 0;
+	this.endpoint_name = "";
 	this.protocol_type = 0;
+	this.endpoint_id = 0;
 	this.receive_timeout = 0;
 }
 
 function Mail_Detail() {
 	this.pickup = 0;
-	this.mail_id = 0;
-	this.send_time = 0;
-	this.sender_type = 0;
-	this.sender_id = 0;
-	this.sender_name = "";
-	this.mail_title = "";
-	this.mail_content = "";
-	this.copper = 0;
-	this.gold = 0;
 	this.item_info = new Array();
+	this.sender_id = 0;
+	this.gold = 0;
+	this.mail_title = "";
+	this.copper = 0;
+	this.mail_content = "";
+	this.send_time = 0;
+	this.mail_id = 0;
+	this.sender_name = "";
+	this.sender_type = 0;
 }
 
 function Item_Info() {
@@ -95,8 +95,8 @@ function Item_Info() {
 }
 
 function Guild_Member_Detail() {
-	this.role_id = 0;
 	this.role_name = "";
+	this.role_id = 0;
 	this.level = 0;
 }
 
@@ -109,13 +109,13 @@ function Guild_Info() {
 }
 
 function Role_Info() {
-	this.role_id = 0;
-	this.role_name = "";
 	this.account = "";
+	this.role_id = 0;
 	this.level = 0;
 	this.exp = 0;
 	this.gender = 0;
 	this.career = 0;
+	this.role_name = "";
 	this.create_time = 0;
 	this.login_time = 0;
 	this.logout_time = 0;
@@ -124,9 +124,9 @@ function Role_Info() {
 }
 
 function http_1() {
-	this.node_type = 0;
 	this.node_id = 0;
 	this.endpoint_gid = 0;
+	this.node_type = 0;
 	this.node_name = "";
 }
 
