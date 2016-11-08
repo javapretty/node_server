@@ -7,7 +7,6 @@
 #include <signal.h>
 #include <getopt.h>
 #include "Time_Value.h"
-#include "Struct_Tool.h"
 #include "Node_Manager.h"
 
 static void sighandler(int sig_no) { exit(0); } /// for gprof need normal exit
@@ -18,7 +17,6 @@ struct option long_options[] = {
 		{"node_id",			required_argument,	0,	'i'},
 		{"endpoint_gid",	required_argument,	0,	'e'},
 		{"node_name",		required_argument,	0,	'n'},
-		{"struct_tool",		no_argument,		0,	's'},
 		{0, 0, 0, 0}
 };
 
@@ -28,7 +26,6 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 	int node_id = 0;
 	int endpoint_gid = 0;
 	std::string node_name = "";
-	bool write_struct = false;
 	int c = 0;
 	while ((c = getopt_long_only(argc, argv, "vdm:", long_options, NULL)) != -1) {
 		switch (c) {
@@ -52,12 +49,6 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 			node_name = optarg;
 			break;
 		}
-		case 's': { //struct_tool
-			Struct_Tool tool;
-			tool.write_struct();
-			write_struct = true;
-			break;
-		}
 		default: {
 			break;
 		}
@@ -68,8 +59,6 @@ int parse_cmd_arguments(int argc, char *argv[]) {
 		LOG_WARN("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 		NODE_MANAGER->init(node_type, node_id, endpoint_gid, node_name);
 		NODE_MANAGER->thr_create();
-	} else if (write_struct) {
-		return 1;
 	} else {
 		LOG_FATAL("node init, label:%s, node_type:%d, node_id:%d, endpoint_gid:%d, node_name:%s", label.c_str(), node_type, node_id, endpoint_gid, node_name.c_str());
 	}

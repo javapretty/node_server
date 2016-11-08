@@ -31,7 +31,6 @@ LIB=-lnodelib\
 	-lcrypto\
 	-ljsoncpp\
 	-ldl\
-	$(MONGO_LIB)
 
 CC=g++
 
