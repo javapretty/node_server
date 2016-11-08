@@ -31,6 +31,7 @@ function init(node_info) {
 	log_info('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.GATE_SERVER);
+	init_gate();
 	gate_node_info = node_info;
 
 	var msg = new node_2();
@@ -45,6 +46,8 @@ function on_drop(cid) {
 		send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg);
 		
 		on_remove_session(session);
+		//删除C++层session
+		remove_session(cid);
 	}
 }
 
@@ -92,8 +95,10 @@ function on_close_session(cid, error_code) {
 	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
-	//关闭网络层链接
-	close_session(Endpoint.GATE_CLIENT_SERVER, cid);	
+	//删除C++层session
+	remove_session(cid);
+	//关闭客户端网络层链接
+	close_client(Endpoint.GATE_CLIENT_SERVER, cid);	
 }
 
 function process_gate_client_msg(msg) {

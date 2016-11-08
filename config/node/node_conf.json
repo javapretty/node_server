@@ -30,6 +30,11 @@
 		{
 			"node_type" : 2,
 			"script_path" : "js/gate_server/gate_server.js",
+			"plugin" : [
+				{
+					"path" : "plugin/gateplugin.so"
+				}
+			],
 			"msg_filter" : [
 				{
 					"msg_type" : 1,

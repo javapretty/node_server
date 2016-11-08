@@ -1,18 +1,16 @@
 ##############################################################################
 #                                                                            #
 #        默认为release模式编译，debug模式请使用参数'MODE=DEBUG'              #
-#        默认不编译MongoDB功能，想编译的话请使用参数'MONGO=TRUE'             #
 #                                                                            #
 ##############################################################################
 
 ###在这里添加源文件目录###
 SRCDIR=	./\
-		./db/\
 
 ###这里定义目标文件目录###
 OBJDIR =./obj/
 
-TARGET_NAME=dbplugin.so
+TARGET_NAME=gateplugin.so
 
 BIN=../
 
@@ -28,9 +26,6 @@ LIBDIR=-L./
 
 LIB=-lv8\
 	-lv8_libplatform\
-	-lmysqlcppconn\
-	-ljsoncpp\
-	$(MONGO_LIB)
 
 CC=g++
 
@@ -41,18 +36,6 @@ DEBUG_FLAG = -O0 -g3
 else
 DEBUG_FLAG = -O3
 endif
-
-ifeq ($(MONGO), TRUE)
-MONGO_DB_IMPLENENT=-D MONGO_DB_IMPLEMENT
-MONGO_LIB=-lmongoclient\
-		  -lboost_filesystem\
-		  -lboost_thread-mt
-else
-MONGO_DB_IMPLENENT=
-MONGO_LIB=
-endif
-
-CONDITION=$(MONGO_DB_IMPLENENT)
 
 COM_FLAG=-Wall -c -fmessage-length=0 -std=c++11 -fPIC
 
@@ -84,7 +67,7 @@ ifeq ($(MODE), DEBUG)
 else
 	@echo "Building RELEASE MODE target $@"
 endif
-	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENS) $(CONDITION) -o "$(@)" "$(<)"
+	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENS) -o "$(@)" "$(<)"
 	@echo " "
 
 mkobjdir:

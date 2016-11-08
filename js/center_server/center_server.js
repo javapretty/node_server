@@ -79,8 +79,8 @@ function on_close_session(account, cid, error_code) {
 	var msg = new s2c_5();
 	msg.error_code = error_code;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
-	//关闭网络层链接
-	close_session(Endpoint.GATE_CLIENT_SERVER, cid);	
+	//关闭客户端网络层链接
+	close_client(Endpoint.CENTER_CLIENT_SERVER, cid);	
 }
 
 function select_gate(msg) {

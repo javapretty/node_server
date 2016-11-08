@@ -1,12 +1,12 @@
 /*
- * V8_Wrap.h
+ * DB_Wrap.h
  *
- *  Created on: Feb 1, 2016
+ *  Created on: Nov 1, 2016
  *      Author: zhangyalei
  */
 
-#ifndef V8_WRAP_H_
-#define V8_WRAP_H_
+#ifndef DB_WRAP_H_
+#define DB_WRAP_H_
 
 #include "include/v8.h"
 #include "DB_Struct.h"
@@ -42,4 +42,4 @@ void get_runtime_data(const FunctionCallbackInfo<Value>& args);
 //函数说明：删除运行时数据		参数：1.key_name, 2.index 返回值：无
 void delete_runtime_data(const FunctionCallbackInfo<Value>& args);
 
-#endif /* V8_WRAP_H_ */
+#endif /* DB_WRAP_H_ */

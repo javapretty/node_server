@@ -1,7 +1,7 @@
 /*
- * V8_Wrap.cpp
+ * DB_Wrap.cpp
  *
- *  Created on: Feb 1, 2016
+ *  Created on: Nov 1, 2016
  *      Author: zhangyalei
  */
 
@@ -9,7 +9,7 @@
 #include "V8_Base.h"
 #include "Data_Manager.h"
 #include "Struct_Manager.h"
-#include "DB_V8_Wrap.h"
+#include "DB_Wrap.h"
 
 void init_db_operator(const FunctionCallbackInfo<Value>& args) {
 	DATA_MANAGER->init_db_operator();
