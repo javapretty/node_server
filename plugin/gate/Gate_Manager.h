@@ -45,7 +45,7 @@ public:
 		notify_lock_.unlock();
 	}
 	//传递消息，用于路由节点
-	int transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer);
+	int transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer);
 
 private:
 	Gate_Manager(void);

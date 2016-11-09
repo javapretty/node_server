@@ -10,7 +10,7 @@ SRCDIR=	./\
 ###这里定义目标文件目录###
 OBJDIR =./obj/
 
-TARGET_NAME=gateplugin.so
+TARGET_NAME=logplugin.so
 
 BIN=../
 

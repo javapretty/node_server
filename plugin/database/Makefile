@@ -34,7 +34,7 @@ LIB=-lv8\
 
 CC=g++
 
-DEPENS=-MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
+DEPENDS=-MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
 
 ifeq ($(MODE), DEBUG)
 DEBUG_FLAG = -O0 -g3
@@ -84,7 +84,7 @@ ifeq ($(MODE), DEBUG)
 else
 	@echo "Building RELEASE MODE target $@"
 endif
-	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENS) $(CONDITION) -o "$(@)" "$(<)"
+	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENDS) $(CONDITION) -o "$(@)" "$(<)"
 	@echo " "
 
 mkobjdir:

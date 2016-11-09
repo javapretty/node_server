@@ -56,6 +56,8 @@ function Token_Info() {
 }
 
 function Node_Info() {
+	this.endpoint_gid = 0;
+	this.max_session_count = 0;
 	this.node_type = 0;
 	this.node_id = 0;
 	this.node_name = "";

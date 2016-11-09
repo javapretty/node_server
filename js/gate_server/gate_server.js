@@ -123,6 +123,9 @@ function process_gate_client_msg(msg) {
 
 function process_gate_node_msg(msg) {
 	switch(msg.msg_id) {
+	case Msg.SYNC_ERROR_CODE:
+		process_error_code(msg);
+		break;
 	case Msg.SYNC_NODE_INFO:
 		set_node_info(msg);
 		break;
@@ -149,7 +152,18 @@ function connect_gate(msg) {
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
 	msg_res.client_cid = msg.cid;
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, 0, msg_res);
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
+}
+
+function process_error_code(msg) {
+	switch (msg.error_code) {
+	case Error_Code.TOKEN_ERROR: {
+		var msg_res = new s2c_5();
+		msg_res.error_code = msg.error_code;
+		send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg_res);
+		break;
+	}
+	}
 }
 
 function set_node_info(msg) {

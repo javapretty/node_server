@@ -14,6 +14,8 @@
 	<Node_Info>
 		<arg type="int" bit="32" name="node_type"/>
 		<arg type="int" bit="32" name="node_id"/>
+		<arg type="int" bit="32" name="endpoint_gid"/>
+		<arg type="int" bit="32" name="max_session_count"/>
 		<arg type="string" name="node_name"/>
 		<arg type="string" name="node_ip"/>
 		<vector vbit="8" type="Endpoint_Info" name="endpoint_list"/>

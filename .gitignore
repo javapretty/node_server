@@ -6,4 +6,5 @@
 /node_server
 /plugin/database/obj/
 /plugin/gate/obj/
+/plugin/log/obj/
 /plugin/*.so

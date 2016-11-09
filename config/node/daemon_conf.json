@@ -29,38 +29,32 @@
 			"node_name" : "data_server"
 		},
 		{
-			"node_type" : 4,
+			"node_type" : 4,	
 			"node_id" : 40001,
 			"endpoint_gid" : 1,
-			"node_name" : "db_server"
+			"node_name" : "log_server"
 		},
 		{
-			"node_type" : 5,	
+			"node_type" : 5,
 			"node_id" : 50001,
 			"endpoint_gid" : 1,
-			"node_name" : "log_server"
+			"node_name" : "master_server"
 		},
 		{
 			"node_type" : 6,
 			"node_id" : 60001,
 			"endpoint_gid" : 1,
-			"node_name" : "master_server"
+			"node_name" : "public_server"
 		},
 		{
 			"node_type" : 7,
 			"node_id" : 70001,
 			"endpoint_gid" : 1,
-			"node_name" : "public_server"
-		},
-		{
-			"node_type" : 8,
-			"node_id" : 80001,
-			"endpoint_gid" : 1,
 			"node_name" : "game_server1"
 		},
 		{
-			"node_type" : 8,
-			"node_id" : 80002,
+			"node_type" : 7,
+			"node_id" : 70002,
 			"endpoint_gid" : 1,
 			"node_name" : "game_server2"
 		}

@@ -12,7 +12,7 @@ if (typeof Error_Code == "undefined") {
 	Error_Code.DISCONNECT_SELF 			= 2;		//服务主动关闭
 	Error_Code.DISCONNECT_RELOGIN		= 3;		//账号重登录
 	Error_Code.DISCONNECT_NOLOGIN 		= 4;		//账号没有登录
-	Error_Code.TOKEN_NOT_EXIST				= 5;		//token不存在
+	Error_Code.TOKEN_ERROR					= 5;		//token错误
 	Error_Code.TOKEN_TIMEOUT				= 6;		//token到期
 	Error_Code.CLIENT_PARAM_ERROR 		= 7;		//客户端参数错误
 	Error_Code.CONFIG_ERROR 				= 8;		//配置文件错误
@@ -48,11 +48,10 @@ if (typeof Node_Type == "undefined") {
 	Node_Type.CENTER_SERVER = 1;
 	Node_Type.GATE_SERVER 	= 2;
 	Node_Type.DATA_SERVER		= 3;
-	Node_Type.DB_SERVER			= 4;
-	Node_Type.LOG_SERVER		= 5;
-	Node_Type.MASTER_SERVER	= 6;
-	Node_Type.PUBLIC_SERVER	= 7;
-	Node_Type.GAME_SERVER		= 8;
+	Node_Type.LOG_SERVER		= 4;
+	Node_Type.MASTER_SERVER	= 5;
+	Node_Type.PUBLIC_SERVER	= 6;
+	Node_Type.GAME_SERVER		= 7;
 }
 
 if (typeof Endpoint == "undefined") {
@@ -66,9 +65,10 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.GATE_CENTER_CONNECTOR		= 3;
 	
 	Endpoint.DATA_SERVER						= 1;
-	Endpoint.DB_DATA_CONNECTOR				= 1;
+	Endpoint.DATA_CONNECTOR					= 2;
 	
 	Endpoint.LOG_SERVER							= 1;
+	Endpoint.LOG_CONNECTOR					= 2;
 	
 	Endpoint.MASTER_SERVER					= 1;
 	Endpoint.MASTER_HTTP_SERVER			= 2;
@@ -113,4 +113,3 @@ if (typeof Save_Flag == "undefined") {
 	Save_Flag.SAVE_BUFFER_DB = 1;
 	Save_Flag.SAVE_DB = 2;
 }
-

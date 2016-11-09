@@ -28,6 +28,7 @@ void Gate_Manager::run_handler(void) {
 }
 
 int Gate_Manager::process_list(void) {
+	Msg_Head msg_head;
 	Byte_Buffer *buffer = nullptr;
 	while (true) {
 		//此处加锁是为了防止本线程其他地方同时等待条件变量成立
@@ -40,26 +41,9 @@ int Gate_Manager::process_list(void) {
 
 		buffer = buffer_list_.pop_front();
 		if(buffer != nullptr) {
-			int32_t eid = 0;
-			int32_t cid = 0;
-			uint8_t protocol = 0;
-			uint8_t client_msg = 0;
-			uint8_t msg_id = 0;
-			uint8_t msg_type = 0;
-			uint32_t sid = 0;
-			buffer->read_int32(eid);
-			buffer->read_int32(cid);
-			buffer->read_uint8(protocol);
-			buffer->read_uint8(client_msg);
-			buffer->read_uint8(msg_id);
-			if (client_msg) {
-				msg_type = C2S;
-			} else {
-				buffer->read_uint8(msg_type);
-				buffer->read_uint32(sid);
-			}
-
-			transmit_msg(eid, cid, msg_id, msg_type, sid, buffer);
+			msg_head.reset();
+			buffer->read_head(msg_head);
+			transmit_msg(msg_head, buffer);
 		}
 
 		//操作完成解锁条件变量
@@ -68,37 +52,36 @@ int Gate_Manager::process_list(void) {
 	return 0;
 }
 
-int Gate_Manager::transmit_msg(int eid, int cid, int msg_id, int msg_type, uint32_t sid, Byte_Buffer *buffer) {
-	int buf_eid = 0;
-	int buf_cid = 0;
-	int buf_msg_id = msg_id;
-	int buf_msg_type = 0;
-	int buf_sid = 0;
+int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
+	int eid = msg_head.eid;
+	int cid = msg_head.cid;
 
-	if (msg_type == C2S) {
-		Session *session = find_session_by_cid(cid);
+	if (msg_head.msg_type == C2S) {
+		Session *session = find_session_by_cid(msg_head.cid);
 		if (!session) {
-			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d", eid, cid, msg_type, msg_id, sid);
+			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
+					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
 			return -1;
 		}
 
-		buf_eid = session->game_eid;
-		buf_cid = session->game_cid;
-		buf_msg_type = NODE_C2S;
-		buf_sid = session->sid;
-	} else if (msg_type == NODE_S2C) {
-		Session *session = find_session_by_sid(sid);
+		msg_head.eid = session->game_eid;
+		msg_head.cid = session->game_cid;
+		msg_head.msg_type = NODE_C2S;
+		msg_head.sid = session->sid;
+	} else if (msg_head.msg_type == NODE_S2C) {
+		Session *session = find_session_by_sid(msg_head.sid);
 		if (!session) {
-			LOG_ERROR("find_session_by_sid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d", eid, cid, msg_type, msg_id, sid);
+			LOG_ERROR("find_session_by_sid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
+					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
 			return -1;
 		}
 
-		buf_eid = session->client_eid;
-		buf_cid = session->client_cid;
-		buf_msg_type = S2C;
-		buf_sid = session->sid;
+		msg_head.eid = session->client_eid;
+		msg_head.cid = session->client_cid;
+		msg_head.msg_type = S2C;
+		msg_head.sid = session->sid;
 	}
-	NODE_MANAGER->send_msg(buf_eid, buf_cid, buf_msg_id, buf_msg_type, buf_sid, buffer);
+	NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
 	NODE_MANAGER->push_buffer(eid, cid, buffer);
 	return 0;
 }
