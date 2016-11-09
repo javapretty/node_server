@@ -2,6 +2,7 @@
 	"exec_name" : "./node_server", //服务器执行程序名称
 	"label" : "test",							//进程标签
 	"log_switcher" : 0,						//日志开关,1表示写入磁盘文件
+	"log_level" : 0,							//日志级别，小于该级别的日志类型不会记录,日志类型从1开始，依次为Debug,Info,Warn,Error,Trace,Fatal
 	//默认启动的node列表
 	"node_list" : [
 		{
