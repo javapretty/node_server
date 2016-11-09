@@ -16,6 +16,7 @@ BIN=../
 
 INCLUDE=-I/usr/local/include/nodelib/base\
 		-I/usr/local/include/nodelib/db\
+		-I/usr/local/include/nodelib/network\
 		-I/usr/local/include/nodelib/node\
 		-I/usr/local/include/nodelib/struct\
 		-I/usr/local/include/nodelib/v8\

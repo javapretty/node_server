@@ -5,6 +5,7 @@
  *      Author: zhangyalei
  */
 
+#include "Node_Manager.h"
 #include "Log_Manager.h"
 
 Log_Manager::Log_Manager(void) { }
@@ -42,15 +43,18 @@ int Log_Manager::process_list(void) {
 			buffer->read_head(msg_head);
 			bit_buffer.reset();
 			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
-			process_buffer(bit_buffer);
+
+			switch(msg_head.msg_id) {
+			default:
+				break;
+			}
+
+			//回收buffer
+			NODE_MANAGER->push_buffer(msg_head.eid, msg_head.cid, buffer);
 		}
 
 		//操作完成解锁条件变量
 		notify_lock_.unlock();
 	}
-	return 0;
-}
-
-int Log_Manager::process_buffer(Bit_Buffer &buffer) {
 	return 0;
 }

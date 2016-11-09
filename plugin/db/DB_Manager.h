@@ -13,7 +13,24 @@
 #include "Buffer_List.h"
 #include "Object_Pool.h"
 #include "Thread.h"
+#include "DB_Struct.h"
 #include "Node_Define.h"
+
+enum DB_ID {
+	DB_GAME = 1001,
+	DB_LOG = 1002,
+};
+
+enum DB_MESSAGE_CMD {
+	SYNC_ERROR_CODE = 1,
+	SYNC_NODE_INFO = 2,
+	SYNC_GAME_DB_LOAD_PLAYER = 201,
+	SYNC_GAME_DB_SAVE_PLAYER = 202,
+	SYNC_DB_GAME_PLAYER_INFO = 203,
+	SYNC_PUBLIC_DB_LOAD_DATA = 205,
+	SYNC_PUBLIC_DB_SAVE_DATA = 206,
+	SYNC_PUBLIC_DB_DELETE_DATA = 207,
+};
 
 class DB_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
@@ -25,7 +42,6 @@ public:
 
 	virtual void run_handler(void);
 	virtual int process_list(void);
-	int process_buffer(Bit_Buffer &buffer);
 
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
@@ -33,6 +49,13 @@ public:
 		notify_lock_.signal();
 		notify_lock_.unlock();
 	}
+
+	void load_player(int cid, int sid, Bit_Buffer &buffer);
+	void save_player(int cid, int sid, Bit_Buffer &buffer);
+
+	void load_db_data(int db_id, std::string table_name, int64_t key_index, Byte_Buffer &buffer);
+	void load_single_data(int db_id, DB_Struct *db_struct, int64_t key_index, Byte_Buffer &buffer);
+	void save_db_data(int flag, int db_id, std::string table_name, Bit_Buffer &buffer);
 
 private:
 	DB_Manager(void);

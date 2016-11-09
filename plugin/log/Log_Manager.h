@@ -25,7 +25,6 @@ public:
 
 	virtual void run_handler(void);
 	virtual int process_list(void);
-	int process_buffer(Bit_Buffer &buffer);
 
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
