@@ -4,7 +4,7 @@
 /natives_blob.bin
 /snapshot_blob.bin
 /node_server
-/plugin/database/obj/
+/plugin/db/obj/
 /plugin/gate/obj/
 /plugin/log/obj/
 /plugin/*.so
