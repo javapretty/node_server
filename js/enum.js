@@ -109,7 +109,7 @@ if (typeof DB_Id == "undefined") {
 
 if (typeof Save_Flag == "undefined") {
 	var Save_Flag = {};
-	Save_Flag.SAVE_BUFFER = 0;
-	Save_Flag.SAVE_BUFFER_DB = 1;
-	Save_Flag.SAVE_DB = 2;
+	Save_Flag.SAVE_CACHE 					= 1;	//保存缓存
+	Save_Flag.SAVE_CACHE_DB 			= 2;	//保存缓存和数据库
+	Save_Flag.SAVE_DB_CLEAR_CACHE 	= 3;	//保存数据库清空缓存
 }

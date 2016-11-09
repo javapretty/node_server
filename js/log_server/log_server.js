@@ -22,8 +22,7 @@ function init(node_info) {
 	timer.init(Node_Type.LOG_SERVER);
 	init_log(node_info);	
 	//连接log数据库
-	init_db_operator();
-	init_db_connect();
+	connect_db();
 	
 	//log_connector进程启动时候，向log_server进程同步自己信息
 	if (node_info.endpoint_gid == 2) {
@@ -48,7 +47,7 @@ function on_msg(msg) {
 
 function on_tick(timer_id) {}
 
-function init_db_connect() {
+function connect_db() {
 	var node_info = config.node_json['node_info'];
 	for(var i = 0; i < node_info.length; i++) {
 		if(node_info[i]['node_type'] == Node_Type.LOG_SERVER){
@@ -68,5 +67,5 @@ function init_db_connect() {
 }
 
 function log_player_logout(msg) {
-	save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.LOG, "log.logout", msg.logout_info);
+	save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.LOG, "log.logout", msg.logout_info);
 }

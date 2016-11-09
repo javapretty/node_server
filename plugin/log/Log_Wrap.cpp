@@ -6,6 +6,7 @@
  */
 
 #include "Struct_Manager.h"
+#include "Data_Manager.h"
 #include "Log_Manager.h"
 #include "Log_Wrap.h"
 
@@ -14,6 +15,8 @@ void init_log(const FunctionCallbackInfo<Value>& args) {
 		LOG_ERROR("init_log args error, length: %d\n", args.Length());
 		return;
 	}
+
+	DATA_MANAGER->init_db_operator();
 
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	Base_Struct *base_struct = STRUCT_MANAGER->get_base_struct("Node_Info");

@@ -161,9 +161,6 @@
 			"script_path" : "js/log_server/log_server.js",
 			"plugin" : [
 				{
-					"path" : "plugin/dbplugin.so"
-				},
-				{
 					"path" : "plugin/logplugin.so"
 				}
 			],

@@ -20,9 +20,16 @@ function init(node_info) {
 	log_info('data_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.DATA_SERVER);	
-	init_db_operator();
+	init_db(node_info);
 	//连接game数据库
-	init_db_connect();
+	connect_db();
+	
+	//db_connector进程启动时候，向db_server进程同步自己信息
+	if (node_info.endpoint_gid == 2) {
+		var msg = new node_2();
+		msg.node_info = node_info;
+		send_msg(Endpoint.DB_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
+	}
 }
 
 function on_drop(cid) { }
@@ -60,7 +67,7 @@ function on_msg(msg) {
 
 function on_tick(timer_id) {}
 
-function init_db_connect() {
+function connect_db() {
 	var node_info = config.node_json['node_info'];
 	for(var i = 0; i < node_info.length; i++) {
 		if(node_info[i]['node_type'] == Node_Type.DATA_SERVER) {
@@ -118,7 +125,7 @@ function create_player(msg) {
 		msg_res.player_data.bag_info.role_id = role_id;
 		msg_res.player_data.mail_info.role_id = role_id;
 		//将玩家数据写到数据库
-		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "Player_Data", msg_res.player_data);
+		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "Player_Data", msg_res.player_data);
 		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
 	}
 }
@@ -135,7 +142,7 @@ function load_player(msg) {
 }
 
 function save_player(msg) {
-	save_db_data(Save_Flag.SAVE_DB, DB_Id.GAME, "Player_Data", msg.player_data);
+	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.GAME, "Player_Data", msg.player_data);
 	if (msg.logout) {
 		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
 	}
@@ -153,7 +160,7 @@ function create_guild(msg) {
 		guild_info.guild_name = msg.guild_name;
 		guild_info.chief_id = msg.chief_id;
 		guild_info.create_time = util.now_sec();
-		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "game.guild", guild_info);
+		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.guild", guild_info);
 		
 		var msg_res = new node_208();
 		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
@@ -187,10 +194,10 @@ function load_public_data(msg) {
 function save_public_data(msg) {
 	switch (msg.data_type) {
 	case Public_Data_Type.GUILD_DATA:
-		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "game.guild", msg.guild_list);
+		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.guild", msg.guild_list);
 		break;
 	case Public_Data_Type.RANK_DATA:
-		save_db_data(Save_Flag.SAVE_BUFFER_DB, DB_Id.GAME, "game.rank", msg.rank_list);
+		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.rank", msg.rank_list);
 		break;
 	default:
 		log_error('save_public_data, data_type not exist:', msg.data_type);
