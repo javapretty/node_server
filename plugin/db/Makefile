@@ -7,7 +7,6 @@
 
 ###在这里添加源文件目录###
 SRCDIR=	./\
-		./db/\
 
 ###这里定义目标文件目录###
 OBJDIR =./obj/
@@ -17,7 +16,7 @@ TARGET_NAME=dbplugin.so
 BIN=../
 
 INCLUDE=-I/usr/local/include/nodelib/base\
-		-I/usr/local/include/nodelib/network\
+		-I/usr/local/include/nodelib/db\
 		-I/usr/local/include/nodelib/node\
 		-I/usr/local/include/nodelib/struct\
 		-I/usr/local/include/nodelib/v8\
@@ -29,7 +28,6 @@ LIBDIR=-L./
 LIB=-lv8\
 	-lv8_libplatform\
 	-lmysqlcppconn\
-	-ljsoncpp\
 	$(MONGO_LIB)
 
 CC=g++
@@ -37,9 +35,9 @@ CC=g++
 DEPENDS=-MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
 
 ifeq ($(MODE), DEBUG)
-DEBUG_FLAG = -O0 -g3
+BUILD_FLAG = -O0 -g3
 else
-DEBUG_FLAG = -O3
+BUILD_FLAG = -O3
 endif
 
 ifeq ($(MONGO), TRUE)
@@ -84,7 +82,7 @@ ifeq ($(MODE), DEBUG)
 else
 	@echo "Building RELEASE MODE target $@"
 endif
-	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENDS) $(CONDITION) -o "$(@)" "$(<)"
+	$(CC) $(INCLUDE) $(BUILD_FLAG) $(COM_FLAG) $(DEPENDS) $(CONDITION) -o "$(@)" "$(<)"
 	@echo " "
 
 mkobjdir:

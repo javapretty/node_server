@@ -1,29 +1,29 @@
 /*
- * Log_Manager.cpp
+ * DB_Manager.cpp
  *
  *  Created on: Nov 9, 2016
  *      Author: zhangyalei
  */
 
-#include "Log_Manager.h"
+#include "DB_Manager.h"
 
-Log_Manager::Log_Manager(void) { }
+DB_Manager::DB_Manager(void) { }
 
-Log_Manager::~Log_Manager(void) { }
+DB_Manager::~DB_Manager(void) { }
 
-Log_Manager *Log_Manager::instance_;
+DB_Manager *DB_Manager::instance_;
 
-Log_Manager *Log_Manager::instance(void) {
+DB_Manager *DB_Manager::instance(void) {
 	if (instance_ == 0)
-		instance_ = new Log_Manager;
+		instance_ = new DB_Manager;
 	return instance_;
 }
 
-void Log_Manager::run_handler(void) {
+void DB_Manager::run_handler(void) {
 	process_list();
 }
 
-int Log_Manager::process_list(void) {
+int DB_Manager::process_list(void) {
 	Msg_Head msg_head;
 	Bit_Buffer bit_buffer;
 	Byte_Buffer *buffer = nullptr;
@@ -51,6 +51,6 @@ int Log_Manager::process_list(void) {
 	return 0;
 }
 
-int Log_Manager::process_buffer(Bit_Buffer &buffer) {
+int DB_Manager::process_buffer(Bit_Buffer &buffer) {
 	return 0;
 }

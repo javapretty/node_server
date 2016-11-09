@@ -35,9 +35,7 @@ function init(node_info) {
 
 function on_drop(drop_id) {}
 
-function on_msg(msg) {
-	log_debug('log_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
+function on_msg(msg) {	
 	switch(msg.msg_id) {
 	case Msg.SYNC_LOG_PLAYER_LOGOUT:
 		log_player_logout(msg);

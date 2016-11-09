@@ -10,7 +10,6 @@
 
 #include "include/v8.h"
 #include "DB_Struct.h"
-#include "Data_Manager.h"
 
 using namespace v8;
 

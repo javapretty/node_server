@@ -1,5 +1,5 @@
 cd plugin
-cd database && make
+cd db && make
 cd ../
 cd gate && make
 cd ../

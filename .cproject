@@ -25,6 +25,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.328756252" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1460333974" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/base"/>
+									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/db"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/network"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/node"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/struct"/>
@@ -50,16 +51,6 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1871576823" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
 								<option id="gnu.cpp.link.option.libs.2116229171" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="nodelib"/>
-									<listOptionValue builtIn="false" value="dl"/>
-									<listOptionValue builtIn="false" value="v8"/>
-									<listOptionValue builtIn="false" value="v8_libplatform"/>
-									<listOptionValue builtIn="false" value="curl"/>
-									<listOptionValue builtIn="false" value="crypto"/>
-									<listOptionValue builtIn="false" value="mysqlcppconn"/>
-									<listOptionValue builtIn="false" value="jsoncpp"/>
-									<listOptionValue builtIn="false" value="mongoclient"/>
-									<listOptionValue builtIn="false" value="boost_filesystem"/>
-									<listOptionValue builtIn="false" value="boost_thread-mt"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1726585046" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -99,15 +90,13 @@
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1915525999" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1730318642" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/base"/>
+									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/db"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/network"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/node"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/struct"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/v8"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/xml"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
-									<listOptionValue builtIn="false" value=""/>
-									<listOptionValue builtIn="false" value=""/>
-									<listOptionValue builtIn="false" value=""/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.906815777" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.1495016529" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
@@ -122,22 +111,13 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1237431766" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="&quot;__cplusplus =201103L&quot;"/>
 								</option>
+								<option id="gnu.c.compiler.option.dialect.std.1765113552" superClass="gnu.c.compiler.option.dialect.std" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1876392915" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.688410527" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.546959667" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release">
 								<option id="gnu.cpp.link.option.libs.76555514" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="nodelib"/>
-									<listOptionValue builtIn="false" value="dl"/>
-									<listOptionValue builtIn="false" value="v8"/>
-									<listOptionValue builtIn="false" value="v8_libplatform"/>
-									<listOptionValue builtIn="false" value="curl"/>
-									<listOptionValue builtIn="false" value="crypto"/>
-									<listOptionValue builtIn="false" value="mysqlcppconn"/>
-									<listOptionValue builtIn="false" value="jsoncpp"/>
-									<listOptionValue builtIn="false" value="mongoclient"/>
-									<listOptionValue builtIn="false" value="boost_filesystem"/>
-									<listOptionValue builtIn="false" value="boost_thread-mt"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.62659321" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

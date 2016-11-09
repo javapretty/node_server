@@ -65,7 +65,6 @@ Guild.prototype.member_join_guild = function(player, guild_info) {
 }
 
 Guild.prototype.create_guild = function(player, msg) {
-	log_debug('create_guild, guild_name:', msg.guild_name, ' chief_id:', player.role_info.role_id);
 	var msg_res = new node_204();
 	msg_res.guild_name = msg.guild_name;
 	msg_res.chief_id = player.role_info.role_id;

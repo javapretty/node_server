@@ -91,7 +91,6 @@ function on_close_session(account, cid, error_code) {
 }
 
 function select_gate(msg) {
-	log_info('select gate, account:', msg.account);
 	if (account_token_map.get(msg.account)) {
 		log_error('account in center_server:', msg.account);
 		return on_close_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);

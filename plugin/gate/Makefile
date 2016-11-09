@@ -17,9 +17,7 @@ BIN=../
 INCLUDE=-I/usr/local/include/nodelib/base\
 		-I/usr/local/include/nodelib/network\
 		-I/usr/local/include/nodelib/node\
-		-I/usr/local/include/nodelib/struct\
 		-I/usr/local/include/nodelib/v8\
-		-I/usr/local/include/nodelib/xml\
 		$(addprefix -I, $(SRCDIR))
 
 LIBDIR=-L./
@@ -32,9 +30,9 @@ CC=g++
 DEPENDS=-MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)"
 
 ifeq ($(MODE), DEBUG)
-DEBUG_FLAG = -O0 -g3
+BUILD_FLAG = -O0 -g3
 else
-DEBUG_FLAG = -O3
+BUILD_FLAG = -O3
 endif
 
 COM_FLAG=-Wall -c -fmessage-length=0 -std=c++11 -fPIC
@@ -67,7 +65,7 @@ ifeq ($(MODE), DEBUG)
 else
 	@echo "Building RELEASE MODE target $@"
 endif
-	$(CC) $(INCLUDE) $(DEBUG_FLAG) $(COM_FLAG) $(DEPENDS) -o "$(@)" "$(<)"
+	$(CC) $(INCLUDE) $(BUILD_FLAG) $(COM_FLAG) $(DEPENDS) -o "$(@)" "$(<)"
 	@echo " "
 
 mkobjdir:
