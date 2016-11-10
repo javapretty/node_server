@@ -1,10 +1,8 @@
 /Debug/
 /Release/
 /obj/
+/log/
 /natives_blob.bin
 /snapshot_blob.bin
 /node_server
-/plugin/db/obj/
-/plugin/gate/obj/
-/plugin/log/obj/
 /plugin/*.so

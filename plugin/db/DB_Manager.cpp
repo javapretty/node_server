@@ -76,11 +76,6 @@ int DB_Manager::process_list(void) {
 }
 
 void DB_Manager::load_player(int cid, int sid, Bit_Buffer &buffer) {
-	DB_Operator *db_operator = DB_OPERATOR(DB_GAME);
-	if(!db_operator) {
-		return;
-	}
-
 	std::string account = "";
 	std::string index_name = "role_id";
 	std::string table_name = "game.role";
@@ -88,10 +83,10 @@ void DB_Manager::load_player(int cid, int sid, Bit_Buffer &buffer) {
 	buffer.read_str(account);
 	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
 	if(db_struct == nullptr) {
-		LOG_ERROR("db_struct %s is NULL", table_name.c_str());
+		LOG_ERROR("db_struct %s is null", table_name.c_str());
 		return;
 	}
-	int64_t role_id = db_operator->select_table_index(DB_GAME, db_struct, query_name, account);
+	int64_t role_id = DATA_MANAGER->select_table_index(DB_GAME, db_struct, query_name, account);
 	Msg_Head msg_head;
 	msg_head.eid = 1;
 	msg_head.cid = cid;
@@ -169,7 +164,7 @@ void DB_Manager::load_single_data(int db_id, DB_Struct *db_struct, int64_t key_i
 	}
 }
 
-void DB_Manager::save_db_data(int flag, int db_id, std::string table_name, Bit_Buffer &buffer) {
+void DB_Manager::save_db_data(int save_flag, int db_id, std::string table_name, Bit_Buffer &buffer) {
 	DB_Struct *db_struct = STRUCT_MANAGER->get_table_struct(table_name);
 	if (db_struct == nullptr) {
 		//数据库表名为空，表示该结构体为多张数据库表的集合，对每个字段分别处理
@@ -186,13 +181,11 @@ void DB_Manager::save_db_data(int flag, int db_id, std::string table_name, Bit_B
 				LOG_ERROR("db_struct %s is NULL", iter->field_type.c_str());
 				return;
 			}
-			Bit_Buffer *buf = DATA_MANAGER->pop_buffer();
-			buf->set_ary(buffer.data(), buffer.get_byte_size());
-			DATA_MANAGER->save_db_data(db_id, sub_struct, buf, flag);
+			DATA_MANAGER->save_db_data(save_flag, db_id, sub_struct, &buffer);
 		}
 	} else {
 		Bit_Buffer *buf = DATA_MANAGER->pop_buffer();
 		buf->set_ary(buffer.data(), buffer.get_byte_size());
-		DATA_MANAGER->save_db_data(db_id, db_struct, buf, flag);
+		DATA_MANAGER->save_db_data(save_flag, db_id, db_struct, &buffer);
 	}
 }

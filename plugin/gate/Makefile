@@ -8,7 +8,7 @@
 SRCDIR=	./\
 
 ###这里定义目标文件目录###
-OBJDIR =./obj/
+OBJDIR =../../obj/gate_obj/
 
 TARGET_NAME=gateplugin.so
 

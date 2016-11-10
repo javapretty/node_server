@@ -17,7 +17,6 @@ void init_log(const FunctionCallbackInfo<Value>& args) {
 	}
 
 	DATA_MANAGER->init_db_operator();
-
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	Base_Struct *base_struct = STRUCT_MANAGER->get_base_struct("Node_Info");
 	if (base_struct) {
