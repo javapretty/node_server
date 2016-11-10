@@ -181,11 +181,11 @@ void DB_Manager::save_db_data(int save_flag, int db_id, std::string table_name, 
 				LOG_ERROR("db_struct %s is NULL", iter->field_type.c_str());
 				return;
 			}
-			DATA_MANAGER->save_db_data(save_flag, db_id, sub_struct, &buffer);
+			DATA_MANAGER->save_db_data(save_flag, db_id, sub_struct, buffer);
 		}
 	} else {
 		Bit_Buffer *buf = DATA_MANAGER->pop_buffer();
 		buf->set_ary(buffer.data(), buffer.get_byte_size());
-		DATA_MANAGER->save_db_data(save_flag, db_id, db_struct, &buffer);
+		DATA_MANAGER->save_db_data(save_flag, db_id, db_struct, buffer);
 	}
 }
