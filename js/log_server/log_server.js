@@ -67,5 +67,5 @@ function connect_db() {
 }
 
 function log_player_logout(msg) {
-	save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.LOG, "log.logout", msg.logout_info);
+	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.LOG, "log.logout", msg.logout_info);
 }
