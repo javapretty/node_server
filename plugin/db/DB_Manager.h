@@ -53,10 +53,6 @@ public:
 	void load_player(int cid, int sid, Bit_Buffer &buffer);
 	void save_player(int cid, int sid, Bit_Buffer &buffer);
 
-	void load_db_data(int db_id, std::string table_name, int64_t key_index, Byte_Buffer &buffer);
-	void load_single_data(int db_id, DB_Struct *db_struct, int64_t key_index, Byte_Buffer &buffer);
-	void save_db_data(int save_flag, int db_id, std::string table_name, Bit_Buffer &buffer);
-
 private:
 	DB_Manager(void);
 	virtual ~DB_Manager(void);

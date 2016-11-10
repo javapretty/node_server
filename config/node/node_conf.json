@@ -121,6 +121,13 @@
 					"path" : "plugin/dbplugin.so"
 				}
 			],
+			"msg_filter" : [
+				{
+					"msg_type" : 5,
+					"min_msg_id" : 201,
+					"max_msg_id" : 202
+				}
+			],
 			"endpoint" : [
 				{
 					"endpoint_type" : 2,
