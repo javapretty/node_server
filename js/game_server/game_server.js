@@ -194,7 +194,7 @@ function fetch_role(msg) {
 
 	//登录从数据库加载玩家信息
 	log_info('load player info from db, account:', msg.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
-	var msg_res = new node_201();
+	var msg_res = new node_202();
 	msg_res.account = msg.account;
 	send_msg_to_db(Msg.SYNC_GAME_DB_LOAD_PLAYER, msg.sid, msg_res);
 }

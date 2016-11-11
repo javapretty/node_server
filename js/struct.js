@@ -142,21 +142,15 @@ function node_209() {
 	this.guild_name = "";
 }
 
-function node_208() {
-	this.data_type = 0;
-	this.guild_list = new Array();
-	this.rank_list = new Array();
-}
-
 function node_207() {
 	this.data_type = 0;
 	this.index_list = new Array();
 }
 
 function node_206() {
-	this.data_type = 0;
 	this.guild_list = new Array();
 	this.rank_list = new Array();
+	this.data_type = 0;
 }
 
 function node_205() {
@@ -164,21 +158,21 @@ function node_205() {
 }
 
 function node_204() {
-	this.guild_name = "";
-	this.chief_id = 0;
-}
-
-function node_203() {
 	this.player_data = new Player_Data();
 }
 
-function node_202() {
+function node_203() {
 	this.logout = 0;
 	this.player_data = new Player_Data();
 }
 
-function node_201() {
+function node_202() {
 	this.account = "";
+}
+
+function node_201() {
+	this.guild_name = "";
+	this.chief_id = 0;
 }
 
 function node_200() {

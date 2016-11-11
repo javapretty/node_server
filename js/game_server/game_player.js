@@ -81,7 +81,7 @@ Game_Player.prototype.sync_login_logout_to_public = function(login) {
 
 Game_Player.prototype.sync_player_data_to_db = function(logout) {
 	log_info('********sync_player_data_to_db, logout:', logout, ' role_id:', this.role_info.role_id, ' role_name:', this.role_info.role_name);
-	var msg = new node_202();
+	var msg = new node_203();
 	msg.logout = logout;
 	msg.player_data.role_info = this.role_info;
 	this.mail.save_data(msg);

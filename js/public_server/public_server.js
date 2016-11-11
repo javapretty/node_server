@@ -68,7 +68,9 @@ function send_public_msg(cid, msg_id, sid, msg) {
 
 function load_public_data() {
 	var msg = new node_205();
-	msg.data_type = Public_Data_Type.ALL_DATA;
+	msg.data_type = Public_Data_Type.GUILD_DATA;
+	send_msg_to_db(Msg.SYNC_PUBLIC_DB_LOAD_DATA, 0, msg);
+	msg.data_type = Public_Data_Type.RANK_DATA;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_LOAD_DATA, 0, msg);
 }
 
@@ -102,18 +104,13 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.SYNC_DB_PUBLIC_DATA: {
+	case Msg.SYNC_PUBLIC_DB_SAVE_DATA: {
 		switch (msg.data_type) {
-		case Public_Data_Type.ALL_DATA: {
-			guild_manager.load_data(msg);
-			rank_manager.load_data(msg);
-			break;
-		}
-		case Public_Data_Type.GUILD_DATA:
-			guild_manager.load_data(msg);
-			break;
 		case Public_Data_Type.CREATE_GUILD_DATA:
 			guild_manager.db_create_guild(msg);
+			break;
+		case Public_Data_Type.GUILD_DATA:
+			guild_manager.load_data(msg);
 			break;
 		case Public_Data_Type.RANK_DATA:
 			rank_manager.load_data(msg);

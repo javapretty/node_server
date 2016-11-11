@@ -15,6 +15,17 @@
 #include "Thread.h"
 #include "Node_Define.h"
 
+enum DB_ID {
+	DB_GAME = 1001,
+	DB_LOG = 1002,
+};
+
+enum LOG_MESSAGE_CMD {
+	SYNC_ERROR_CODE = 1,
+	SYNC_NODE_INFO = 2,
+	SYNC_LOG_PLAYER_LOGOUT = 210,
+};
+
 class Log_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
 	typedef std::vector<Node_Info> Node_List;
@@ -32,6 +43,8 @@ public:
 		notify_lock_.signal();
 		notify_lock_.unlock();
 	}
+
+	void player_logout(Bit_Buffer &buffer);
 
 private:
 	Log_Manager(void);

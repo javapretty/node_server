@@ -124,8 +124,8 @@
 			"msg_filter" : [
 				{
 					"msg_type" : 5,
-					"min_msg_id" : 201,
-					"max_msg_id" : 202
+					"min_msg_id" : 210,
+					"max_msg_id" : 255
 				}
 			],
 			"endpoint" : [
@@ -169,6 +169,13 @@
 			"plugin" : [
 				{
 					"path" : "plugin/logplugin.so"
+				}
+			],
+			"msg_filter" : [
+				{
+					"msg_type" : 5,
+					"min_msg_id" : 202,
+					"max_msg_id" : 255
 				}
 			],
 			"endpoint" : [

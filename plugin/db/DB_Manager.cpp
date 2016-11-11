@@ -42,7 +42,6 @@ int DB_Manager::process_list(void) {
 		if(buffer != nullptr) {
 			msg_head.reset();
 			buffer->read_head(msg_head);
-
 			Bit_Buffer bit_buffer;
 			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 
@@ -92,9 +91,9 @@ void DB_Manager::load_player(int cid, int sid, Bit_Buffer &buffer) {
 	msg_head.sid = sid;
 	if (role_id > 0) {
 		msg_head.msg_id = SYNC_DB_GAME_PLAYER_INFO;
-		Byte_Buffer byte_buffer;
-		DATA_MANAGER->load_db_data(DB_GAME, "Player_Data", role_id, byte_buffer);
-		NODE_MANAGER->send_msg(msg_head, byte_buffer.get_read_ptr(), byte_buffer.readable_bytes());
+		Bit_Buffer bit_buffer;
+		DATA_MANAGER->load_db_data(DB_GAME, "Player_Data", role_id, bit_buffer);
+		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 	} else {
 		msg_head.msg_id = SYNC_ERROR_CODE;
 		Bit_Buffer bit_buffer;
@@ -117,5 +116,50 @@ void DB_Manager::save_player(int cid, int sid, Bit_Buffer &buffer) {
 		Bit_Buffer bit_buffer;
 		bit_buffer.write_uint(11, 16); //Error_Code.PLAYER_SAVE_COMPLETE = 11
 		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+	}
+}
+
+void load_public_data(int cid, int sid, Bit_Buffer &buffer) {
+	Msg_Head msg_head;
+	msg_head.eid = 1;
+	msg_head.cid = cid;
+	msg_head.msg_id = SYNC_PUBLIC_DB_SAVE_DATA;
+	msg_head.msg_type = NODE_MSG;
+	msg_head.sid = sid;
+	uint data_type = buffer.read_uint(4);
+	Bit_Buffer bit_buffer;
+	bit_buffer.write_uint(data_type, 4);
+	switch(data_type) {
+	case 1:
+		DATA_MANAGER->load_db_data(DB_GAME, "game.guild", 0, bit_buffer);
+		break;
+	case 2:
+		DATA_MANAGER->load_db_data(DB_GAME, "game.rank", 0, bit_buffer);
+		break;
+	}
+	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+}
+
+void save_public_data(int cid, int sid, Bit_Buffer &buffer) {
+	uint data_type = buffer.read_uint(4);
+	switch(data_type) {
+	case 1:
+		DATA_MANAGER->save_db_data(SAVE_CACHE_DB, DB_GAME, "game.guild", buffer);
+		break;
+	case 2:
+		DATA_MANAGER->save_db_data(SAVE_CACHE_DB, DB_GAME, "game.rank", buffer);
+		break;
+	}
+}
+
+void delete_public_data(int cid, int sid, Bit_Buffer &buffer) {
+	uint data_type = buffer.read_uint(4);
+	switch(data_type) {
+	case 1:
+		DATA_MANAGER->delete_db_data(DB_GAME, "game.guild", buffer);
+		break;
+	case 2:
+		DATA_MANAGER->delete_db_data(DB_GAME, "game.rank", buffer);
+		break;
 	}
 }

@@ -24,9 +24,9 @@ enum DB_ID {
 enum DB_MESSAGE_CMD {
 	SYNC_ERROR_CODE = 1,
 	SYNC_NODE_INFO = 2,
-	SYNC_GAME_DB_LOAD_PLAYER = 201,
-	SYNC_GAME_DB_SAVE_PLAYER = 202,
-	SYNC_DB_GAME_PLAYER_INFO = 203,
+	SYNC_GAME_DB_LOAD_PLAYER = 202,
+	SYNC_GAME_DB_SAVE_PLAYER = 203,
+	SYNC_DB_GAME_PLAYER_INFO = 204,
 	SYNC_PUBLIC_DB_LOAD_DATA = 205,
 	SYNC_PUBLIC_DB_SAVE_DATA = 206,
 	SYNC_PUBLIC_DB_DELETE_DATA = 207,
@@ -52,6 +52,9 @@ public:
 
 	void load_player(int cid, int sid, Bit_Buffer &buffer);
 	void save_player(int cid, int sid, Bit_Buffer &buffer);
+	void load_public_data(int cid, int sid, Bit_Buffer &buffer);
+	void save_public_data(int cid, int sid, Bit_Buffer &buffer);
+	void delete_public_data(int cid, int sid, Bit_Buffer &buffer);
 
 private:
 	DB_Manager(void);

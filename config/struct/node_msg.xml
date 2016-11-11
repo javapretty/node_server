@@ -37,22 +37,22 @@
     	<arg type="uint" bit="2" name="career"/>
 	</node_200>
 
-	<node_201 msg_id="201" msg_name="SYNC_GAME_DB_LOAD_PLAYER">
-		<arg type="string" name="account"/>
+	<node_201 msg_id="201" msg_name="SYNC_PUBLIC_DB_CREATE_GUILD">
+		<arg type="string" name="guild_name"/>
+		<arg type="int64" name="chief_id"/>
 	</node_201>
-
-	<node_202 msg_id="202" msg_name="SYNC_GAME_DB_SAVE_PLAYER">
-		<arg type="bool" name="logout"/>
-		<struct type="Player_Data" name="player_data"/>
+	
+	<node_202 msg_id="202" msg_name="SYNC_GAME_DB_LOAD_PLAYER">
+		<arg type="string" name="account"/>
 	</node_202>
 
-	<node_203 msg_id="203" msg_name="SYNC_DB_GAME_PLAYER_INFO">
+	<node_203 msg_id="203" msg_name="SYNC_GAME_DB_SAVE_PLAYER">
+		<arg type="bool" name="logout"/>
 		<struct type="Player_Data" name="player_data"/>
 	</node_203>
 
-	<node_204 msg_id="204" msg_name="SYNC_PUBLIC_DB_CREATE_GUILD">
-		<arg type="string" name="guild_name"/>
-		<arg type="int64" name="chief_id"/>
+	<node_204 msg_id="204" msg_name="SYNC_DB_GAME_PLAYER_INFO">
+		<struct type="Player_Data" name="player_data"/>
 	</node_204>
 
 	<node_205 msg_id="205" msg_name="SYNC_PUBLIC_DB_LOAD_DATA">
@@ -60,21 +60,23 @@
 	</node_205>
 
 	<node_206 msg_id="206" msg_name="SYNC_PUBLIC_DB_SAVE_DATA">
-		<arg type="uint" bit="4" name="data_type"/>
-		<vector vbit="16" type="Guild_Info" name="guild_list"/>
-		<vector vbit="8" type="Rank_Info" name="rank_list"/>
+		<switch name="data_type" type="uint" bit="4" >
+			<case val="0">
+	      <vector vbit="16" type="Guild_Info" name="guild_list"/>
+	    </case>
+	    <case val="1">
+	      <vector vbit="16" type="Guild_Info" name="guild_list"/>
+	    </case>
+	    	<case val="2">
+	    		<vector vbit="16" type="Rank_Info" name="rank_list"/>
+	    	</case>
+    </switch>
 	</node_206>
 
 	<node_207 msg_id="207" msg_name="SYNC_PUBLIC_DB_DELETE_DATA">
 		<arg type="uint" bit="4" name="data_type"/>
 		<vector vbit="16" type="int64" name="index_list"/>
 	</node_207>
-
-	<node_208 msg_id="208" msg_name="SYNC_DB_PUBLIC_DATA">
-		<arg type="uint" bit="4" name="data_type"/>
-		<vector vbit="16" type="Guild_Info" name="guild_list"/>
-		<vector vbit="8" type="Rank_Info" name="rank_list"/>
-	</node_208>
 	
 	<node_209 msg_id="209" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
 		<arg type="int64" name="role_id"/>

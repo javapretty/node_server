@@ -41,14 +41,14 @@ function on_msg(msg) {
 	case Msg.SYNC_GAME_DB_CREATE_PLAYER:
 		create_player(msg);
 		break;
+	case Msg.SYNC_PUBLIC_DB_CREATE_GUILD:
+		create_guild(msg);
+		break;
 	case Msg.SYNC_GAME_DB_LOAD_PLAYER:
 		load_player(msg);
 		break;
 	case Msg.SYNC_GAME_DB_SAVE_PLAYER:
 		save_player(msg);
-		break;
-	case Msg.SYNC_PUBLIC_DB_CREATE_GUILD:
-		create_guild(msg);
 		break;
 	case Msg.SYNC_PUBLIC_DB_LOAD_DATA:
 		load_public_data(msg);
@@ -114,7 +114,7 @@ function create_player(msg) {
 		send_error_msg(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
 	} else {
 		role_id = generate_table_index(DB_Id.GAME, "game.idx", "role_id");
-		var msg_res = new node_203();
+		var msg_res = new node_204();
 		msg_res.player_data.role_info.role_id = role_id;
 		msg_res.player_data.role_info.account = msg.account;
 		msg_res.player_data.role_info.role_name = msg.role_name;
@@ -124,27 +124,8 @@ function create_player(msg) {
 		msg_res.player_data.role_info.create_time = util.now_sec();
 		msg_res.player_data.bag_info.role_id = role_id;
 		msg_res.player_data.mail_info.role_id = role_id;
-		//将玩家数据写到数据库
-		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "Player_Data", msg_res.player_data);
+		create_db_data(DB_Id.GAME, "Player_Data", msg_res.player_data);
 		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
-	}
-}
-
-function load_player(msg) {
-	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
-	if (role_id > 0) {
-		var msg_res = new node_203();
-		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
-		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
-	} else {
-		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
-	}
-}
-
-function save_player(msg) {
-	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.GAME, "Player_Data", msg.player_data);
-	if (msg.logout) {
-		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
 	}
 }
 
@@ -160,24 +141,37 @@ function create_guild(msg) {
 		guild_info.guild_name = msg.guild_name;
 		guild_info.chief_id = msg.chief_id;
 		guild_info.create_time = util.now_sec();
-		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.guild", guild_info);
+		create_db_data(DB_Id.GAME, "game.guild", guild_info);
 		
-		var msg_res = new node_208();
+		var msg_res = new node_206();
 		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
 		msg_res.guild_list.push(guild_info);
-		send_db_msg(msg.cid, Msg.SYNC_DB_PUBLIC_DATA, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_SAVE_DATA, msg.sid, msg_res);
+	}
+}
+
+function load_player(msg) {
+	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
+	if (role_id > 0) {
+		var msg_res = new node_204();
+		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
+		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
+	} else {
+		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
+	}
+}
+
+function save_player(msg) {
+	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.GAME, "Player_Data", msg.player_data);
+	if (msg.logout) {
+		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
 	}
 }
 
 function load_public_data(msg) {
-	var msg_res = new node_208();
+	var msg_res = new node_206();
 	msg_res.data_type = msg.data_type;
 	switch (msg.data_type) {
-	case Public_Data_Type.ALL_DATA:{
-		msg_res.guild_list = load_db_data(DB_Id.GAME, "game.guild", 0);
-		msg_res.rank_list = load_db_data(DB_Id.GAME, "game.rank", 0);
-		break;
-	}
 	case Public_Data_Type.GUILD_DATA:
 		msg_res.guild_list = load_db_data(DB_Id.GAME, "game.guild", 0);
 		break;
@@ -188,7 +182,7 @@ function load_public_data(msg) {
 		log_error('load_public_data, data_type not exist:', msg.data_type);
 		break;
 	}
-	send_db_msg(msg.cid, Msg.SYNC_DB_PUBLIC_DATA, msg.sid, msg_res);
+	send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_SAVE_DATA, msg.sid, msg_res);
 }
 
 function save_public_data(msg) {

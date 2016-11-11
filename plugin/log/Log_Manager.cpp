@@ -5,6 +5,7 @@
  *      Author: zhangyalei
  */
 
+#include "Data_Manager.h"
 #include "Node_Manager.h"
 #include "Log_Manager.h"
 
@@ -45,6 +46,9 @@ int Log_Manager::process_list(void) {
 			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 
 			switch(msg_head.msg_id) {
+			case SYNC_LOG_PLAYER_LOGOUT:
+				player_logout(bit_buffer);
+				break;
 			default:
 				break;
 			}
@@ -57,4 +61,8 @@ int Log_Manager::process_list(void) {
 		notify_lock_.unlock();
 	}
 	return 0;
+}
+
+void Log_Manager::player_logout(Bit_Buffer &buffer) {
+	DATA_MANAGER->save_db_data(SAVE_DB_CLEAR_CACHE, DB_LOG, "log.logout", buffer);
 }

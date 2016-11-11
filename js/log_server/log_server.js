@@ -34,16 +34,7 @@ function init(node_info) {
 
 function on_drop(drop_id) {}
 
-function on_msg(msg) {	
-	switch(msg.msg_id) {
-	case Msg.SYNC_LOG_PLAYER_LOGOUT:
-		log_player_logout(msg);
-		break;
-	default:
-		log_error('log_server on_msg, msg_id not exist:', msg.msg_id);
-		break;
-	}
-}
+function on_msg(msg) {}
 
 function on_tick(timer_id) {}
 
@@ -64,8 +55,4 @@ function connect_db() {
 			}
 		}
 	}
-}
-
-function log_player_logout(msg) {
-	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.LOG, "log.logout", msg.logout_info);
 }

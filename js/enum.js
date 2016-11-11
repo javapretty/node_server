@@ -89,10 +89,9 @@ if (typeof Endpoint == "undefined") {
 
 if (typeof Public_Data_Type == "undefined") {
 	var Public_Data_Type = {};
-	Public_Data_Type.ALL_DATA					= 0; //所有数据
+	Public_Data_Type.CREATE_GUILD_DATA	= 0; //创建公会数据
 	Public_Data_Type.GUILD_DATA				= 1; //公会数据
-	Public_Data_Type.CREATE_GUILD_DATA	= 2;	//创建公会数据
-	Public_Data_Type.RANK_DATA 				= 3;	//排行榜数据
+	Public_Data_Type.RANK_DATA 				= 2;	//排行榜数据
 }
 
 if (typeof Rank_Type == "undefined") {
