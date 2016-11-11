@@ -18,12 +18,12 @@ Rank.prototype.load_data = function(obj) {
 }
 
 Rank.prototype.save_data = function() {
-	var msg = new node_206();
+	var msg = new node_205();
 	msg.data_type = Public_Data_Type.RANK_DATA;
 	for (var value of this.rank_map.values()) {
 		msg.rank_list.push(value);
 	}
-	send_msg_to_db(Msg.SYNC_PUBLIC_DB_SAVE_DATA, 0, msg);
+	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DATA, 0, msg);
 }
 
 Rank.prototype.get_rank_value = function(type, player) {

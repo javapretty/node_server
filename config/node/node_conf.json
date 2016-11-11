@@ -124,7 +124,7 @@
 			"msg_filter" : [
 				{
 					"msg_type" : 5,
-					"min_msg_id" : 210,
+					"min_msg_id" : 202,
 					"max_msg_id" : 255
 				}
 			],

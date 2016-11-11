@@ -30,6 +30,12 @@
 	<node_7 msg_id="7" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION">
 	</node_7>
 	
+	<node_8 msg_id="8" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
+		<arg type="int64" name="role_id"/>
+		<arg type="int64" name="guild_id"/>
+		<arg type="string" name="guild_name"/>
+	</node_8>
+	
 	<node_200 msg_id="200" msg_name="SYNC_GAME_DB_CREATE_PLAYER">
 		<arg type="string" name="account"/>
     	<arg type="string" name="role_name"/>
@@ -46,21 +52,17 @@
 		<arg type="string" name="account"/>
 	</node_202>
 
-	<node_203 msg_id="203" msg_name="SYNC_GAME_DB_SAVE_PLAYER">
+	<node_203 msg_id="203" msg_name="SYNC_GAME_DB_PLAYER_DATA">
 		<arg type="bool" name="logout"/>
 		<struct type="Player_Data" name="player_data"/>
 	</node_203>
 
-	<node_204 msg_id="204" msg_name="SYNC_DB_GAME_PLAYER_INFO">
-		<struct type="Player_Data" name="player_data"/>
+	<node_204 msg_id="204" msg_name="SYNC_PUBLIC_DB_LOAD_DATA">
+		<arg type="uint" bit="6" name="data_type"/>
 	</node_204>
 
-	<node_205 msg_id="205" msg_name="SYNC_PUBLIC_DB_LOAD_DATA">
-		<arg type="uint" bit="4" name="data_type"/>
-	</node_205>
-
-	<node_206 msg_id="206" msg_name="SYNC_PUBLIC_DB_SAVE_DATA">
-		<switch name="data_type" type="uint" bit="4" >
+	<node_205 msg_id="205" msg_name="SYNC_PUBLIC_DB_DATA">
+		<switch name="data_type" type="uint" bit="6" >
 			<case val="0">
 	      <vector vbit="16" type="Guild_Info" name="guild_list"/>
 	    </case>
@@ -71,17 +73,30 @@
 	    		<vector vbit="16" type="Rank_Info" name="rank_list"/>
 	    	</case>
     </switch>
-	</node_206>
+	</node_205>
 
-	<node_207 msg_id="207" msg_name="SYNC_PUBLIC_DB_DELETE_DATA">
-		<arg type="uint" bit="4" name="data_type"/>
+	<node_206 msg_id="206" msg_name="SYNC_PUBLIC_DB_DELETE_DATA">
+		<arg type="uint" bit="6" name="data_type"/>
 		<vector vbit="16" type="int64" name="index_list"/>
-	</node_207>
+	</node_206>
 	
-	<node_209 msg_id="209" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
-		<arg type="int64" name="role_id"/>
-		<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
+	<node_207 msg_id="207" msg_name="SYNC_DB_LOAD_RUNTIME_DATA">
+		<arg type="uint" bit="6" name="data_type"/>
+		<arg type="int64" name="key_index"/>
+	</node_207>
+
+	<node_208 msg_id="208" msg_name="SYNC_DB_RUNTIME_DATA">
+		<switch name="data_type" type="uint" bit="6" >
+			<case val="0">
+				<arg type="int64" name="key_index"/>
+				<struct type="Data_Info" name="data_info"/>
+	    </case>
+    </switch>
+	</node_208>
+
+	<node_209 msg_id="209" msg_name="SYNC_DB_DELETE_RUNTIME_DATA">
+		<arg type="uint" bit="6" name="data_type"/>
+		<arg type="int64" name="key_index"/>
 	</node_209>
 	
 	<node_210 msg_id="210" msg_name="SYNC_LOG_PLAYER_LOGOUT">

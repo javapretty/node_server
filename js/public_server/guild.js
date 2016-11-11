@@ -19,19 +19,19 @@ Guild.prototype.load_data = function(msg) {
 }
 
 Guild.prototype.save_data = function(){
-	var msg = new node_206();
+	var msg = new node_205();
 	msg.data_type = Public_Data_Type.GUILD_DATA;
 	for (var value of this.guild_map.values()) {
 		msg.guild_list.push(value);
 	}
-	send_msg_to_db(Msg.SYNC_PUBLIC_DB_SAVE_DATA, 0, msg);
+	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DATA, 0, msg);
 	this.is_change = false;
 }
 
 Guild.prototype.drop_guild = function(){
 	if (this.drop_list.length <= 0) return;
 		
-	var msg = new node_207();
+	var msg = new node_206();
 	msg.data_type = Public_Data_Type.GUILD_DATA;
 	msg.index_list = this.drop_list;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DELETE_DATA, 0, msg);
@@ -46,7 +46,7 @@ Guild.prototype.save_data_handler = function() {
 }
 
 Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
-	var msg = new node_209();
+	var msg = new node_8();
 	msg.role_id = player.role_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;

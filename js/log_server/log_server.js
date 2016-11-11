@@ -20,7 +20,7 @@ function init(node_info) {
 	log_info('log_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.LOG_SERVER);
-	init_log(node_info);	
+	//init_log(node_info);	
 	//连接log数据库
 	connect_db();
 	

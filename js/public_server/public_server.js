@@ -67,7 +67,7 @@ function send_public_msg(cid, msg_id, sid, msg) {
 }
 
 function load_public_data() {
-	var msg = new node_205();
+	var msg = new node_204();
 	msg.data_type = Public_Data_Type.GUILD_DATA;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_LOAD_DATA, 0, msg);
 	msg.data_type = Public_Data_Type.RANK_DATA;
@@ -104,7 +104,7 @@ function process_public_node_msg(msg) {
 		}
 		break;
 	}
-	case Msg.SYNC_PUBLIC_DB_SAVE_DATA: {
+	case Msg.SYNC_PUBLIC_DB_DATA: {
 		switch (msg.data_type) {
 		case Public_Data_Type.CREATE_GUILD_DATA:
 			guild_manager.db_create_guild(msg);

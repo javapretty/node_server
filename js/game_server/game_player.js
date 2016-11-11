@@ -86,7 +86,7 @@ Game_Player.prototype.sync_player_data_to_db = function(logout) {
 	msg.player_data.role_info = this.role_info;
 	this.mail.save_data(msg);
 	this.bag.save_data(msg);
-	send_msg_to_db(Msg.SYNC_GAME_DB_SAVE_PLAYER, this.sid, msg);
+	send_msg_to_db(Msg.SYNC_GAME_DB_PLAYER_DATA, this.sid, msg);
 	this.is_change = false;
 }
 

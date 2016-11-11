@@ -20,7 +20,7 @@ function init(node_info) {
 	log_info('data_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	config.init();
 	timer.init(Node_Type.DATA_SERVER);	
-	init_db(node_info);
+	//init_db(node_info);
 	//连接game数据库
 	connect_db();
 	
@@ -43,21 +43,6 @@ function on_msg(msg) {
 		break;
 	case Msg.SYNC_PUBLIC_DB_CREATE_GUILD:
 		create_guild(msg);
-		break;
-	case Msg.SYNC_GAME_DB_LOAD_PLAYER:
-		load_player(msg);
-		break;
-	case Msg.SYNC_GAME_DB_SAVE_PLAYER:
-		save_player(msg);
-		break;
-	case Msg.SYNC_PUBLIC_DB_LOAD_DATA:
-		load_public_data(msg);
-		break;
-	case Msg.SYNC_PUBLIC_DB_SAVE_DATA:
-		save_public_data(msg);
-		break;
-	case Msg.SYNC_PUBLIC_DB_DELETE_DATA:
-		delete_public_data(msg);
 		break;
 	default:
 		log_error('data_server on_msg, msg_id not exist:', msg.msg_id);
@@ -114,7 +99,7 @@ function create_player(msg) {
 		send_error_msg(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
 	} else {
 		role_id = generate_table_index(DB_Id.GAME, "game.idx", "role_id");
-		var msg_res = new node_204();
+		var msg_res = new node_203();
 		msg_res.player_data.role_info.role_id = role_id;
 		msg_res.player_data.role_info.account = msg.account;
 		msg_res.player_data.role_info.role_name = msg.role_name;
@@ -125,7 +110,7 @@ function create_player(msg) {
 		msg_res.player_data.bag_info.role_id = role_id;
 		msg_res.player_data.mail_info.role_id = role_id;
 		create_db_data(DB_Id.GAME, "Player_Data", msg_res.player_data);
-		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
+		send_db_msg(msg.cid, Msg.SYNC_GAME_DB_PLAYER_DATA, msg.sid, msg_res);
 	}
 }
 
@@ -143,72 +128,9 @@ function create_guild(msg) {
 		guild_info.create_time = util.now_sec();
 		create_db_data(DB_Id.GAME, "game.guild", guild_info);
 		
-		var msg_res = new node_206();
+		var msg_res = new node_205();
 		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
 		msg_res.guild_list.push(guild_info);
-		send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_SAVE_DATA, msg.sid, msg_res);
-	}
-}
-
-function load_player(msg) {
-	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
-	if (role_id > 0) {
-		var msg_res = new node_204();
-		msg_res.player_data = load_db_data(DB_Id.GAME, "Player_Data", role_id);
-		send_db_msg(msg.cid, Msg.SYNC_DB_GAME_PLAYER_INFO, msg.sid, msg_res);
-	} else {
-		send_error_msg(msg.cid, msg.sid, Error_Code.NEED_CREATE_ROLE);
-	}
-}
-
-function save_player(msg) {
-	save_db_data(Save_Flag.SAVE_DB_CLEAR_CACHE, DB_Id.GAME, "Player_Data", msg.player_data);
-	if (msg.logout) {
-		send_error_msg(msg.cid, msg.sid, Error_Code.PLAYER_SAVE_COMPLETE);
-	}
-}
-
-function load_public_data(msg) {
-	var msg_res = new node_206();
-	msg_res.data_type = msg.data_type;
-	switch (msg.data_type) {
-	case Public_Data_Type.GUILD_DATA:
-		msg_res.guild_list = load_db_data(DB_Id.GAME, "game.guild", 0);
-		break;
-	case Public_Data_Type.RANK_DATA:
-		msg_res.rank_list = load_db_data(DB_Id.GAME, "game.rank", 0);
-		break;
-	default:
-		log_error('load_public_data, data_type not exist:', msg.data_type);
-		break;
-	}
-	send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_SAVE_DATA, msg.sid, msg_res);
-}
-
-function save_public_data(msg) {
-	switch (msg.data_type) {
-	case Public_Data_Type.GUILD_DATA:
-		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.guild", msg.guild_list);
-		break;
-	case Public_Data_Type.RANK_DATA:
-		save_db_data(Save_Flag.SAVE_CACHE_DB, DB_Id.GAME, "game.rank", msg.rank_list);
-		break;
-	default:
-		log_error('save_public_data, data_type not exist:', msg.data_type);
-		break;
-	}
-}
-
-function delete_public_data(msg) {
-	switch (msg.data_type) {
-	case Public_Data_Type.GUILD_DATA:
-		delete_db_data(DB_Id.GAME, "game.guild", msg.index_list);
-		break;
-	case Public_Data_Type.RANK_DATA:
-		delete_db_data(DB_Id.GAME, "game.rank", msg.index_list);
-		break;
-	default:
-		log_error('delete_public_data, data_type not exist:', msg.data_type);
-		break;
+		send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_DATA, msg.sid, msg_res);
 	}
 }

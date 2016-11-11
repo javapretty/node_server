@@ -152,7 +152,7 @@ function process_game_node_msg(msg) {
 		}
 		break;	
 	}
-	case Msg.SYNC_DB_GAME_PLAYER_INFO:
+	case Msg.SYNC_GAME_DB_PLAYER_DATA:
 		load_player_data(msg);
 		break;
 	case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {

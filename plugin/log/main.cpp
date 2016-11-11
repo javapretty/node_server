@@ -5,15 +5,19 @@
  *      Author: zhangyalei
  */
 
-#include "Log_Wrap.h"
+#include "Data_Manager.h"
 #include "Log_Manager.h"
+#include "include/v8.h"
 
 using namespace v8;
 
 extern "C" {
-	void init(Local<ObjectTemplate> &global, Isolate *isolate) {
-		global->Set(String::NewFromUtf8(isolate, "init_log", NewStringType::kNormal).ToLocalChecked(),
-			FunctionTemplate::New(isolate, init_log));
+	void init(Local<ObjectTemplate> &global, Isolate *isolate) {}
+
+	void create_thread(const Node_Info &node_info) {
+		DATA_MANAGER->init_db_operator();
+		LOG_MANAGER->init(node_info);
+		LOG_MANAGER->thr_create();
 	}
 
 	void push_buffer(Byte_Buffer *buffer) {

@@ -137,28 +137,34 @@ function node_210() {
 }
 
 function node_209() {
-	this.role_id = 0;
-	this.guild_id = 0;
-	this.guild_name = "";
+	this.data_type = 0;
+	this.key_index = 0;
+}
+
+function node_208() {
+	this.key_index = 0;
+	this.data_info = new Data_Info();
+	this.data_type = 0;
 }
 
 function node_207() {
 	this.data_type = 0;
-	this.index_list = new Array();
+	this.key_index = 0;
 }
 
 function node_206() {
+	this.data_type = 0;
+	this.index_list = new Array();
+}
+
+function node_205() {
 	this.guild_list = new Array();
 	this.rank_list = new Array();
 	this.data_type = 0;
 }
 
-function node_205() {
-	this.data_type = 0;
-}
-
 function node_204() {
-	this.player_data = new Player_Data();
+	this.data_type = 0;
 }
 
 function node_203() {
@@ -180,6 +186,12 @@ function node_200() {
 	this.role_name = "";
 	this.gender = 0;
 	this.career = 0;
+}
+
+function node_8() {
+	this.role_id = 0;
+	this.guild_id = 0;
+	this.guild_name = "";
 }
 
 function node_7() {
