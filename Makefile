@@ -46,7 +46,7 @@ SRCS=$(wildcard $(addsuffix *.cpp, $(SRCDIR)))
 
 OBJECTS:=$(addprefix $(OBJDIR), $(subst ./,,$(SRCS:.cpp=.o)))
 
-.PHONY:all mkobjdir clean config
+.PHONY:all mkobjdir clean dep
 
 all:mkobjdir $(BIN_TARGET)
 
