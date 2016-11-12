@@ -46,8 +46,8 @@ int Log_Manager::process_list(void) {
 			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 
 			switch(msg_head.msg_id) {
-			case SYNC_LOG_PLAYER_LOGOUT:
-				player_logout(bit_buffer);
+			case SYNC_SAVE_DB_DATA:
+				save_db_data(bit_buffer);
 				break;
 			default:
 				break;
@@ -63,6 +63,12 @@ int Log_Manager::process_list(void) {
 	return 0;
 }
 
-void Log_Manager::player_logout(Bit_Buffer &buffer) {
-	DATA_MANAGER->save_db_data(SAVE_DB_CLEAR_CACHE, DB_LOG, "log.logout", buffer);
+void Log_Manager::save_db_data(Bit_Buffer &buffer) {
+	uint save_type = buffer.read_uint(2);
+	bool vector_data = buffer.read_bool();
+	uint db_id = buffer.read_uint(16);
+	std::string struct_name = "";
+	buffer.read_str(struct_name);
+	/*uint data_type*/buffer.read_uint(8);
+	DATA_MANAGER->save_db_data(save_type, vector_data, db_id, struct_name, buffer);
 }

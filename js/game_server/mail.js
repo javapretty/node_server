@@ -9,13 +9,13 @@ function Mail() {
 	this.mail_info = new Mail_Info();
 }
 
-Mail.prototype.load_data = function(game_player, msg) {
+Mail.prototype.load_data = function(game_player, player_data) {
 	this.game_player = game_player;
-	this.mail_info = msg.player_data.mail_info;
+	this.mail_info = player_data.mail_info;
 }
 	
-Mail.prototype.save_data = function(msg) {
-	msg.player_data.mail_info = this.mail_info;
+Mail.prototype.save_data = function(player_data) {
+	player_data.mail_info = this.mail_info;
 }
 
 Mail.prototype.fetch_mail = function() {

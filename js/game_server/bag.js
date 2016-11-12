@@ -9,13 +9,13 @@ function Bag() {
 	this.bag_info = new Bag_Info();
 }
 	
-Bag.prototype.load_data = function(game_player, msg) {
+Bag.prototype.load_data = function(game_player, player_data) {
 	this.game_player = game_player;
-	this.bag_info = msg.player_data.bag_info;	
+	this.bag_info = player_data.bag_info;	
 }
 
-Bag.prototype.save_data = function(msg) {
-	msg.player_data.bag_info = this.bag_info;
+Bag.prototype.save_data = function(player_data) {
+	player_data.bag_info = this.bag_info;
 }
 
 Bag.prototype.fetch_bag = function() {

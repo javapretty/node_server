@@ -125,6 +125,13 @@ function Role_Info() {
 	this.guild_name = "";
 }
 
+function Create_Role_Info() {
+	this.account = "";
+	this.role_name = "";
+	this.gender = 0;
+	this.career = 0;
+}
+
 function http_1() {
 	this.node_type = 0;
 	this.node_id = 0;
@@ -132,60 +139,64 @@ function http_1() {
 	this.node_name = "";
 }
 
-function node_210() {
-	this.logout_info = new Logout_Info();
-}
-
-function node_209() {
-	this.data_type = 0;
+function node_255() {
+	this.struct_name = "";
 	this.key_index = 0;
 }
 
-function node_208() {
+function node_253() {
+	this.struct_name = "";
 	this.key_index = 0;
-	this.data_info = new Data_Info();
 	this.data_type = 0;
 }
 
-function node_207() {
-	this.data_type = 0;
-	this.key_index = 0;
-}
-
-function node_206() {
-	this.data_type = 0;
+function node_252() {
+	this.db_id = 0;
+	this.struct_name = "";
 	this.index_list = new Array();
 }
 
-function node_205() {
+function node_251() {
+	this.save_type = 0;
+	this.vector_data = 0;
+	this.db_id = 0;
+	this.struct_name = "";
+	this.player_data = new Player_Data();
 	this.guild_list = new Array();
 	this.rank_list = new Array();
+	this.logout_info = new Logout_Info();
 	this.data_type = 0;
 }
 
-function node_204() {
+function node_250() {
+	this.db_id = 0;
+	this.struct_name = "";
+	this.key_index = 0;
 	this.data_type = 0;
 }
 
-function node_203() {
-	this.logout = 0;
-	this.player_data = new Player_Data();
+function node_249() {
+	this.type = "";
+	this.id = 0;
 }
 
-function node_202() {
-	this.account = "";
+function node_248() {
+	this.db_id = 0;
+	this.table_name = "";
+	this.type = "";
 }
 
-function node_201() {
-	this.guild_name = "";
-	this.chief_id = 0;
+function node_247() {
+	this.table_name = "";
+	this.key_index = 0;
 }
 
-function node_200() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
+function node_246() {
+	this.db_id = 0;
+	this.table_name = "";
+	this.index_name = "";
+	this.query_name = "";
+	this.query_value = "";
 }
 
 function node_8() {
@@ -204,6 +215,12 @@ function node_6() {
 function node_5() {
 	this.login = 0;
 	this.role_info = new Role_Info();
+}
+
+function node_254() {
+	this.struct_name = "";
+	this.key_index = 0;
+	this.data_type = 0;
 }
 
 function node_4() {
@@ -275,10 +292,7 @@ function s2c_5() {
 }
 
 function c2s_5() {
-	this.account = "";
-	this.role_name = "";
-	this.gender = 0;
-	this.career = 0;
+	this.role_info = new Create_Role_Info();
 }
 
 function s2c_4() {

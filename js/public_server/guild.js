@@ -19,20 +19,25 @@ Guild.prototype.load_data = function(msg) {
 }
 
 Guild.prototype.save_data = function(){
-	var msg = new node_205();
-	msg.data_type = Public_Data_Type.GUILD_DATA;
+	var msg = new node_251();
+	msg.save_type = Save_Type.SAVE_CACHE_DB;
+	msg.vector_data = true;
+	msg.db_id = DB_Id.GAME;
+	msg.struct_name = "Guild_Info";
+	msg.data_type = DB_Data_Type.GUILD;
 	for (var value of this.guild_map.values()) {
 		msg.guild_list.push(value);
 	}
-	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DATA, 0, msg);
+	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, 0, msg);
 	this.is_change = false;
 }
 
 Guild.prototype.drop_guild = function(){
 	if (this.drop_list.length <= 0) return;
 		
-	var msg = new node_206();
-	msg.data_type = Public_Data_Type.GUILD_DATA;
+	var msg = new node_252();
+	msg.db_id = DB_Id.GAME;
+	msg.struct_name = "Guild_Info";
 	msg.index_list = this.drop_list;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DELETE_DATA, 0, msg);
 	this.drop_list = [];
@@ -65,25 +70,27 @@ Guild.prototype.member_join_guild = function(player, guild_info) {
 }
 
 Guild.prototype.create_guild = function(player, msg) {
-	var msg_res = new node_201();
-	msg_res.guild_name = msg.guild_name;
-	msg_res.chief_id = player.role_info.role_id;
-	send_msg_to_db(Msg.SYNC_PUBLIC_DB_CREATE_GUILD, msg.sid, msg_res);
+	//将公会名字暂时存到帮主player信息里面	
+	player.role_info.guild_name = msg.guild_name;
+	
+	var msg_res = new node_246();
+	msg_res.db_id = DB_Id.GAME;
+	msg_res.table_name = "game.guild";
+	msg_res.index_name = "guild_id";
+	msg_res.query_name = "guild_name";
+	msg_res.query_value = msg.guild_name;
+	send_msg_to_db(Msg.SYNC_GET_TABLE_INDEX, msg.sid, msg_res);
 }
 
-Guild.prototype.db_create_guild = function(msg) {
-	var player = sid_public_player_map.get(msg.sid);
-	if (!player || msg.guild_list.length != 1) {
-		log_error('db_create_guild param error');
-		return;
-	}
-
+Guild.prototype.db_create_guild = function(player, guild_info) {
+	log_debug('db_create_guild, guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name, ' chief_id:', guild_info.chief_id);
+	
+	this.member_join_guild(player, guild_info);
+	this.guild_map.set(guild_info.guild_id, guild_info);
+	this.sync_guild_info_to_game(player, guild_info.guild_id, guild_info.guild_name);
+	
 	var msg_res = new s2c_201();
-	msg_res.guild_info = msg.guild_list[0];
-	log_debug('db_create_guild, guild_id:', msg_res.guild_info.guild_id, ' guild_name:', msg_res.guild_info.guild_name, ' chief_id:', msg_res.guild_info.chief_id);
-	this.member_join_guild(player, msg_res.guild_info);
-	this.guild_map.set(msg_res.guild_info.guild_id, msg_res.guild_info);
-	this.sync_guild_info_to_game(player, msg_res.guild_info.guild_id, msg_res.guild_info.guild_name);
+	msg_res.guild_info = guild_info;
 	player.send_success_msg(Msg.RES_CREATE_GUILD, msg_res);
 }
 

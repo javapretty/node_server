@@ -13,35 +13,21 @@
 #include "Buffer_List.h"
 #include "Object_Pool.h"
 #include "Thread.h"
-#include "DB_Struct.h"
 #include "Node_Define.h"
-
-enum DB_ID {
-	DB_GAME = 1001,
-	DB_LOG = 1002,
-};
-
-enum Public_Data_Type {
-	CREATE_GUILD_DATA	= 0, 	//创建公会数据
-	GUILD_DATA					= 1, 	//公会数据
-	RANK_DATA 					= 2,	//排行榜数据
-};
-
-enum Runtime_Data_Type {
-	RUNTIME_DATA = 1,
-};
 
 enum DB_MESSAGE_CMD {
 	SYNC_ERROR_CODE = 1,
 	SYNC_NODE_INFO = 2,
-	SYNC_GAME_DB_LOAD_PLAYER = 202,
-	SYNC_GAME_DB_PLAYER_DATA = 203,
-	SYNC_PUBLIC_DB_LOAD_DATA = 204,
-	SYNC_PUBLIC_DB_DATA = 205,
-	SYNC_PUBLIC_DB_DELETE_DATA = 206,
-	SYNC_DB_LOAD_RUNTIME_DATA = 207,
-	SYNC_DB_RUNTIME_DATA = 208,
-	SYNC_DB_DELETE_RUNTIME_DATA = 209,
+	SYNC_GET_TABLE_INDEX = 246,
+	SYNC_RES_TABLE_INDEX = 247,
+	SYNC_GENERATE_ID = 248,
+	SYNC_DB_RES_ID = 249,
+	SYNC_LOAD_DB_DATA = 250,
+	SYNC_SAVE_DB_DATA = 251,
+	SYNC_DELETE_DB_DATA = 252,
+	SYNC_LOAD_RUNTIME_DATA = 253,
+	SYNC_SAVE_RUNTIME_DATA = 254,
+	SYNC_DELETE_RUNTIME_DATA = 255,
 };
 
 class DB_Manager: public Thread {
@@ -62,14 +48,14 @@ public:
 		notify_lock_.unlock();
 	}
 
-	//玩家数据操作接口
-	void load_player(int cid, int sid, Bit_Buffer &buffer);
-	void save_player(int cid, int sid, Bit_Buffer &buffer);
+	//key_index操作接口
+	void get_table_index(int cid, int sid, Bit_Buffer &buffer);
+	void generate_id(int cid, int sid, Bit_Buffer &buffer);
 
-	//公共数据操作接口
-	void load_public_data(int cid, int sid, Bit_Buffer &buffer);
-	void save_public_data(int cid, int sid, Bit_Buffer &buffer);
-	void delete_public_data(int cid, int sid, Bit_Buffer &buffer);
+	//db数据操作接口
+	void load_db_data(int cid, int sid, Bit_Buffer &buffer);
+	void save_db_data(int cid, int sid, Bit_Buffer &buffer);
+	void delete_db_data(int cid, int sid, Bit_Buffer &buffer);
 
 	//运行时数据操作接口
 	void load_runtime_data(int cid, int sid, Bit_Buffer &buffer);

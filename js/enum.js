@@ -16,7 +16,7 @@ if (typeof Error_Code == "undefined") {
 	Error_Code.TOKEN_TIMEOUT				= 6;		//token到期
 	Error_Code.CLIENT_PARAM_ERROR 		= 7;		//客户端参数错误
 	Error_Code.CONFIG_ERROR 				= 8;		//配置文件错误
-	Error_Code.ROLE_HAS_EXIST 				= 9;	//角色已存在
+	Error_Code.GENERATE_ID_ERROR 		= 9;		//生成id错误
 	Error_Code.ROLE_NOT_EXIST 				= 10;	//角色不存在
 	Error_Code.PLAYER_SAVE_COMPLETE	= 11;	//保存玩家完成
 	Error_Code.PLAYER_KICK_OFF 			= 12;	//玩家被踢下线
@@ -87,17 +87,12 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.GAME_GATE2_CONNECTOR		= 6;
 }
 
-if (typeof Public_Data_Type == "undefined") {
-	var Public_Data_Type = {};
-	Public_Data_Type.CREATE_GUILD_DATA	= 0; //创建公会数据
-	Public_Data_Type.GUILD_DATA				= 1; //公会数据
-	Public_Data_Type.RANK_DATA 				= 2;	//排行榜数据
-}
-
-if (typeof Rank_Type == "undefined") {
-	var Rank_Type = {};
-	Rank_Type.LEVEL_RANK		= 1;	//等级排行
-	Rank_Type.COMBAT_RANK 	= 2;	//战力排行
+if (typeof DB_Data_Type == "undefined") {
+	var DB_Data_Type = {};
+	DB_Data_Type.PLAYER			= 1;	//玩家数据
+	DB_Data_Type.GUILD			= 2;	//公会数据
+	DB_Data_Type.RANK 			= 3;	//排行榜数据
+	DB_Data_Type.LOGOUT 		= 4;	//离线日志数据
 }
 
 if (typeof DB_Id == "undefined") {
@@ -106,9 +101,15 @@ if (typeof DB_Id == "undefined") {
 	DB_Id.LOG 		= 1002;
 }
 
-if (typeof Save_Flag == "undefined") {
-	var Save_Flag = {};
-	Save_Flag.SAVE_CACHE 					= 1;	//保存缓存
-	Save_Flag.SAVE_CACHE_DB 			= 2;	//保存缓存和数据库
-	Save_Flag.SAVE_DB_CLEAR_CACHE 	= 3;	//保存数据库清空缓存
+if (typeof Save_Type == "undefined") {
+	var Save_Type = {};
+	Save_Type.SAVE_CACHE 					= 1;	//保存缓存
+	Save_Type.SAVE_CACHE_DB 			= 2;	//保存缓存和数据库
+	Save_Type.SAVE_DB_CLEAR_CACHE 	= 3;	//保存数据库清空缓存
+}
+
+if (typeof Rank_Type == "undefined") {
+	var Rank_Type = {};
+	Rank_Type.LEVEL_RANK		= 1;	//等级排行
+	Rank_Type.COMBAT_RANK 	= 2;	//战力排行
 }

@@ -36,18 +36,6 @@ function on_drop(cid) { }
 
 function on_msg(msg) {
 	log_debug('data_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
-	switch(msg.msg_id) {
-	case Msg.SYNC_GAME_DB_CREATE_PLAYER:
-		create_player(msg);
-		break;
-	case Msg.SYNC_PUBLIC_DB_CREATE_GUILD:
-		create_guild(msg);
-		break;
-	default:
-		log_error('data_server on_msg, msg_id not exist:', msg.msg_id);
-		break;
-	}
 }
 
 function on_tick(timer_id) {}
@@ -79,58 +67,5 @@ function connect_db() {
 				}
 			}
 		}
-	}
-}
-
-function send_db_msg(cid, msg_id, sid, msg) {
-	send_msg(Endpoint.DATA_SERVER, cid, msg_id, Msg_Type.NODE_MSG, sid, msg);
-}
-
-function send_error_msg(cid, sid, error_code) {
-	var msg_res = new node_1();
-	msg_res.error_code = error_code;
-	send_msg(Endpoint.DATA_SERVER, cid, Msg.SYNC_ERROR_CODE, Msg_Type.NODE_MSG, sid, msg_res);
-}
-
-function create_player(msg) {
-	var role_id = select_table_index(DB_Id.GAME, "game.role", "account", msg.account);
-	if (role_id > 0) {
-		log_warn('create player, player has exist, account:',msg.account);
-		send_error_msg(msg.cid, msg.sid, Error_Code.ROLE_HAS_EXIST);
-	} else {
-		role_id = generate_table_index(DB_Id.GAME, "game.idx", "role_id");
-		var msg_res = new node_203();
-		msg_res.player_data.role_info.role_id = role_id;
-		msg_res.player_data.role_info.account = msg.account;
-		msg_res.player_data.role_info.role_name = msg.role_name;
-		msg_res.player_data.role_info.level = 1;
-		msg_res.player_data.role_info.gender = msg.gender;
-		msg_res.player_data.role_info.career = msg.career;
-		msg_res.player_data.role_info.create_time = util.now_sec();
-		msg_res.player_data.bag_info.role_id = role_id;
-		msg_res.player_data.mail_info.role_id = role_id;
-		create_db_data(DB_Id.GAME, "Player_Data", msg_res.player_data);
-		send_db_msg(msg.cid, Msg.SYNC_GAME_DB_PLAYER_DATA, msg.sid, msg_res);
-	}
-}
-
-function create_guild(msg) {
-	var guild_id = select_table_index(DB_Id.GAME, "game.guild", "guild_name", msg.guild_name);
-	if (guild_id > 0) {
-		log_warn('create guild, guild has exist, guild_name:',msg.guild_name);
-		send_error_msg(msg.cid, msg.sid, Error_Code.GUILD_HAS_EXIST);
-	} else {
-		guild_id = generate_table_index(DB_Id.GAME, "game.idx", "guild_id");
-		var guild_info = new Guild_Info();
-		guild_info.guild_id = guild_id;
-		guild_info.guild_name = msg.guild_name;
-		guild_info.chief_id = msg.chief_id;
-		guild_info.create_time = util.now_sec();
-		create_db_data(DB_Id.GAME, "game.guild", guild_info);
-		
-		var msg_res = new node_205();
-		msg_res.data_type = Public_Data_Type.CREATE_GUILD_DATA;
-		msg_res.guild_list.push(guild_info);
-		send_db_msg(msg.cid, Msg.SYNC_PUBLIC_DB_DATA, msg.sid, msg_res);
 	}
 }

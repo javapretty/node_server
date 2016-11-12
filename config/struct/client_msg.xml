@@ -35,10 +35,7 @@
 	</s2c_4>
 
 	<c2s_5 msg_id="5" msg_name="REQ_CREATE_ROLE">
-		<arg type="string" name="account"/>
-		<arg type="string" name="role_name"/>
-		<arg type="uint" bit=1 name="gender"/>
-		<arg type="uint" bit=2 name="career"/>
+		<struct type="Create_Role_Info" name="role_info"/>
 	</c2s_5>
 	
 	<s2c_5 msg_id="5" msg_name="RES_ERROR_CODE">

@@ -1,5 +1,12 @@
 <root>
 
+	<Create_Role_Info>
+		<arg type="string" name="account"/>
+    	<arg type="string" name="role_name"/>
+    	<arg type="uint" bit="1" name="gender"/>
+    	<arg type="uint" bit="2" name="career"/>
+	</Create_Role_Info>
+	
 	<Role_Info table_name="game.role" index_name="role_id">
 		<arg type="int64" name="role_id"/>
     	<arg type="string" name="role_name"/>
