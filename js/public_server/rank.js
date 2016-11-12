@@ -23,7 +23,7 @@ Rank.prototype.save_data = function() {
 	msg.vector_data = true;
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Rank_Info";
-	msg.data_type = DB_Data_Type.Rank;
+	msg.data_type = DB_Data_Type.RANK;
 	for (var value of this.rank_map.values()) {
 		msg.rank_list.push(value);
 	}
