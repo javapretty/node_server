@@ -123,8 +123,8 @@ function process_gate_client_msg(msg) {
 
 function process_gate_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.SYNC_ERROR_CODE:
-		process_error_code(msg);
+	case Msg.SYNC_NODE_CODE:
+		process_node_code(msg);
 		break;
 	case Msg.SYNC_NODE_INFO:
 		set_node_info(msg);
@@ -155,11 +155,11 @@ function connect_gate(msg) {
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, msg.cid, msg_res);
 }
 
-function process_error_code(msg) {
-	switch (msg.error_code) {
-	case Error_Code.TOKEN_ERROR: {
+function process_node_code(msg) {
+	switch (msg.node_code) {
+	case Node_Code.VERIFY_TOKEN_FAIL: {
 		var msg_res = new s2c_5();
-		msg_res.error_code = msg.error_code;
+		msg_res.error_code = Error_Code.TOKEN_ERROR;
 		send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg_res);
 		break;
 	}

@@ -140,8 +140,8 @@ function process_game_client_msg(msg) {
 
 function process_game_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.SYNC_ERROR_CODE:
-		process_error_code(msg);
+	case Msg.SYNC_NODE_CODE:
+		process_node_code(msg);
 		break;
 	case Msg.SYNC_GATE_GAME_ADD_SESSION:
 		on_add_session(msg.sid, msg.gate_nid);
@@ -178,12 +178,18 @@ function process_game_node_msg(msg) {
 	}
 }
 
-function process_error_code(msg) {
-	switch (msg.error_code) {
-	case Error_Code.PLAYER_SAVE_COMPLETE:{
+function process_node_code(msg) {
+	switch (msg.node_code) {
+	case Node_Code.LOAD_DB_DATA_FAIL:
+		log_error('load player data fail, sid:', msg.sid);
+		on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
+		break;
+	case Node_Code.LOAD_RUNTIME_DATA_FAIL:
+		log_error('load runtime data fail, sid:', msg.sid);
+		break;
+	case Node_Code.SAVE_DB_DATA_SUCCESS:
 		logout_map.delete(msg.sid);
 		break;
-	}
 	}
 }
 

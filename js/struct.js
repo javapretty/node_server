@@ -239,7 +239,7 @@ function node_2() {
 }
 
 function node_1() {
-	this.error_code = 0;
+	this.node_code = 0;
 }
 
 function s2c_202() {

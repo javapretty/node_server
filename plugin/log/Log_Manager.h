@@ -16,7 +16,6 @@
 #include "Node_Define.h"
 
 enum DB_MESSAGE_CMD {
-	SYNC_ERROR_CODE = 1,
 	SYNC_NODE_INFO = 2,
 	SYNC_SAVE_DB_DATA = 251,
 };

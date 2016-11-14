@@ -4,10 +4,23 @@
 *	时间：2016/02/24
 */
 
+if (typeof Node_Code == "undefined") {
+	var Node_Code = {};
+	Node_Code.RET_OK									= 0;		//成功返回
+	Node_Code.LOAD_DB_DATA_FAIL				= 1;		//加载db数据失败
+	Node_Code.SAVE_DB_DATA_FAIL				= 2;		//保存db数据失败
+	Node_Code.DELETE_DB_DATA_FAIL			= 3;		//删除db数据失败
+	Node_Code.LOAD_RUNTIME_DATA_FAIL		= 4;		//加载运行时数据失败
+	Node_Code.SAVE_RUNTIME_DATA_FAIL		= 5;		//保存运行时数据失败
+	Node_Code.DELETE_RUNTIME_DATA_FAIL	= 6;		//删除运行时数据失败
+	Node_Code.SAVE_DB_DATA_SUCCESS			=	7;		//保存db数据成功
+	Node_Code.VERIFY_TOKEN_FAIL				= 8;		//校验token失败
+}
+
 if (typeof Error_Code == "undefined") {
 	var Error_Code = {};
 
-	Error_Code.RET_OK								= 0;		//成功返回
+	Error_Code.RET_OK								= 0;		//成功返回	
 	Error_Code.NEED_CREATE_ROLE			= 1;		//需要创建角色
 	Error_Code.DISCONNECT_SELF 			= 2;		//服务主动关闭
 	Error_Code.DISCONNECT_RELOGIN		= 3;		//账号重登录
@@ -17,8 +30,8 @@ if (typeof Error_Code == "undefined") {
 	Error_Code.CLIENT_PARAM_ERROR 		= 7;		//客户端参数错误
 	Error_Code.CONFIG_ERROR 				= 8;		//配置文件错误
 	Error_Code.GENERATE_ID_ERROR 		= 9;		//生成id错误
-	Error_Code.ROLE_NOT_EXIST 				= 10;	//角色不存在
-	Error_Code.PLAYER_SAVE_COMPLETE	= 11;	//保存玩家完成
+	Error_Code.PLAYER_DATA_ERROR			= 10;	//玩家数据错误
+	Error_Code.PLAYER_NOT_EXIST 			= 11;	//玩家不存在
 	Error_Code.PLAYER_KICK_OFF 			= 12;	//玩家被踢下线
 	Error_Code.PLAYER_OFFLINE 				= 13;	//玩家已离线
 	Error_Code.LEVEL_NOT_ENOUGH 			= 14;	//角色等级不足

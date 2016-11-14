@@ -147,7 +147,12 @@ void DB_Manager::load_db_data(int cid, int sid, Bit_Buffer &buffer) {
 	bit_buffer.write_uint(db_id, 16);
 	bit_buffer.write_str(struct_name.c_str());
 	bit_buffer.write_uint(data_type, 8);
-	DATA_MANAGER->load_db_data(db_id, struct_name, key_index, bit_buffer);
+	int ret = DATA_MANAGER->load_db_data(db_id, struct_name, key_index, bit_buffer);
+	if(ret < 0) {
+		msg_head.msg_id = SYNC_NODE_CODE;
+		bit_buffer.reset();
+		bit_buffer.write_uint(LOAD_DB_DATA_FAIL, 16);
+	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
 
@@ -158,14 +163,42 @@ void DB_Manager::save_db_data(int cid, int sid, Bit_Buffer &buffer) {
 	std::string struct_name = "";
 	buffer.read_str(struct_name);
 	/*uint data_type*/buffer.read_uint(8);
-	DATA_MANAGER->save_db_data(save_type, vector_data, db_id, struct_name, buffer);
+	int ret = DATA_MANAGER->save_db_data(save_type, vector_data, db_id, struct_name, buffer);
+	Msg_Head msg_head;
+	msg_head.eid = 1;
+	msg_head.cid = cid;
+	msg_head.msg_id = SYNC_NODE_CODE;
+	msg_head.msg_type = NODE_MSG;
+	msg_head.sid = sid;
+	if(ret < 0) {
+		Bit_Buffer bit_buffer;
+		bit_buffer.write_uint(SAVE_DB_DATA_FAIL, 16);
+		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+	} else {
+		if(save_type == SAVE_DB_CLEAR_CACHE) {
+			Bit_Buffer bit_buffer;
+			bit_buffer.write_uint(SAVE_DB_DATA_SUCCESS, 16);
+			NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+		}
+	}
 }
 
 void DB_Manager::delete_db_data(int cid, int sid, Bit_Buffer &buffer) {
 	uint db_id = buffer.read_uint(16);
 	std::string struct_name = "";
 	buffer.read_str(struct_name);
-	DATA_MANAGER->delete_db_data(db_id, struct_name, buffer);
+	int ret = DATA_MANAGER->delete_db_data(db_id, struct_name, buffer);
+	if(ret < 0) {
+		Msg_Head msg_head;
+		msg_head.eid = 1;
+		msg_head.cid = cid;
+		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_type = NODE_MSG;
+		msg_head.sid = sid;
+		Bit_Buffer bit_buffer;
+		bit_buffer.write_uint(DELETE_DB_DATA_FAIL, 16);
+		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+	}
 }
 
 void DB_Manager::load_runtime_data(int cid, int sid, Bit_Buffer &buffer) {
@@ -184,7 +217,12 @@ void DB_Manager::load_runtime_data(int cid, int sid, Bit_Buffer &buffer) {
 	bit_buffer.write_str(struct_name.c_str());
 	bit_buffer.write_int64(key_index);
 	bit_buffer.write_uint(data_type, 8);
-	DATA_MANAGER->load_runtime_data(struct_name, key_index, bit_buffer);
+	int ret = DATA_MANAGER->load_runtime_data(struct_name, key_index, bit_buffer);
+	if(ret < 0) {
+		msg_head.msg_id = SYNC_NODE_CODE;
+		bit_buffer.reset();
+		bit_buffer.write_uint(LOAD_RUNTIME_DATA_FAIL, 16);
+	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
 
@@ -193,12 +231,34 @@ void DB_Manager::save_runtime_data(int cid, int sid, Bit_Buffer &buffer) {
 	buffer.read_str(struct_name);
 	int64_t key_index = buffer.read_int64();
 	/*uint data_type*/buffer.read_uint(8);
-	DATA_MANAGER->save_runtime_data(struct_name, key_index, buffer);
+	int ret = DATA_MANAGER->save_runtime_data(struct_name, key_index, buffer);
+	if(ret < 0) {
+		Msg_Head msg_head;
+		msg_head.eid = 1;
+		msg_head.cid = cid;
+		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_type = NODE_MSG;
+		msg_head.sid = sid;
+		Bit_Buffer bit_buffer;
+		bit_buffer.write_uint(SAVE_RUNTIME_DATA_FAIL, 16);
+		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+	}
 }
 
 void DB_Manager::delete_runtime_data(int cid, int sid, Bit_Buffer &buffer) {
 	std::string struct_name = "";
 	buffer.read_str(struct_name);
 	int64_t key_index = buffer.read_int64();
-	DATA_MANAGER->delete_runtime_data(struct_name, key_index);
+	int ret = DATA_MANAGER->delete_runtime_data(struct_name, key_index);
+	if(ret < 0) {
+		Msg_Head msg_head;
+		msg_head.eid = 1;
+		msg_head.cid = cid;
+		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_type = NODE_MSG;
+		msg_head.sid = sid;
+		Bit_Buffer bit_buffer;
+		bit_buffer.write_uint(DELETE_RUNTIME_DATA_FAIL, 16);
+		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
+	}
 }

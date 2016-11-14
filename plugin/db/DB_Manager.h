@@ -15,8 +15,18 @@
 #include "Thread.h"
 #include "Node_Define.h"
 
+enum NODE_CODE {
+	LOAD_DB_DATA_FAIL				= 1,		//加载db数据失败
+	SAVE_DB_DATA_FAIL				= 2,		//保存db数据失败
+	DELETE_DB_DATA_FAIL			= 3,		//删除db数据失败
+	LOAD_RUNTIME_DATA_FAIL		= 4,		//加载运行时数据失败
+	SAVE_RUNTIME_DATA_FAIL		= 5,		//保存运行时数据失败
+	DELETE_RUNTIME_DATA_FAIL= 6,		//删除运行时数据失败
+	SAVE_DB_DATA_SUCCESS			=	7,		//保存db数据成功
+};
+
 enum DB_MESSAGE_CMD {
-	SYNC_ERROR_CODE = 1,
+	SYNC_NODE_CODE = 1,
 	SYNC_NODE_INFO = 2,
 	SYNC_GET_TABLE_INDEX = 246,
 	SYNC_RES_TABLE_INDEX = 247,
