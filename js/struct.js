@@ -77,7 +77,7 @@ function Endpoint_Info() {
 }
 
 function Mail_Detail() {
-	this.pickup = 0;
+	this.pickup = false;
 	this.mail_id = 0;
 	this.send_time = 0;
 	this.sender_type = 0;
@@ -158,7 +158,7 @@ function node_252() {
 
 function node_251() {
 	this.save_type = 0;
-	this.vector_data = 0;
+	this.vector_data = false;
 	this.db_id = 0;
 	this.struct_name = "";
 	this.player_data = new Player_Data();
@@ -213,7 +213,7 @@ function node_6() {
 }
 
 function node_5() {
-	this.login = 0;
+	this.login = false;
 	this.role_info = new Role_Info();
 }
 
