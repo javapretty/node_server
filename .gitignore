@@ -1,6 +1,6 @@
 /Debug/
 /Release/
-/obj/
+/.obj/
 /log/
 /natives_blob.bin
 /snapshot_blob.bin
