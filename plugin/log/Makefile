@@ -8,7 +8,7 @@
 SRCDIR=	./\
 
 ###这里定义目标文件目录###
-OBJDIR =../../obj/log_obj/
+OBJDIR =../../.obj/log_obj/
 
 TARGET_NAME=logplugin.so
 
