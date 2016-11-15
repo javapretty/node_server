@@ -8,6 +8,7 @@
 #ifndef LOG_MANAGER_H_
 #define LOG_MANAGER_H_
 
+#include <unordered_set>
 #include <unordered_map>
 #include "Bit_Buffer.h"
 #include "Buffer_List.h"
@@ -22,12 +23,14 @@ enum DB_MESSAGE_CMD {
 
 class Log_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
+	typedef std::unordered_set<int> Int_Set;
+	typedef std::vector<int> Int_Vec;
 public:
 	static Log_Manager *instance(void);
 
 	void init(const Node_Info &node_info) {
 		node_info_ = node_info;
-		cur_log_id = node_info_.node_id;
+		log_node_idx_ = node_info_.node_id;
 	}
 
 	virtual void run_handler(void);
@@ -40,9 +43,10 @@ public:
 		notify_lock_.unlock();
 	}
 
-	void add_log_connector(int cid) { log_list_.push_back(cid); }
-	//传递消息，用于路由节点
-	int transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer);
+	void add_log_cid(int cid) { 
+		log_cid_list_.push_back(cid); 
+		log_connector_size_++;
+	}
 	int save_db_data(Bit_Buffer &buffer);
 
 private:
@@ -54,10 +58,12 @@ private:
 private:
 	static Log_Manager *instance_;
 
-	Data_List buffer_list_;			//消息列表
-	Node_Info node_info_;				//节点信息
-	int cur_log_id;
-	std::vector<int> log_list_;	//log链接器cid列表
+	Data_List buffer_list_;	//消息列表
+	Node_Info node_info_;	//节点信息
+	int log_node_idx_;		//log链接器id索引
+	int log_connector_size_;//log链接器数量
+	Int_Vec log_cid_list_;	//log链接器cid列表
+	Int_Set log_fork_list_;	//log进程启动列表
 };
 
 #define LOG_MANAGER Log_Manager::instance()

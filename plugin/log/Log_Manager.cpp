@@ -9,7 +9,7 @@
 #include "Node_Manager.h"
 #include "Log_Manager.h"
 
-Log_Manager::Log_Manager(void) : cur_log_id(0) { }
+Log_Manager::Log_Manager(void) : log_node_idx_(0), log_connector_size_(0) { }
 
 Log_Manager::~Log_Manager(void) { }
 
@@ -44,29 +44,36 @@ int Log_Manager::process_list(void) {
 			buffer->read_head(msg_head);
 			int eid = msg_head.eid;
 			int cid = msg_head.cid;
+			bit_buffer.reset();
+			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 
 			switch(msg_head.msg_id) {
-			case SYNC_NODE_INFO:
-				add_log_connector(cid);
+			case SYNC_NODE_INFO: {
+				add_log_cid(cid);
+				Node_Info node_info;
+				node_info.deserialize(bit_buffer);
+				log_fork_list_.erase(node_info.node_id);
 				break;
+			}
 			case SYNC_SAVE_DB_DATA: {
-				if(node_info_.endpoint_gid == 1) {
-					int connector_size = buffer_list_.size() / node_info_.max_session_count;
-					if(connector_size > 0) {
-						int lack_connector = connector_size - log_list_.size();
-						if(lack_connector > 0) {
-							for(int i = 0; i < lack_connector; ++i) {
-								std::string node_name = "log_connector";
-								NODE_MANAGER->fork_process(LOG_SERVER, ++cur_log_id, 2, node_name);
-							}
-						}
-						else {
-							transmit_msg(msg_head, buffer);
-						}
+				int buffer_size = buffer_list_.size();
+				if(node_info_.endpoint_gid == 1 && buffer_size >= node_info_.max_session_count) {
+					//计算需要创建log_connector的数量，如果大于0，而且当前最小的connector没有创建多，就创建
+					int fork_log_size = buffer_size / node_info_.max_session_count - log_connector_size_;
+					if(fork_log_size > 0 && log_fork_list_.count(log_node_idx_) <= 0) {
+						std::string node_name = "log_connector";
+						NODE_MANAGER->fork_process(LOG_SERVER, ++log_node_idx_, 2, node_name);
+						log_fork_list_.insert(log_node_idx_);
 					}
-				} else {
-					bit_buffer.reset();
-					bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
+				}
+
+				//如果当前已经有创建好的log_connector,就转发消息,否则就用本进程处理
+				if(node_info_.endpoint_gid == 1 && log_connector_size_ > 0 && buffer_size >= node_info_.max_session_count) {
+					int index = random() % (log_connector_size_);
+					msg_head.cid = log_cid_list_[index];
+					NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
+				}
+				else {
 					save_db_data(bit_buffer);
 				}
 				break;
@@ -82,13 +89,6 @@ int Log_Manager::process_list(void) {
 		//操作完成解锁条件变量
 		notify_lock_.unlock();
 	}
-	return 0;
-}
-
-int Log_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
-	int index = random() % (log_list_.size());
-	msg_head.cid = log_list_[index];
-	NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
 	return 0;
 }
 
