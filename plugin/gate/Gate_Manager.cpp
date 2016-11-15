@@ -43,7 +43,12 @@ int Gate_Manager::process_list(void) {
 		if(buffer != nullptr) {
 			msg_head.reset();
 			buffer->read_head(msg_head);
+			int eid = msg_head.eid;
+			int cid = msg_head.cid;
+			//传递消息
 			transmit_msg(msg_head, buffer);
+			//回收buffer
+			NODE_MANAGER->push_buffer(eid, cid, buffer);
 		}
 
 		//操作完成解锁条件变量
@@ -53,9 +58,6 @@ int Gate_Manager::process_list(void) {
 }
 
 int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
-	int eid = msg_head.eid;
-	int cid = msg_head.cid;
-
 	if (msg_head.msg_type == C2S) {
 		Session *session = find_session_by_cid(msg_head.cid);
 		if (!session) {
@@ -82,7 +84,6 @@ int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 		msg_head.sid = session->sid;
 	}
 	NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
-	NODE_MANAGER->push_buffer(eid, cid, buffer);
 	return 0;
 }
 
