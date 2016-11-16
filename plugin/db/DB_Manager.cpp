@@ -10,7 +10,7 @@
 #include "Node_Manager.h"
 #include "DB_Manager.h"
 
-DB_Manager::DB_Manager(void) { }
+DB_Manager::DB_Manager(void) : data_node_idx_(0), data_connector_size_(0) { }
 
 DB_Manager::~DB_Manager(void) { }
 
@@ -28,6 +28,7 @@ void DB_Manager::run_handler(void) {
 
 int DB_Manager::process_list(void) {
 	Msg_Head msg_head;
+	Bit_Buffer bit_buffer;
 	Byte_Buffer *buffer = nullptr;
 	while (true) {
 		//此处加锁是为了防止本线程其他地方同时等待条件变量成立
@@ -40,48 +41,82 @@ int DB_Manager::process_list(void) {
 
 		buffer = buffer_list_.pop_front();
 		if(buffer != nullptr) {
+			int buffer_size = buffer_list_.size();
+			if(node_info_.endpoint_gid == 1 && buffer_size >= node_info_.max_session_count) {
+				//计算需要创建log_connector的数量，如果大于0，就创建
+				int fork_size = buffer_size / node_info_.max_session_count - data_connector_size_;
+				if(fork_size > 0 && data_fork_list_.count(data_node_idx_) <= 0) {
+					std::string node_name = "data_connector";
+					NODE_MANAGER->fork_process(DATA_SERVER, ++data_node_idx_, 2, node_name);
+					data_fork_list_.insert(data_node_idx_);
+				}
+			}
+
 			msg_head.reset();
 			buffer->read_head(msg_head);
-			Bit_Buffer bit_buffer;
-			bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
+			int eid = msg_head.eid;
+			int cid = msg_head.cid;
 
-			switch(msg_head.msg_id) {
-			case SYNC_GET_TABLE_INDEX:
-				get_table_index(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_GENERATE_ID:
-				generate_id(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_LOAD_DB_DATA:
-				load_db_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_SAVE_DB_DATA:
-				save_db_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_DELETE_DB_DATA:
-				delete_db_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_LOAD_RUNTIME_DATA:
-				load_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_SAVE_RUNTIME_DATA:
-				save_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			case SYNC_DELETE_RUNTIME_DATA:
-				delete_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
-				break;
-			default:
-				break;
+			//如果当前已经有创建好的data_connector,就转发消息,否则就用本进程处理
+			if(node_info_.endpoint_gid == 1 && data_connector_size_ > 0 
+				&& buffer_size >= node_info_.max_session_count && msg_head.msg_id != SYNC_NODE_INFO) {
+				int index = random() % (data_connector_size_);
+				msg_head.cid = data_cid_list_[index];
+				NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
+			}
+			else {
+				bit_buffer.reset();
+				bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
+				switch(msg_head.msg_id) {
+				case SYNC_NODE_INFO: {
+					add_data_cid(msg_head.cid);
+					Node_Info node_info;
+					node_info.deserialize(bit_buffer);
+					data_fork_list_.erase(node_info.node_id);
+					break;
+				}
+				case SYNC_GET_TABLE_INDEX:
+					get_table_index(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_GENERATE_ID:
+					generate_id(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_LOAD_DB_DATA:
+					load_db_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_SAVE_DB_DATA:
+					save_db_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_DELETE_DB_DATA:
+					delete_db_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_LOAD_RUNTIME_DATA:
+					load_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_SAVE_RUNTIME_DATA:
+					save_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				case SYNC_DELETE_RUNTIME_DATA:
+					delete_runtime_data(msg_head.cid, msg_head.sid, bit_buffer);
+					break;
+				default:
+					break;
+				}
 			}
 
 			//回收buffer
-			NODE_MANAGER->push_buffer(msg_head.eid, msg_head.cid, buffer);
+			NODE_MANAGER->push_buffer(eid, cid, buffer);
 		}
 
 		//操作完成解锁条件变量
 		notify_lock_.unlock();
 	}
 	return 0;
+}
+
+void DB_Manager::add_data_cid(int cid) { 
+	data_cid_list_.push_back(cid); 
+	data_connector_size_++;
 }
 
 void DB_Manager::get_table_index(int cid, int sid, Bit_Buffer &buffer) {

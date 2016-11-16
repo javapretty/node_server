@@ -1,8 +1,8 @@
 {
 	"log_switcher" : 0,			//日志开关,1表示写入磁盘文件
-	"log_level" : 0,				//日志级别，小于该级别的日志类型不会记录,日志类型从1开始，依次为Debug,Info,Warn,Error,Trace,Fatal
-	"agent_num" : 1,				//平台编号，比如37wan编号为1，生成角色id,帮派id时候用
-	"server_num" : 1,				//服务器编号，比如1服编号为1，生成角色id,帮派id时候用
+	"log_level" : 0,			//日志级别，小于该级别的日志类型不会记录,日志类型从1开始，依次为Debug,Info,Warn,Error,Trace,Fatal
+	"agent_num" : 1,			//平台编号，比如37wan编号为1，生成角色id,帮派id时候用
+	"server_num" : 1,			//服务器编号，比如1服编号为1，生成角色id,帮派id时候用
 	"base_struct_path" : [
 		"config/struct/client_msg.xml",
 		"config/struct/node_msg.xml",

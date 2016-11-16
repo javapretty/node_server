@@ -98,7 +98,10 @@ function process_public_client_msg(msg) {
 }
 
 function process_public_node_msg(msg) {
-	switch(msg.msg_id) {
+    switch (msg.msg_id) {
+    case Msg.SYNC_NODE_CODE:
+        log_error("process_public_node_msg, node_code:", msg.node_code);
+        break;
 	case Msg.SYNC_RES_TABLE_INDEX:
 		db_res_table_index(msg);
 		break;

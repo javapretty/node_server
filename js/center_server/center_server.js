@@ -25,8 +25,6 @@ var game_list = new Array();
 var config = new Config();
 //定时器
 var timer = new Timer();
-//cid--account
-var cid_account_map = new Map();
 //account--Token_Info
 var account_token_map = new Map();
 
@@ -36,11 +34,7 @@ function init(node_info) {
 	timer.init(Node_Type.CENTER_SERVER);
 }
 
-function on_drop(cid) {
-	var account = cid_account_map.get(cid);
-	cid_account_map.delete(account);
-	account_token_map.delete(account); 
-}
+function on_drop(cid) {}
 
 function on_msg(msg) {
 	log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
@@ -81,7 +75,6 @@ function on_tick(timer_id) {
 }
 
 function on_close_session(account, cid, error_code) {	
-	cid_account_map.delete(cid);
 	account_token_map.delete(account);
 	var msg = new s2c_5();
 	msg.error_code = error_code;
@@ -102,7 +95,6 @@ function select_gate(msg) {
 	token_info.cid = msg.cid;
 	token_info.token = generate_token(msg.account);
 	token_info.token_time = util.now_sec;
-	cid_account_map.set(msg.cid, msg.account);
 	account_token_map.set(msg.account, token_info);
 	
 	var msg_res = new s2c_2();

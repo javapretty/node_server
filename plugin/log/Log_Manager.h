@@ -43,10 +43,7 @@ public:
 		notify_lock_.unlock();
 	}
 
-	void add_log_cid(int cid) { 
-		log_cid_list_.push_back(cid); 
-		log_connector_size_++;
-	}
+	int add_log_cid(int cid);
 	int save_db_data(Bit_Buffer &buffer);
 
 private:

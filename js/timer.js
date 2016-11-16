@@ -11,8 +11,8 @@ function Timer() {
 	this.init = function(node_type) {
 		switch(node_type) {
 		case Node_Type.CENTER_SERVER: {
-			//注册清除token定时器，时间间隔10s
-			this.register_timer(10000, 0, this.center_token_handler);
+			//注册清除token定时器，时间间隔2s
+			this.register_timer(2000, 0, this.center_token_handler);
 			break;
 		}
 		case Node_Type.GAME_SERVER: {

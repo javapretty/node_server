@@ -8,6 +8,7 @@
 #ifndef DB_MANAGER_H_
 #define DB_MANAGER_H_
 
+#include <unordered_set>
 #include <unordered_map>
 #include "Bit_Buffer.h"
 #include "Buffer_List.h"
@@ -16,13 +17,13 @@
 #include "Node_Define.h"
 
 enum NODE_CODE {
-	LOAD_DB_DATA_FAIL				= 1,		//加载db数据失败
-	SAVE_DB_DATA_FAIL				= 2,		//保存db数据失败
-	DELETE_DB_DATA_FAIL			= 3,		//删除db数据失败
-	LOAD_RUNTIME_DATA_FAIL		= 4,		//加载运行时数据失败
-	SAVE_RUNTIME_DATA_FAIL		= 5,		//保存运行时数据失败
-	DELETE_RUNTIME_DATA_FAIL= 6,		//删除运行时数据失败
-	SAVE_DB_DATA_SUCCESS			=	7,		//保存db数据成功
+	LOAD_DB_DATA_FAIL			= 1,	//加载db数据失败
+	SAVE_DB_DATA_FAIL			= 2,	//保存db数据失败
+	DELETE_DB_DATA_FAIL			= 3,	//删除db数据失败
+	LOAD_RUNTIME_DATA_FAIL		= 4,	//加载运行时数据失败
+	SAVE_RUNTIME_DATA_FAIL		= 5,	//保存运行时数据失败
+	DELETE_RUNTIME_DATA_FAIL	= 6,	//删除运行时数据失败
+	SAVE_DB_DATA_SUCCESS		= 7,	//保存db数据成功
 };
 
 enum DB_MESSAGE_CMD {
@@ -42,11 +43,15 @@ enum DB_MESSAGE_CMD {
 
 class DB_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
-	typedef std::vector<Node_Info> Node_List;
+	typedef std::unordered_set<int> Int_Set;
+	typedef std::vector<int> Int_Vec;
 public:
 	static DB_Manager *instance(void);
 
-	void init(const Node_Info &node_info) { node_info_ = node_info; }
+	void init(const Node_Info &node_info) { 
+		node_info_ = node_info; 
+		data_node_idx_ = node_info_.node_id;
+	}
 
 	virtual void run_handler(void);
 	virtual int process_list(void);
@@ -57,6 +62,9 @@ public:
 		notify_lock_.signal();
 		notify_lock_.unlock();
 	}
+
+	//添加data_cid
+	void add_data_cid(int cid);
 
 	//key_index操作接口
 	void get_table_index(int cid, int sid, Bit_Buffer &buffer);
@@ -81,9 +89,12 @@ private:
 private:
 	static DB_Manager *instance_;
 
-	Node_Info node_info_;					//节点信息
-	Data_List buffer_list_;				//消息列表
-	Node_List log_list_;						//log链接器列表
+	Data_List buffer_list_;		//消息列表
+	Node_Info node_info_;		//节点信息
+	int data_node_idx_;			//data链接器id索引
+	int data_connector_size_;	//data链接器数量
+	Int_Vec data_cid_list_;		//data链接器cid列表
+	Int_Set data_fork_list_;	//data进程启动列表
 };
 
 #define DB_MANAGER DB_Manager::instance()
