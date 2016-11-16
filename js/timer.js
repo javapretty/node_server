@@ -46,7 +46,7 @@ function Timer() {
 	this.center_token_handler = function() {
 		var now = util.now_sec();
 		account_token_map.forEach(function(value, key, map) {
-			if (now - value.token_time >= 10) {
+			if (now - value.token_time >= 2) {
 				on_close_session(key, value.cid, Error_Code.TOKEN_TIMEOUT);	
 			}
 		});

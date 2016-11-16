@@ -117,7 +117,7 @@ Session *Gate_Manager::find_session_by_cid(int cid) {
 	return nullptr;
 }
 
-Session *Gate_Manager::find_session_by_sid(int sid) {
+Session *Gate_Manager::find_session_by_sid(uint sid) {
 	Session_Map::iterator iter = sid_session_map_.find(sid);
 	if (iter != sid_session_map_.end()) {
 		return iter->second;

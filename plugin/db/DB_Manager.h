@@ -16,7 +16,12 @@
 #include "Thread.h"
 #include "Node_Define.h"
 
-enum NODE_CODE {
+enum Enpoint_Gid {
+	GID_DATA_SERVER		= 1,
+	GID_DATA_CONNECTOR		= 2,
+};
+
+enum Node_Code {
 	LOAD_DB_DATA_FAIL			= 1,	//加载db数据失败
 	SAVE_DB_DATA_FAIL			= 2,	//保存db数据失败
 	DELETE_DB_DATA_FAIL			= 3,	//删除db数据失败
@@ -26,7 +31,7 @@ enum NODE_CODE {
 	SAVE_DB_DATA_SUCCESS		= 7,	//保存db数据成功
 };
 
-enum DB_MESSAGE_CMD {
+enum DB_Msg {
 	SYNC_NODE_CODE = 1,
 	SYNC_NODE_INFO = 2,
 	SYNC_GET_TABLE_INDEX = 246,
@@ -43,7 +48,8 @@ enum DB_MESSAGE_CMD {
 
 class DB_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
-	typedef std::unordered_set<int> Int_Set;
+	typedef std::unordered_map<uint, int> Session_Map;
+	typedef std::unordered_set<uint> UInt_Set;
 	typedef std::vector<int> Int_Vec;
 public:
 	static DB_Manager *instance(void);
@@ -63,22 +69,19 @@ public:
 		notify_lock_.unlock();
 	}
 
-	//添加data_cid
-	void add_data_cid(int cid);
-
 	//key_index操作接口
-	void get_table_index(int cid, int sid, Bit_Buffer &buffer);
-	void generate_id(int cid, int sid, Bit_Buffer &buffer);
+	void get_table_index(Msg_Head &msg_head, Bit_Buffer &buffer);
+	void generate_id(Msg_Head &msg_head, Bit_Buffer &buffer);
 
 	//db数据操作接口
-	void load_db_data(int cid, int sid, Bit_Buffer &buffer);
-	void save_db_data(int cid, int sid, Bit_Buffer &buffer);
-	void delete_db_data(int cid, int sid, Bit_Buffer &buffer);
+	void load_db_data(Msg_Head &msg_head, Bit_Buffer &buffer);
+	void save_db_data(Msg_Head &msg_head, Bit_Buffer &buffer);
+	void delete_db_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 
 	//运行时数据操作接口
-	void load_runtime_data(int cid, int sid, Bit_Buffer &buffer);
-	void save_runtime_data(int cid, int sid, Bit_Buffer &buffer);
-	void delete_runtime_data(int cid, int sid, Bit_Buffer &buffer);
+	void load_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer);
+	void save_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer);
+	void delete_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 
 private:
 	DB_Manager(void);
@@ -89,12 +92,14 @@ private:
 private:
 	static DB_Manager *instance_;
 
-	Data_List buffer_list_;		//消息列表
-	Node_Info node_info_;		//节点信息
-	int data_node_idx_;			//data链接器id索引
-	int data_connector_size_;	//data链接器数量
-	Int_Vec data_cid_list_;		//data链接器cid列表
-	Int_Set data_fork_list_;	//data进程启动列表
+	Data_List buffer_list_;			//消息列表
+	Node_Info node_info_;			//节点信息
+	Session_Map session_map_;		//转发到connector进程session信息
+	UInt_Set sid_set_;				//本进程sid列表
+	int data_node_idx_;				//data链接器id索引
+	int data_connector_size_;		//data链接器数量
+	Int_Vec data_connector_list_;	//data链接器cid列表
+	UInt_Set data_fork_list_;		//data进程启动列表
 };
 
 #define DB_MANAGER DB_Manager::instance()

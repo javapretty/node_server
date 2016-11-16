@@ -41,7 +41,7 @@ void add_session(const FunctionCallbackInfo<Value>& args) {
 			ToLocalChecked()).ToLocalChecked())->Int32Value(context).FromJust();
 	session->sid = (object->Get(context,
 			String::NewFromUtf8(args.GetIsolate(), "sid", NewStringType::kNormal).
-			ToLocalChecked()).ToLocalChecked())->Int32Value(context).FromJust();
+			ToLocalChecked()).ToLocalChecked())->Uint32Value(context).FromJust();
 
 	GATE_MANAGER->add_session(session);
 }

@@ -55,12 +55,11 @@ int Log_Manager::process_list(void) {
 			buffer->read_head(msg_head);
 			int eid = msg_head.eid;
 			int cid = msg_head.cid;
-
 			//如果当前已经有创建好的log_connector,就转发消息,否则就用本进程处理
 			if(node_info_.endpoint_gid == 1 && log_connector_size_ > 0 
 				&& buffer_size >= node_info_.max_session_count && msg_head.msg_id != SYNC_NODE_INFO) {
 				int index = random() % (log_connector_size_);
-				msg_head.cid = log_cid_list_[index];
+				msg_head.cid = log_connector_list_[index];
 				NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
 			}
 			else {
@@ -68,7 +67,9 @@ int Log_Manager::process_list(void) {
 				bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 				switch(msg_head.msg_id) {
 				case SYNC_NODE_INFO: {
-					add_log_cid(cid);
+					log_connector_list_.push_back(cid);
+					log_connector_size_++;
+					
 					Node_Info node_info;
 					node_info.deserialize(bit_buffer);
 					log_fork_list_.erase(node_info.node_id);
@@ -90,12 +91,6 @@ int Log_Manager::process_list(void) {
 		//操作完成解锁条件变量
 		notify_lock_.unlock();
 	}
-	return 0;
-}
-
-int Log_Manager::add_log_cid(int cid) {
-	log_cid_list_.push_back(cid); 
-	log_connector_size_++;
 	return 0;
 }
 

@@ -43,7 +43,6 @@ public:
 		notify_lock_.unlock();
 	}
 
-	int add_log_cid(int cid);
 	int save_db_data(Bit_Buffer &buffer);
 
 private:
@@ -55,12 +54,12 @@ private:
 private:
 	static Log_Manager *instance_;
 
-	Data_List buffer_list_;	//消息列表
-	Node_Info node_info_;	//节点信息
-	int log_node_idx_;		//log链接器id索引
-	int log_connector_size_;//log链接器数量
-	Int_Vec log_cid_list_;	//log链接器cid列表
-	Int_Set log_fork_list_;	//log进程启动列表
+	Data_List buffer_list_;		//消息列表
+	Node_Info node_info_;		//节点信息
+	int log_node_idx_;			//log链接器id索引
+	int log_connector_size_;	//log链接器数量
+	Int_Vec log_connector_list_;//log链接器cid列表
+	Int_Set log_fork_list_;		//log进程启动列表
 };
 
 #define LOG_MANAGER Log_Manager::instance()

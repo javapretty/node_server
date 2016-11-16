@@ -16,15 +16,15 @@
 struct Session {
 	int client_eid;	//gate向client发消息的端点id
 	int client_cid;	//client与gate连接的cid
-	int game_eid;		//gate向game发消息的端点id
-	int game_cid;		//game与gate连接的cid
-	int sid;					//gate生成的全局唯一session_id
+	int game_eid;	//gate向game发消息的端点id
+	int game_cid;	//game与gate连接的cid
+	uint sid;		//gate生成的全局唯一session_id
 };
 
 class Gate_Manager: public Thread {
 public:
 	typedef Object_Pool<Session, Mutex_Lock> Session_Pool;
-	typedef std::unordered_map<int, Session *> Session_Map;
+	typedef std::unordered_map<uint, Session *> Session_Map;
 	typedef Buffer_List<Mutex_Lock> Data_List;
 public:
 	static Gate_Manager *instance(void);
@@ -36,7 +36,7 @@ public:
 	int add_session(Session *session);
 	int remove_session(int cid);
 	Session *find_session_by_cid(int cid);
-	Session *find_session_by_sid(int sid);
+	Session *find_session_by_sid(uint sid);
 
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
@@ -60,7 +60,7 @@ private:
 	Session_Map cid_session_map_;	//cid--session_info
 	Session_Map sid_session_map_;	//sid--session_info
 
-	Data_List buffer_list_;				//消息列表
+	Data_List buffer_list_;			//消息列表
 };
 
 #define GATE_MANAGER Gate_Manager::instance()
