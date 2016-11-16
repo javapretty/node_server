@@ -9,7 +9,7 @@
 					"endpoint_gid" : 1,
 					"endpoint_id" : 1,
 					"endpoint_name" : "center_client_server",
-					"server_ip" : "127.0.0.1",	
+					"server_ip" : "192.168.223.128",	
 					"server_port" : 8000,
 					"protocol_type" : 0,
 					"receive_timeout" : 60
@@ -53,7 +53,7 @@
 					"endpoint_gid" : 1,
 					"endpoint_id" : 1,
 					"endpoint_name" : "gate1_client_server",
-					"server_ip" : "127.0.0.1",	
+					"server_ip" : "192.168.223.128",	
 					"server_port" : 8100,
 					"protocol_type" : 0,
 					"receive_timeout" : 60
@@ -84,7 +84,7 @@
 					"endpoint_gid" : 2,
 					"endpoint_id" : 1,
 					"endpoint_name" : "gate2_client_server",
-					"server_ip" : "127.0.0.1",	
+					"server_ip" : "192.168.223.128",	
 					"server_port" : 8101,
 					"protocol_type" : 0,
 					"receive_timeout" : 60

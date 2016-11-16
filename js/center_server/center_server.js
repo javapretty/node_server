@@ -75,10 +75,12 @@ function on_tick(timer_id) {
 }
 
 function on_close_session(account, cid, error_code) {	
-	account_token_map.delete(account);
-	var msg = new s2c_5();
-	msg.error_code = error_code;
-	send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+    account_token_map.delete(account);
+    if (error_code != Error_Code.RET_OK) {
+        var msg = new s2c_5();
+        msg.error_code = error_code;
+        send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+    }
 	//关闭客户端网络层链接
 	close_client(Endpoint.CENTER_CLIENT_SERVER, cid);	
 }
@@ -138,4 +140,6 @@ function verify_token(msg) {
 	msg_res.client_cid = msg.client_cid;
 	msg_res.game_nid = game_info.node_id;
 	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, sid_idx, msg_res);
+    //关闭session
+	on_close_session(msg.account, token_info.cid, Error_Code.RET_OK);
 }
