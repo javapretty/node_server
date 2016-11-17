@@ -20,9 +20,9 @@ var sid_public_player_map = new Map();
 var role_id_public_player_map = new Map();
 
 //公会管理器
-var guild_manager = new Guild();
+var guild_manager = new Guild_Manager();
 //排行榜管理器
-var rank_manager = new Rank();
+var rank_manager = new Rank_Manager();
 //配置管理器
 var config = new Config();
 //定时器

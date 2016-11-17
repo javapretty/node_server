@@ -5,20 +5,25 @@
 */
 
 function Guild() {
-	this.guild_map = new Map();
-	this.drop_list = new Array();
-	this.is_change = false;
+    this.guild_info = new Guild_Info();
+    this.is_change = false;
 }
 
-Guild.prototype.load_data = function(msg) {
+function Guild_Manager() {
+	this.guild_map = new Map();
+	this.delete_list = new Array();
+}
+
+Guild_Manager.prototype.load_data = function(msg) {
 	log_info('load guild data, size:', msg.guild_list.length);	
 	for(var i = 0; i < msg.guild_list.length; i++) {
-		var guild_info = msg.guild_list[i];
-		this.guild_map.set(guild_info.guild_id, guild_info);
+	    var guild = new Guild();
+	    guild.guild_info = msg.guild_list[i];
+	    this.guild_map.set(guild.guild_info.guild_id, guild);
 	}
 }
 
-Guild.prototype.save_data = function(){
+Guild_Manager.prototype.save_data = function(){
 	var msg = new node_251();
 	msg.save_type = Save_Type.SAVE_CACHE_DB;
 	msg.vector_data = true;
@@ -26,31 +31,32 @@ Guild.prototype.save_data = function(){
 	msg.struct_name = "Guild_Info";
 	msg.data_type = DB_Data_Type.GUILD;
 	for (var value of this.guild_map.values()) {
-		msg.guild_list.push(value);
+        if(value.is_change) {
+            value.is_change = false;
+            msg.guild_list.push(value.guild_info);
+	    }
 	}
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, 0, msg);
-	this.is_change = false;
 }
 
-Guild.prototype.drop_guild = function(){
-	if (this.drop_list.length <= 0) return;
+Guild_Manager.prototype.delete_guild = function(){
+    if (this.delete_list.length <= 0) 
+        return;
 		
 	var msg = new node_252();
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Guild_Info";
-	msg.index_list = this.drop_list;
+	msg.index_list = this.delete_list;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DELETE_DATA, 0, msg);
-	this.drop_list = [];
+	this.delete_list = [];
 }
 
-Guild.prototype.save_data_handler = function() {
-	if (!this.is_change) return;
+Guild_Manager.prototype.save_data_handler = function() {
 	this.save_data();
-	this.drop_guild();
-	this.is_change = false;
+	this.delete_guild();
 }
 
-Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
+Guild_Manager.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
 	var msg = new node_8();
 	msg.role_id = player.role_info.role_id;
 	msg.guild_id = guild_id;
@@ -58,18 +64,19 @@ Guild.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name)
 	send_public_msg(player.game_cid, Msg.SYNC_PUBLIC_GAME_GUILD_INFO, player.sid, msg);
 }
 
-Guild.prototype.member_join_guild = function(player, guild_info) {
+Guild_Manager.prototype.member_join_guild = function(player, guild) {
+    player.role_info.guild_id = guild.guild_info.guild_id;
+    player.role_info.guild_name = guild.guild_info.guild_name;
+
 	var member_detail = new Guild_Member_Detail();
 	member_detail.role_id = player.role_info.role_id;
 	member_detail.role_name = player.role_info.role_name;
 	member_detail.level = player.role_info.level;
-	guild_info.member_list.push(member_detail);
-	player.role_info.guild_id = guild_info.guild_id;
-	player.role_info.guild_name = guild_info.guild_name;
-	this.is_change = true;
+	guild.guild_info.member_list.push(member_detail);
+	guild.is_change = true;
 }
 
-Guild.prototype.create_guild = function(player, msg) {
+Guild_Manager.prototype.create_guild = function(player, msg) {
 	//将公会名字暂时存到帮主player信息里面	
 	player.role_info.guild_name = msg.guild_name;
 	
@@ -82,11 +89,13 @@ Guild.prototype.create_guild = function(player, msg) {
 	send_msg_to_db(Msg.SYNC_GET_TABLE_INDEX, msg.sid, msg_res);
 }
 
-Guild.prototype.db_create_guild = function(player, guild_info) {
+Guild_Manager.prototype.db_create_guild = function(player, guild_info) {
 	log_debug('db_create_guild, guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name, ' chief_id:', guild_info.chief_id);
-	
-	this.member_join_guild(player, guild_info);
-	this.guild_map.set(guild_info.guild_id, guild_info);
+
+	var guild = new Guild();
+	guild.guild_info = guild_info;
+	this.member_join_guild(player, guild);
+	this.guild_map.set(guild_info.guild_id, guild);
 	this.sync_guild_info_to_game(player, guild_info.guild_id, guild_info.guild_name);
 	
 	var msg_res = new s2c_201();
@@ -94,26 +103,23 @@ Guild.prototype.db_create_guild = function(player, guild_info) {
 	player.send_success_msg(Msg.RES_CREATE_GUILD, msg_res);
 }
 
-Guild.prototype.dissove_guild = function(player, msg) {
-	log_debug('dissove_guild, role_id:', player.role_info.role_id, ' role_name:', player.role_info.role_name);
-	var guild_info = this.guild_map.get(player.role_info.guild_id);
-	if(guild_info == null){
+Guild_Manager.prototype.dissove_guild = function(player, msg) {
+	var guild = this.guild_map.get(player.role_info.guild_id);
+	if(guild == null){
 		return player.send_error_msg(Error_Code.GUILD_NOT_EXIST);
 	}
-	for(var i = 0; i < guild_info.member_list.length; i++){
-		var mem_player = role_id_public_player_map.get(guild_info.member_list[i].role_id);
-		if(mem_player == null){
-			//离线数据，保存到离线数据列表
-			offline_manager.set_offline_detail(guild_info.member_list[i].role_id, guild_info.guild_id, guild_info.guild_name);
-		} else {
-			this.sync_guild_info_to_game(mem_player, 0, "");
+
+	log_debug('dissove_guild, guild_id:', player.role_info.guild_id, ' role_id:', player.role_info.role_id);
+	for(var i = 0; i < guild.guild_info.member_list.length; i++) {
+	    var mem_player = role_id_public_player_map.get(guild.guild_info.member_list[i].role_id);
+		if(mem_player != null){
+		    this.sync_guild_info_to_game(mem_player, 0, "");
 		}
 	}
-	this.guild_map.delete(guild_info.guild_id);
-	this.drop_list.push(guild_info.guild_id);
+	this.guild_map.delete(player.role_info.guild_id);
+	this.delete_list.push(player.role_info.guild_id);
 	
 	var msg_res = new s2c_202();
-	msg_res.guild_id = msg.guild_id;
+	msg_res.guild_id = player.role_info.guild_id;
 	player.send_success_msg(Msg.RES_DISSOVE_GUILD, msg_res);
-	this.is_change = true;
 }

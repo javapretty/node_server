@@ -4,11 +4,11 @@
 *	时间：2016/05/25
 */
 
-function Rank() {
+function Rank_Manager() {
 	this.rank_map = new Map();
 }
 
-Rank.prototype.load_data = function(obj) {
+Rank_Manager.prototype.load_data = function(obj) {
 	log_info('load rank data, size:', obj.rank_list.length);	
 	for(var i = 0; i < obj.rank_list.length; i++) {
 		var rank_info = obj.rank_list[i];
@@ -17,7 +17,7 @@ Rank.prototype.load_data = function(obj) {
 	}
 }
 
-Rank.prototype.save_data = function() {	
+Rank_Manager.prototype.save_data = function() {	
 	var msg = new node_251();
 	msg.save_type = Save_Type.SAVE_CACHE_DB;
 	msg.vector_data = true;
@@ -30,7 +30,7 @@ Rank.prototype.save_data = function() {
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, 0, msg);
 }
 
-Rank.prototype.get_rank_value = function(type, player) {
+Rank_Manager.prototype.get_rank_value = function(type, player) {
 	//按照类型获取player对应数值
 	var rank_value = 0;
 	switch(type) {
@@ -48,7 +48,7 @@ Rank.prototype.get_rank_value = function(type, player) {
 	return rank_value;
 }
 
-Rank.prototype.update_rank = function(type, player) {
+Rank_Manager.prototype.update_rank = function(type, player) {
 	var rank_info = this.rank_map.get(type);
 	if(rank_info == null) {
 		rank_info = new Rank_Info();
@@ -91,7 +91,7 @@ Rank.prototype.update_rank = function(type, player) {
 	}
 }
 
-Rank.prototype.refresh_min_rank_value = function(rank_info){
+Rank_Manager.prototype.refresh_min_rank_value = function(rank_info){
 	rank_info.min_value = 0x7fffffff;
 	for (var value of rank_info.member_map.values()) {
   		if(value.value < rank_info.min_value){
