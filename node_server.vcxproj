@@ -50,6 +50,8 @@
     <ClCompile Include="plugin\gate\Gate_Manager.cpp" />
     <ClCompile Include="plugin\gate\Gate_Wrap.cpp" />
     <ClCompile Include="plugin\gate\main.cpp" />
+	<ClCompile Include="plugin\hot\Hot_Update.cpp" />
+    <ClCompile Include="plugin\hot\main.cpp" />
     <ClCompile Include="plugin\log\Log_Manager.cpp" />
     <ClCompile Include="plugin\log\main.cpp" />
     <ClCompile Include="main.cpp" />
@@ -58,6 +60,7 @@
     <ClInclude Include="plugin\db\DB_Manager.h" />
     <ClInclude Include="plugin\gate\Gate_Manager.h" />
     <ClCompile Include="plugin\gate\Gate_Wrap.h" />
+	<ClInclude Include="plugin\hot\Hot_Update.h" />
     <ClInclude Include="plugin\log\Log_Manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
