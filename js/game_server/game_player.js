@@ -115,26 +115,6 @@ Game_Player.prototype.sync_logout_to_log = function() {
 	send_msg_to_log(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);
 }
 
-Game_Player.prototype.add_exp = function(exp) {
-	if (exp <= 0) {
-		return this.send_error_msg(Error_Code.CLIENT_PARAM_ERROR);
-	}
-	
-	//经验增加升级
-	this.role_info.exp += exp;
-	var max_player_level = config.util_json.max_player_level;
-	for (var i = this.role_info.level; i < max_player_level; ++i) {
-		var level_exp = config.level_json[i].level_exp;
-		if (this.role_info.exp < level_exp) 
-			break;
-		
-		this.role_info.level++;
-		this.role_info.exp -= level_exp;
-	}
-
-	this.sync_login_to_client();
-}
-
 Game_Player.prototype.set_guild_info = function(msg) {
 	this.role_info.guild_id = msg.guild_id;
 	this.role_info.guild_name = msg.guild_name;

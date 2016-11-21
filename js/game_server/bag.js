@@ -27,9 +27,9 @@ Bag.prototype.fetch_bag = function() {
 }
 	
 Bag.prototype.bag_add_money = function(copper, gold) {
-	if(!util.is_number(copper) || !util.is_number(gold)){
-		return Error_Code.CLIENT_PARAM_ERROR;
-	}
+    if(typeof(copper) != "number" || typeof(gold) != "number") {
+        return Error_Code.CLIENT_PARAM_ERROR;
+    }
 	this.bag_info.copper += copper;
 	this.bag_info.gold += gold;
 	this.bag_active_money();
@@ -37,9 +37,9 @@ Bag.prototype.bag_add_money = function(copper, gold) {
 }
 	
 Bag.prototype.bag_sub_money = function(copper, gold) {
-	if(!util.is_number(copper) || !util.is_number(gold)){
-		return Error_Code.CLIENT_PARAM_ERROR;
-	}
+    if(typeof(copper) != "number" || typeof(gold) != "number") {
+        return Error_Code.CLIENT_PARAM_ERROR;
+    }
 	if (this.bag_info.copper < copper) {
 		return Error_Code.COPPER_NOT_ENOUGH;
 	}
@@ -53,7 +53,7 @@ Bag.prototype.bag_sub_money = function(copper, gold) {
 }
 	
 Bag.prototype.bag_insert_item = function(item_array) {
-	if (this.bag_info.item_map.size + item_array.length > 2000) {
+	if (this.bag_info.item_map.size + item_array.length > 1000) {
 		return this.game_player.send_error_msg(Error_Code.BAG_FULL);
 	}
 	for (var i = 0; i < item_array.length; ++i) {

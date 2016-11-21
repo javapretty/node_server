@@ -33,7 +33,3 @@ util.get_next_day_tick = function(hour, min = 0, sec = 0) {
 	var next_tick = time - now;
 	return next_tick > 0 ? next_tick : (next_tick + util.whole_day_sec);
 }
-
-util.is_number = function(value) {
-	return typeof(value) == "number";
-}
