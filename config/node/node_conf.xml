@@ -1,6 +1,10 @@
 <root>
   <log file="0" level="0"/>
   <struct agent_num="1" server_num="1">
+    <base_struct path="config/struct/client_msg.xml"></base_struct>
+    <base_struct path="config/struct/node_msg.xml"></base_struct>
+    <base_struct path="config/struct/public_struct.xml"></base_struct>
+    <base_struct path="config/struct/node_struct.xml"></base_struct>
     <msg_struct path="config/struct/client_msg.xml"></msg_struct>
     <msg_struct path="config/struct/node_msg.xml"></msg_struct>
     <msg_struct path="config/struct/public_struct.xml"></msg_struct>
@@ -8,7 +12,7 @@
     <db_struct path="config/struct/public_struct.xml"></db_struct>
     <db_struct path="config/struct/node_struct.xml"></db_struct>
   </struct>
-  <node_info>
+  <node_list>
     <node type="1" script_path="js/center_server/center_server.js">
       <endpoint type="1" gid="1" id="1" name="center_client_server" ip="127.0.0.1" port="8000" protocol="0" timeout="60"></endpoint>
       <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="0" timeout="0"></endpoint>
@@ -29,14 +33,14 @@
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="data_server" ip="127.0.0.1" port="8200" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="2" name="data_connector" ip="127.0.0.1" port="8200" protocol="0" timeout="0"></endpoint>
-      <msyql db_id="1001" ip="127.0.0.1" port="3306" user="root" password="123456" pool="game_pool"></msyql>
+      <mysql db_id="1001" ip="127.0.0.1" port="3306" user="root" password="123456" pool="game_pool"></mysql>
     </node>
     <node type="4" script_path="js/log_server/log_server.js" max_session_count="1000000">
       <plugin path="plugin/logplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="log_server" ip="127.0.0.1" port="8300" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="2" name="log_connector" ip="127.0.0.1" port="8300" protocol="0" timeout="0"></endpoint>
-      <msyql db_id="1002" ip="127.0.0.1" port="3306" user="root" password="123456" pool="log_pool"></msyql>
+      <mysql db_id="1002" ip="127.0.0.1" port="3306" user="root" password="123456" pool="log_pool"></mysql>
     </node>
     <node type="5" script_path="js/master_server/master_server.js">
       <endpoint type="2" gid="1" id="1" name="master_server" ip="127.0.0.1" port="8400" protocol="0" timeout="0"></endpoint>
@@ -57,5 +61,5 @@
       <endpoint type="3" gid="1" id="5" name="game_gate1_connector" ip="127.0.0.1" port="8150" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="1" id="6" name="game_gate2_connector" ip="127.0.0.1" port="8151" protocol="0" timeout="0"></endpoint>
     </node>
-  </node_info>
+  </node_list>
 </root>

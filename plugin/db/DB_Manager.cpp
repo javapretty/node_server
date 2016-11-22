@@ -22,6 +22,46 @@ DB_Manager *DB_Manager::instance(void) {
 	return instance_;
 }
 
+int DB_Manager::init(const Node_Info &node_info) { 
+	node_info_ = node_info; 
+	data_node_idx_ = node_info_.node_id;
+
+	Xml xml;
+	bool ret = xml.load_xml("./config/node/node_conf.xml");
+	if(ret < 0) {
+		LOG_FATAL("load config:node_conf.xml abort");
+		return -1;
+	}
+	//连接mysql
+	TiXmlNode* node = xml.get_root_node("node_list");
+	if(node) {
+		TiXmlNode* child_node = xml.enter_node(node, "node_list");
+		if(child_node) {
+			XML_LOOP_BEGIN(child_node)
+				if(xml.get_attr_int(child_node, "type") == DATA_SERVER) {
+					TiXmlNode* sub_node = xml.enter_node(child_node, "node");
+					if(sub_node) {
+						XML_LOOP_BEGIN(sub_node)
+							std::string key = xml.get_key(sub_node);
+							if(key == "mysql") {
+								int db_id = xml.get_attr_int(sub_node, "db_id");
+								std::string ip = xml.get_attr_str(sub_node, "ip");
+								int port = xml.get_attr_int(sub_node, "port");
+								std::string user = xml.get_attr_str(sub_node, "user");
+								std::string password = xml.get_attr_str(sub_node, "password");
+								std::string pool = xml.get_attr_str(sub_node, "pool");
+								DATA_MANAGER->connect_to_db(db_id, ip, port, user, password, pool);
+							}
+						XML_LOOP_END(sub_node)
+					}
+					break;
+				}
+			XML_LOOP_END(child_node)
+		}
+	}
+	return 0;
+}
+
 void DB_Manager::run_handler(void) {
 	process_list();
 }

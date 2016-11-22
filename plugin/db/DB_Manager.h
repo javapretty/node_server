@@ -54,11 +54,7 @@ class DB_Manager: public Thread {
 public:
 	static DB_Manager *instance(void);
 
-	void init(const Node_Info &node_info) { 
-		node_info_ = node_info; 
-		data_node_idx_ = node_info_.node_id;
-	}
-
+	int init(const Node_Info &node_info);
 	virtual void run_handler(void);
 	virtual int process_list(void);
 

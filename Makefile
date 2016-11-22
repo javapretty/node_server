@@ -18,6 +18,7 @@ INCLUDE=-I/usr/local/include/nodelib/base\
 		-I/usr/local/include/nodelib/network\
 		-I/usr/local/include/nodelib/node\
 		-I/usr/local/include/nodelib/v8\
+		-I/usr/local/include/nodelib/xml\
 		$(addprefix -I, $(SRCDIR))
 
 LIBDIR=-L./
