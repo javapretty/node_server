@@ -5,13 +5,8 @@
  *      Author: zhangyalei
  */
 
-#include "Node_Manager.h"
 #include "Gate_Manager.h"
 #include "Gate_Wrap.h"
-
-void init_gate(const FunctionCallbackInfo<Value>& args) {
-	GATE_MANAGER->thr_create();
-}
 
 void add_session(const FunctionCallbackInfo<Value>& args) {
 	if (args.Length() != 1 || !args[0]->IsObject()) {

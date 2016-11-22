@@ -26,24 +26,24 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	
 	this.sync_login_to_client();
 	this.sync_login_logout_to_public(true);
-	sid_game_player_map.set(this.sid, this);
-	role_id_game_player_map.set(this.role_info.role_id, this);
-	role_name_game_player_map.set(this.role_info.role_name, this);
+	global.sid_game_player_map.set(this.sid, this);
+	global.role_id_game_player_map.set(this.role_info.role_id, this);
+	global.role_name_game_player_map.set(this.role_info.role_name, this);
 }
 
 //玩家离线，保存数据
 Game_Player.prototype.logout = function() {
 	log_info('********game_player logout, role_id:', this.role_info.role_id, " role_name:", this.role_info.role_name, ' sid:', this.sid);
 	this.role_info.logout_time = util.now_sec();
-	logout_map.set(this.sid, this.role_info.logout_time);
+	global.logout_map.set(this.sid, this.role_info.logout_time);
 	
 	this.sync_player_data_to_db(true);
 	this.sync_logout_to_log();
 	this.sync_login_logout_to_public(false);
-	sid_gate_eid_map.delete(this.sid);
-	sid_game_player_map.delete(this.sid);
-	role_id_game_player_map.delete(this.role_info.role_id);
-	role_name_game_player_map.delete(this.role_info.role_name);
+	global.sid_gate_eid_map.delete(this.sid);
+	global.sid_game_player_map.delete(this.sid);
+	global.role_id_game_player_map.delete(this.role_info.role_id);
+	global.role_name_game_player_map.delete(this.role_info.role_name);
 }
 
 Game_Player.prototype.tick = function(now) {

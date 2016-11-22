@@ -45,7 +45,7 @@ function Timer() {
 	/////////////////////////////////定时器处理函数/////////////////////////////////
 	this.center_token_handler = function() {
 		var now = util.now_sec();
-		account_token_map.forEach(function(value, key, map) {
+		global.account_token_map.forEach(function(value, key, map) {
 			if (now - value.token_time >= 2) {
 				on_close_session(key, value.cid, Error_Code.TOKEN_TIMEOUT);	
 			}
@@ -54,20 +54,20 @@ function Timer() {
 	
 	this.game_player_handler = function() {
 		var now = util.now_sec();
-		for (var value of role_id_game_player_map.values()) {
+		for (var value of global.role_id_game_player_map.values()) {
   			value.tick(now);
 		}
 	}
 	
 	this.public_player_handler = function() {
 		var now = util.now_sec();
-		for (var value of role_id_public_player_map.values()) {
+		for (var value of global.role_id_public_player_map.values()) {
   			value.tick(now);
 		}
 	}
 
 	this.public_save_handler = function() {
-		guild_manager.save_data_handler();
-		rank_manager.save_data();
+	    global.guild_manager.save_data_handler();
+	    global.rank_manager.save_data();
 	}
 }

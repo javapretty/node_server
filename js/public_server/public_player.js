@@ -17,17 +17,17 @@ Public_Player.prototype.login = function(game_cid, sid, role_info) {
 	this.game_cid = game_cid;
 	this.sid = sid;
 	this.role_info = role_info;
-	sid_public_player_map.set(this.sid, this);
-	role_id_public_player_map.set(this.role_info.role_id, this);
+	global.sid_public_player_map.set(this.sid, this);
+	global.role_id_public_player_map.set(this.role_info.role_id, this);
 	
-	rank_manager.update_rank(Rank_Type.LEVEL_RANK, this);
+	global.rank_manager.update_rank(Rank_Type.LEVEL_RANK, this);
 }
 
 //玩家离线，保存数据
 Public_Player.prototype.logout = function() {
 	log_info('********public_player logout, role_id:', this.role_info.role_id, ' sid:', this.sid, " role_name:", this.role_info.role_name);
-	sid_public_player_map.delete(this.sid);
-	role_id_public_player_map.delete(this.role_info.role_id);
+	global.sid_public_player_map.delete(this.sid);
+	global.role_id_public_player_map.delete(this.role_info.role_id);
 }
 
 Public_Player.prototype.tick = function(now) {}

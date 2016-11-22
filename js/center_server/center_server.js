@@ -4,34 +4,11 @@
 *	时间：2016/09/22
 */
 
-require('enum.js');
-require('message.js');
-require('struct.js');
-require('config.js');
-require('util.js');
-require('timer.js');
-
-//sid idx
-var sid_idx = 0;
-//sid set
-var sid_set = new Set();
-//node_id--node_info
-var node_map = new Map();
-//gate列表
-var gate_list = new Array();
-//game列表
-var game_list = new Array();
-//配置管理器
-var config = new Config();
-//定时器
-var timer = new Timer();
-//account--Token_Info
-var account_token_map = new Map();
+require('global.js');
 
 function init(node_info) {
 	log_info('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
-	config.init();
-	timer.init(Node_Type.CENTER_SERVER);
+	global.timer.init(Node_Type.CENTER_SERVER);
 }
 
 function on_drop(cid) {}
@@ -58,7 +35,7 @@ function on_msg(msg) {
 			verify_token(msg);
 			break;
 		case Msg.SYNC_GATE_CENTER_REMOVE_SESSION:
-			sid_set.delete(msg.sid);
+		    global.sid_set.delete(msg.sid);
 			break;
 		default:
 			log_error('center_server process node msg, msg_id not exist:', msg.msg_id);
@@ -68,14 +45,14 @@ function on_msg(msg) {
 }
 
 function on_tick(timer_id) {
-	var timer_handler = timer.get_timer_handler(timer_id);
+    var timer_handler = global.timer.get_timer_handler(timer_id);
 	if (timer_handler != null) {
 		timer_handler();
 	}
 }
 
 function on_close_session(account, cid, error_code) {	
-    account_token_map.delete(account);
+    global.account_token_map.delete(account);
     if (error_code != Error_Code.RET_OK) {
         var msg = new s2c_5();
         msg.error_code = error_code;
@@ -86,18 +63,18 @@ function on_close_session(account, cid, error_code) {
 }
 
 function select_gate(msg) {
-	if (account_token_map.get(msg.account)) {
+    if (global.account_token_map.get(msg.account)) {
 		log_error('account in center_server:', msg.account);
 		return on_close_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
-	var index = hash(msg.account) % (gate_list.length);
-	var gate_info = gate_list[index];
+    var index = hash(msg.account) % (global.gate_list.length);
+    var gate_info = global.gate_list[index];
 	var token_info = new Token_Info();
 	token_info.cid = msg.cid;
 	token_info.token = generate_token(msg.account);
 	token_info.token_time = util.now_sec;
-	account_token_map.set(msg.account, token_info);
+	global.account_token_map.set(msg.account, token_info);
 	
 	var msg_res = new s2c_2();
 	msg_res.gate_ip = gate_info.endpoint_list[0].server_ip;
@@ -108,16 +85,16 @@ function select_gate(msg) {
 
 function set_node_info(msg) {
 	if (msg.node_info.node_type == Node_Type.GATE_SERVER) {
-		gate_list.push(msg.node_info);
+	    global.gate_list.push(msg.node_info);
 	}
 	else if (msg.node_info.node_type == Node_Type.GAME_SERVER) {
-		game_list.push(msg.node_info);
+	    global.game_list.push(msg.node_info);
 	}
-	node_map.set(msg.node_info.node_id, msg.node_info);
+	global.node_map.set(msg.node_info.node_id, msg.node_info);
 }
 
 function verify_token(msg) {
-	var token_info = account_token_map.get(msg.account);
+    var token_info = global.account_token_map.get(msg.account);
 	if (!token_info || token_info.token != msg.token) {		
 		log_error('verify_token, token error, account:', msg.account, ' token:', msg.token);
 		if (token_info) {
@@ -128,18 +105,18 @@ function verify_token(msg) {
 		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_NODE_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
 
-	++sid_idx;
-	if (sid_idx > 4294967295) {
-		sid_idx = 0;
+	++global.sid_idx;
+	if (global.sid_idx > 4294967295) {
+	    global.sid_idx = 0;
 	}
-	sid_set.add(sid_idx);
-	var index = hash(msg.account) % (game_list.length);
-	var game_info = game_list[index];
+	global.sid_set.add(global.sid_idx);
+	var index = hash(msg.account) % (global.game_list.length);
+	var game_info = global.game_list[index];
 	var msg_res = new node_3();
 	msg_res.account = msg.account;
 	msg_res.client_cid = msg.client_cid;
 	msg_res.game_nid = game_info.node_id;
-	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, sid_idx, msg_res);
+	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, global.sid_idx, msg_res);
     //关闭session
 	on_close_session(msg.account, token_info.cid, Error_Code.RET_OK);
 }

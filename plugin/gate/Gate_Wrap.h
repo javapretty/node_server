@@ -12,8 +12,6 @@
 
 using namespace v8;
 
-//函数说明：初始化gate		参数：无 返回值：无
-void init_gate(const FunctionCallbackInfo<Value>& args);
 //函数说明：增加客户端连接  	参数：1.session信息    返回值：无
 void add_session(const FunctionCallbackInfo<Value>& args);
 //函数说明：移除客户端连接  	参数：1.cid    返回值：无

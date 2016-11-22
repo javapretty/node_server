@@ -4,22 +4,10 @@
 *	时间：2016/10/27
 */
 
-require('enum.js');
-require('message.js');
-require('struct.js');
-require('config.js');
-require('util.js');
-require('timer.js');
-
-//配置管理器
-var config = new Config();
-//定时器
-var timer = new Timer();
+require('global.js');
 
 function init(node_info) {
 	log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
-	config.init();
-	timer.init(Node_Type.MASTER_SERVER);
 }
 
 function on_drop(cid) { }
