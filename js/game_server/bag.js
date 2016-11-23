@@ -19,6 +19,7 @@ Bag.prototype.save_data = function(player_data) {
 }
 
 Bag.prototype.fetch_bag = function() {
+	log_warn("fetch bag");
 	var msg_res = new s2c_9();
 	for (var value of this.bag_info.item_map.values()) {
   		msg_res.item_list.push(value);
