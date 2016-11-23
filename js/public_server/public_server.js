@@ -4,7 +4,6 @@
 *	时间：2016/02/24
 */
 
-require('global.js');
 require('public_server/public_player.js');
 
 function init(node_info) {

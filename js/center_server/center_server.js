@@ -4,8 +4,6 @@
 *	时间：2016/09/22
 */
 
-require('global.js');
-
 function init(node_info) {
 	log_info('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 	global.timer.init(Node_Type.CENTER_SERVER);

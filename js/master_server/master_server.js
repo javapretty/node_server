@@ -4,8 +4,6 @@
 *	时间：2016/10/27
 */
 
-require('global.js');
-
 function init(node_info) {
 	log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 }

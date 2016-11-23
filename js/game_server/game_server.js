@@ -4,7 +4,6 @@
 *	时间：2016/02/24
 */
 
-require('global.js');
 require('game_server/game_player.js');
 require('game_server/bag.js');
 require('game_server/mail.js');
