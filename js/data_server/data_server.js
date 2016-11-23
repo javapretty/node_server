@@ -14,10 +14,12 @@ function init(node_info) {
 	}
 }
 
+function on_hotupdate(file_path) { }
+
 function on_drop(cid) { }
 
 function on_msg(msg) {
 	log_debug('data_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 }
 
-function on_tick(timer_id) {}
+function on_tick(timer_id) { }

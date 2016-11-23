@@ -1,5 +1,9 @@
 <root>
   <log file="0" level="0"/>
+  <hotupdate>
+    <folder path="js/"></folder>
+    <folder path="config/"></folder>
+  </hotupdate>
   <struct agent_num="1" server_num="1">
     <base_struct path="config/struct/client_msg.xml"></base_struct>
     <base_struct path="config/struct/node_msg.xml"></base_struct>

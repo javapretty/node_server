@@ -9,7 +9,9 @@ function init(node_info) {
 	global.timer.init(Node_Type.CENTER_SERVER);
 }
 
-function on_drop(cid) {}
+function on_hotupdate(file_path) { }
+
+function on_drop(cid) { }
 
 function on_msg(msg) {
 	log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);

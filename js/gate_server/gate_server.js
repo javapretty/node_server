@@ -15,6 +15,8 @@ function init(node_info) {
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
+function on_hotupdate(file_path) { }
+
 function on_drop(cid) {
     var session = global.cid_session_map.get(cid);
 	if (session) {

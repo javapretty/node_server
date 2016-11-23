@@ -16,6 +16,8 @@ function init(node_info) {
 	send_msg(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
+function on_hotupdate(file_path) { }
+
 function on_drop(cid) { }
 
 function on_msg(msg) {

@@ -8,6 +8,8 @@ function init(node_info) {
 	log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
 }
 
+function on_hotupdate(file_path) { }
+
 function on_drop(cid) { }
 
 function on_msg(msg) {

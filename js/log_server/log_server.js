@@ -14,6 +14,8 @@ function init(node_info) {
 	}
 }
 
+function on_hotupdate(file_path) { }
+
 function on_drop(drop_id) {}
 
 function on_msg(msg) {}
