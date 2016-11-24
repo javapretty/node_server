@@ -6,15 +6,16 @@
 
 if (typeof Node_Code == "undefined") {
 	var Node_Code = {};
-	Node_Code.RET_OK					= 0;	//成功返回
-	Node_Code.LOAD_DB_DATA_FAIL			= 1;	//加载db数据失败
-	Node_Code.SAVE_DB_DATA_FAIL			= 2;	//保存db数据失败
-	Node_Code.DELETE_DB_DATA_FAIL		= 3;	//删除db数据失败
-	Node_Code.LOAD_RUNTIME_DATA_FAIL	= 4;	//加载运行时数据失败
-	Node_Code.SAVE_RUNTIME_DATA_FAIL	= 5;	//保存运行时数据失败
-	Node_Code.DELETE_RUNTIME_DATA_FAIL	= 6;	//删除运行时数据失败
-	Node_Code.SAVE_DB_DATA_SUCCESS		= 7;	//保存db数据成功
-	Node_Code.VERIFY_TOKEN_FAIL			= 8;	//校验token失败
+	Node_Code.RET_OK                    = 0;	//成功返回
+	Node_Code.SELECT_DB_DATA_FAIL       = 1;	//查询db数据失败
+	Node_Code.LOAD_DB_DATA_FAIL			= 2;	//加载db数据失败
+	Node_Code.SAVE_DB_DATA_FAIL			= 3;	//保存db数据失败
+	Node_Code.DELETE_DB_DATA_FAIL		= 4;	//删除db数据失败
+	Node_Code.LOAD_RUNTIME_DATA_FAIL	= 5;	//加载运行时数据失败
+	Node_Code.SAVE_RUNTIME_DATA_FAIL    = 6;	//保存运行时数据失败
+	Node_Code.DELETE_RUNTIME_DATA_FAIL  = 7;	//删除运行时数据失败
+	Node_Code.SAVE_DB_DATA_SUCCESS		= 8;	//保存db数据成功
+	Node_Code.VERIFY_TOKEN_FAIL			= 9;	//校验token失败
 }
 
 if (typeof Error_Code == "undefined") {
@@ -101,12 +102,18 @@ if (typeof Endpoint == "undefined") {
 	Endpoint.GAME_GATE2_CONNECTOR	= 6;
 }
 
+if (typeof Select_Data_Type == "undefined") {
+    var Select_Data_Type = {};
+    Select_Data_Type.INT64 = 1;     //查询int64类型值
+    Select_Data_Type.STRING = 2;    //查询string类型值
+}
+
 if (typeof DB_Data_Type == "undefined") {
 	var DB_Data_Type = {};
-	DB_Data_Type.PLAYER		= 1;//玩家数据
-	DB_Data_Type.GUILD		= 2;//公会数据
-	DB_Data_Type.RANK 		= 3;//排行榜数据
-	DB_Data_Type.LOGOUT 	= 4;//离线日志数据
+	DB_Data_Type.PLAYER		= 1;    //玩家数据
+	DB_Data_Type.GUILD		= 2;    //公会数据
+	DB_Data_Type.RANK 		= 3;    //排行榜数据
+	DB_Data_Type.LOGOUT 	= 4;    //离线日志数据
 }
 
 if (typeof DB_Id == "undefined") {
@@ -117,13 +124,13 @@ if (typeof DB_Id == "undefined") {
 
 if (typeof Save_Type == "undefined") {
 	var Save_Type = {};
-	Save_Type.SAVE_CACHE 		    = 1;//保存缓存
-	Save_Type.SAVE_CACHE_DB 	    = 2;//保存缓存和数据库
-	Save_Type.SAVE_DB_CLEAR_CACHE 	= 3;//保存数据库清空缓存
+	Save_Type.SAVE_CACHE 		    = 1;    //保存缓存
+	Save_Type.SAVE_CACHE_DB 	    = 2;    //保存缓存和数据库
+	Save_Type.SAVE_DB_CLEAR_CACHE 	= 3;    //保存数据库清空缓存
 }
 
 if (typeof Rank_Type == "undefined") {
 	var Rank_Type = {};
-	Rank_Type.LEVEL_RANK	= 1;//等级排行
-	Rank_Type.COMBAT_RANK 	= 2;//战力排行
+	Rank_Type.LEVEL_RANK	= 1;    //等级排行
+	Rank_Type.COMBAT_RANK 	= 2;    //战力排行
 }

@@ -22,22 +22,23 @@ enum Enpoint_Gid {
 };
 
 enum Node_Code {
-	LOAD_DB_DATA_FAIL			= 1,	//加载db数据失败
-	SAVE_DB_DATA_FAIL			= 2,	//保存db数据失败
-	DELETE_DB_DATA_FAIL			= 3,	//删除db数据失败
-	LOAD_RUNTIME_DATA_FAIL		= 4,	//加载运行时数据失败
-	SAVE_RUNTIME_DATA_FAIL		= 5,	//保存运行时数据失败
-	DELETE_RUNTIME_DATA_FAIL	= 6,	//删除运行时数据失败
-	SAVE_DB_DATA_SUCCESS		= 7,	//保存db数据成功
+	SELECT_DB_DATA_FAIL			= 1,	//查询db数据失败
+	LOAD_DB_DATA_FAIL			= 2,	//加载db数据失败
+	SAVE_DB_DATA_FAIL			= 3,	//保存db数据失败
+	DELETE_DB_DATA_FAIL			= 4,	//删除db数据失败
+	LOAD_RUNTIME_DATA_FAIL		= 5,	//加载运行时数据失败
+	SAVE_RUNTIME_DATA_FAIL		= 6,	//保存运行时数据失败
+	DELETE_RUNTIME_DATA_FAIL	= 7,	//删除运行时数据失败
+	SAVE_DB_DATA_SUCCESS		= 8,	//保存db数据成功
 };
 
 enum DB_Msg {
 	SYNC_NODE_CODE = 1,
 	SYNC_NODE_INFO = 2,
-	SYNC_GET_TABLE_INDEX = 246,
-	SYNC_RES_TABLE_INDEX = 247,
+	SYNC_SELECT_DB_DATA = 246,
+	SYNC_RES_SELECT_DB_DATA = 247,
 	SYNC_GENERATE_ID = 248,
-	SYNC_DB_RES_ID = 249,
+	SYNC_RES_GENERATE_ID = 249,
 	SYNC_LOAD_DB_DATA = 250,
 	SYNC_SAVE_DB_DATA = 251,
 	SYNC_DELETE_DB_DATA = 252,
@@ -65,8 +66,8 @@ public:
 		notify_lock_.unlock();
 	}
 
-	//key_index操作接口
-	void get_table_index(Msg_Head &msg_head, Bit_Buffer &buffer);
+	//根据条件查询db接口
+	void select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 	void generate_id(Msg_Head &msg_head, Bit_Buffer &buffer);
 
 	//db数据操作接口

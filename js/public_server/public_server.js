@@ -81,11 +81,11 @@ function process_public_node_msg(msg) {
     case Msg.SYNC_NODE_CODE:
         log_error("process_public_node_msg, node_code:", msg.node_code);
         break;
-	case Msg.SYNC_RES_TABLE_INDEX:
-		db_res_table_index(msg);
+    case Msg.SYNC_RES_SELECT_DB_DATA:
+        res_select_db_data(msg);
 		break;
-	case Msg.SYNC_DB_RES_ID:
-		db_res_id(msg);
+    case Msg.SYNC_RES_GENERATE_ID:
+        res_generate_id(msg);
 		break;
 	case Msg.SYNC_SAVE_DB_DATA: {
 		switch (msg.data_type) {
@@ -123,22 +123,31 @@ function process_public_node_msg(msg) {
 	}
 }
 
-function db_res_table_index(msg) {
-	if (msg.key_index > 0) {
-	    var player = global.sid_public_player_map.get(msg.sid);
-		if (player) {
-			player.send_error_msg(Error_Code.GUILD_HAS_EXIST);
-		}
-	} else {
-		var msg_res = new node_248();
-		msg_res.db_id = DB_Id.GAME;
-		msg_res.table_name = "game.idx";
-		msg_res.type = "guild_id";
-		send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
-	}
+function res_select_db_data(msg) {
+    switch (msg.data_type) {
+        case Select_Data_Type.INT64: {
+            if (msg.query_value > 0) {
+                var player = global.sid_public_player_map.get(msg.sid);
+                if (player) {
+                    player.send_error_msg(Error_Code.GUILD_HAS_EXIST);
+                }
+            }
+            else if (msg.query_value <= 0) {
+                var msg_res = new node_248();
+                msg_res.db_id = DB_Id.GAME;
+                msg_res.table_name = "game.idx";
+                msg_res.type = "guild_id";
+                send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
+            }
+            else {
+                log_error("data_type:", msg.data_type, " query_value:", msg.query_value);
+            }
+            break;
+        }
+    }
 }
 
-function db_res_id(msg) {
+function res_generate_id(msg) {
     var player = global.sid_public_player_map.get(msg.sid);
 	if (!player) {
 		return log_error('generate guild id, player not exist, sid:',msg.sid);

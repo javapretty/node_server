@@ -1,0 +1,90 @@
+<root>
+
+	<c2s_1 msg_id="1" msg_name="REQ_HEARTBEAT">
+    	<arg type="int" bit="32" name="client_time"/>
+	</c2s_1>
+
+	<s2c_1 msg_id="1" msg_name="RES_HEARTBEAT">
+		<arg type="int" bit="32" name="server_time"/>
+	</s2c_1>
+	
+	<c2s_2 msg_id="2" msg_name="REQ_SELECT_GATE">
+		<arg type="string" name="account"/>
+	</c2s_2>
+
+	<s2c_2 msg_id="2" msg_name="RES_SELECT_GATE">
+   	<arg type="string" name="gate_ip"/>
+    	<arg type="uint" bit="16" name="gate_port"/>
+    	<arg type="string" name="token"/>
+	</s2c_2>
+
+	<c2s_3 msg_id="3" msg_name="REQ_CONNECT_GATE">
+    	<arg type="string" name="account"/>
+    	<arg type="string" name="token"/>
+	</c2s_3>
+
+	<s2c_3 msg_id="3" msg_name="RES_CONNECT_GATE">
+	</s2c_3>
+	
+	<c2s_4 msg_id="4" msg_name="REQ_FETCH_ROLE">
+		<arg type="string" name="account"/>
+	</c2s_4>
+
+	<s2c_4 msg_id="4" msg_name="RES_ROLE_INFO">
+		<struct type="Role_Info" name="role_info"/>
+	</s2c_4>
+
+	<c2s_5 msg_id="5" msg_name="REQ_CREATE_ROLE">
+		<struct type="Create_Role_Info" name="role_info"/>
+	</c2s_5>
+	
+	<s2c_5 msg_id="5" msg_name="RES_ERROR_CODE">
+		<arg type="uint" bit="16" name="error_code"/>
+	</s2c_5>
+
+	<c2s_6 msg_id="6" msg_name="REQ_FETCH_MAIL">
+	</c2s_6>
+
+	<s2c_6 msg_id="6" msg_name="RES_MAIL_INFO">
+		<vector vbit="8" type="Mail_Detail" name="mail_list"/>
+	</s2c_6>
+
+	<c2s_7 msg_id="7" msg_name="REQ_PICKUP_MAIL">
+		<arg type="int" bit="32" name="mail_id" desc="收取所有邮件时候id为0"/>
+	</c2s_7>
+
+	<s2c_7 msg_id="7" msg_name="RES_PICKUP_MAIL">
+		<vector vbit="8" type="int" bit="32" name="mail_id_list"/>
+	</s2c_7>
+
+	<c2s_8 msg_id="8" msg_name="REQ_DEL_MAIL">
+		<arg type="int" bit="32" name="mail_id" desc="删除所有邮件时候id为0"/>
+	</c2s_8>
+
+	<s2c_8 msg_id="8" msg_name="RES_DEL_MAIL">
+		<vector vbit="8" type="int" bit="32" name="mail_id_list"/>
+	</s2c_8>
+	
+	<c2s_9 msg_id="9" msg_name="REQ_FETCH_BAG">
+	</c2s_9>
+
+	<s2c_9 msg_id="9" msg_name="RES_FETCH_BAG">
+		<vector vbit="16" type="Item_Info" name="item_list"/>
+	</s2c_9>
+
+	<c2s_201 msg_id="201" msg_name="REQ_CREATE_GUILD">
+		<arg type="string" name="guild_name"/>
+	</c2s_201>
+
+	<s2c_201 msg_id="201" msg_name="RES_CREATE_GUILD">
+	  	<struct type="Guild_Info" name="guild_info"/>
+	</s2c_201>
+
+	<c2s_202 msg_id="202" msg_name="REQ_DISSOVE_GUILD">
+	</c2s_202>
+
+	<s2c_202 msg_id="202" msg_name="RES_DISSOVE_GUILD">
+	  	<arg type="int64" name="guild_id"/>
+	</s2c_202>
+
+</root>

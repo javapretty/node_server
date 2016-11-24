@@ -187,16 +187,20 @@ function node_248() {
 }
 
 function node_247() {
-	this.table_name = "";
-	this.key_index = 0;
+	this.db_id = 0;
+	this.struct_name = "";
+	this.query_value = 0;
+	this.data_type = 0;
 }
 
 function node_246() {
 	this.db_id = 0;
-	this.table_name = "";
-	this.index_name = "";
+	this.struct_name = "";
+	this.condition_name = "";
+	this.condition_value = "";
 	this.query_name = "";
-	this.query_value = "";
+	this.query_type = "";
+	this.data_type = 0;
 }
 
 function node_8() {

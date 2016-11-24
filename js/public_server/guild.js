@@ -78,19 +78,21 @@ Guild_Manager.prototype.member_join_guild = function(player, guild) {
 
 Guild_Manager.prototype.create_guild = function(player, msg) {
 	//将公会名字暂时存到帮主player信息里面	
-	player.role_info.guild_name = msg.guild_name;
-	
+    player.role_info.guild_name = msg.guild_name;
+
 	var msg_res = new node_246();
 	msg_res.db_id = DB_Id.GAME;
-	msg_res.table_name = "game.guild";
-	msg_res.index_name = "guild_id";
-	msg_res.query_name = "guild_name";
-	msg_res.query_value = msg.guild_name;
-	send_msg_to_db(Msg.SYNC_GET_TABLE_INDEX, msg.sid, msg_res);
+	msg_res.struct_name = "Guild_Info";
+	msg_res.condition_name = "guild_name";
+	msg_res.condition_value = msg.guild_name;
+	msg_res.query_name = "guild_id";
+	msg_res.query_type = "int64";
+	msg_res.data_type = Select_Data_Type.INT64;
+	send_msg_to_db(Msg.SYNC_SELECT_DB_DATA, msg.sid, msg_res);
 }
 
 Guild_Manager.prototype.db_create_guild = function(player, guild_info) {
-	log_debug('db_create_guild, guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name, ' chief_id:', guild_info.chief_id);
+	log_info('db_create_guild, guild_id:', guild_info.guild_id, ' guild_name:', guild_info.guild_name, ' chief_id:', guild_info.chief_id);
 
 	var guild = new Guild();
 	guild.guild_info = guild_info;

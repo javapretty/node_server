@@ -46,15 +46,12 @@
     <arg type="uint" bit="8" name="data_type"/>
 	</node_246>
 	
-	<node_247 msg_id="247" msg_name="SYNC_RES_SELECT_DB_DATA">
+	<node_247 msg_id="247" msg_name="SYNC_UPDATE_DB_DATA">
     <arg type="uint" bit="16" name="db_id"/>
     <arg type="string" name="struct_name"/>
     <switch name="data_type" type="uint" bit="8" >
       <case val="1">
-        <arg type="int64" name="query_value"/>
-      </case>
-      <case val="2">
-        <arg type="string" name="query_value"/>
+        <arg type="int64" name="key_index"/>
       </case>
     </switch>
 	</node_247>
@@ -65,7 +62,7 @@
 		<arg type="string" name="type"/>
 	</node_248>
 	
-	<node_249 msg_id="249" msg_name="SYNC_RES_GENERATE_ID">
+	<node_249 msg_id="249" msg_name="SYNC_DB_RES_ID">
 		<arg type="string" name="type"/>
 		<arg type="int64" name="id"/>
 	</node_249>

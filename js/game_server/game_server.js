@@ -128,11 +128,11 @@ function process_game_node_msg(msg) {
 		}
 		break;	
 	}
-	case Msg.SYNC_RES_TABLE_INDEX:
-		db_res_table_index(msg);
+	    case Msg.SYNC_RES_SELECT_DB_DATA:
+		res_select_db_data(msg);
 		break;
-	case Msg.SYNC_DB_RES_ID:
-		db_res_id(msg);
+	    case Msg.SYNC_RES_GENERATE_ID:
+		res_generate_id(msg);
 		break;
 	case Msg.SYNC_SAVE_DB_DATA: {
 		var game_player = new Game_Player();
@@ -153,7 +153,11 @@ function process_game_node_msg(msg) {
 }
 
 function process_node_code(msg) {
-	switch (msg.node_code) {
+    switch (msg.node_code) {
+        case Node_Code.SELECT_DB_DATA_FAIL:
+        log_error('select db data fail, sid:', msg.sid);
+        on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
+        break;
 	case Node_Code.LOAD_DB_DATA_FAIL:
 		log_error('load player data fail, sid:', msg.sid);
 		on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
@@ -177,27 +181,38 @@ function fetch_role(msg) {
 	log_info('fetch_role, get table index from db, account:', msg.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
 	var msg_res = new node_246();
 	msg_res.db_id = DB_Id.GAME;
-	msg_res.table_name = "game.role";
-	msg_res.index_name = "role_id";
-	msg_res.query_name = "account";
-	msg_res.query_value = msg.account;
-	send_msg_to_db(Msg.SYNC_GET_TABLE_INDEX, msg.sid, msg_res);
+	msg_res.struct_name = "Role_Info";
+	msg_res.condition_name = "account";
+	msg_res.condition_value = msg.account;
+	msg_res.query_name = "role_id";
+	msg_res.query_type = "int64";
+	msg_res.data_type = Select_Data_Type.INT64;
+	send_msg_to_db(Msg.SYNC_SELECT_DB_DATA, msg.sid, msg_res);
 }
 
-function db_res_table_index(msg) {
-	if (msg.key_index <= 0) {
-	    var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-		var msg_res = new s2c_5();
-		msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
-		send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
-	} else {
-		var msg_res = new node_250();
-		msg_res.db_id = DB_Id.GAME;
-		msg_res.key_index = msg.key_index;
-		msg_res.struct_name = "Player_Data";
-		msg_res.data_type = DB_Data_Type.PLAYER;
-		send_msg_to_db(Msg.SYNC_LOAD_DB_DATA, msg.sid, msg_res);
-	}
+function res_select_db_data(msg) {
+    switch(msg.data_type) {
+        case Select_Data_Type.INT64: {
+        if (msg.query_value <= 0) {
+            var gate_eid = global.sid_gate_eid_map.get(msg.sid);
+            var msg_res = new s2c_5();
+            msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
+            send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
+        }
+        else if (msg.query_value > 0) {
+            var msg_res = new node_250();
+            msg_res.db_id = DB_Id.GAME;
+            msg_res.key_index = msg.query_value;
+            msg_res.struct_name = "Player_Data";
+            msg_res.data_type = DB_Data_Type.PLAYER;
+            send_msg_to_db(Msg.SYNC_LOAD_DB_DATA, msg.sid, msg_res);
+        }
+        else {
+            log_error("data_type:", msg.data_type, " query_value:", msg.query_value);
+        }
+        break;
+    }
+    }
 }
 
 function create_role(msg) {
@@ -216,7 +231,7 @@ function create_role(msg) {
 	send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
 }
 
-function db_res_id(msg) {
+function res_generate_id(msg) {
 	if (msg.id <= 0) {
 	    var gate_eid = global.sid_gate_eid_map.get(msg.sid);
 		var msg_res = new s2c_5();

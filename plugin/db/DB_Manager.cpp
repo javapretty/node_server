@@ -96,10 +96,9 @@ int DB_Manager::process_list(void) {
 			buffer->read_head(msg_head);
 			int eid = msg_head.eid;
 			int cid = msg_head.cid;
-			if(msg_head.msg_id == SYNC_NODE_CODE || msg_head.msg_id == SYNC_NODE_INFO
-				|| msg_head.msg_id == SYNC_RES_TABLE_INDEX || msg_head.msg_id == SYNC_DB_RES_ID
-				|| (msg_head.msg_id == SYNC_SAVE_DB_DATA && msg_head.msg_type == DATA_MSG)
-				|| (msg_head.msg_id == SYNC_SAVE_RUNTIME_DATA && msg_head.msg_type == DATA_MSG)) {
+			if(msg_head.msg_id == SYNC_NODE_CODE || msg_head.msg_id == SYNC_NODE_INFO || msg_head.msg_id == SYNC_RES_GENERATE_ID || msg_head.msg_id == SYNC_RES_SELECT_DB_DATA
+				|| ((msg_head.msg_id == SYNC_SAVE_DB_DATA || msg_head.msg_id == SYNC_SAVE_RUNTIME_DATA) && msg_head.msg_type == DATA_MSG)) {
+				//同步节点信息是子进程启动后发过来的
 				if(msg_head.msg_id == SYNC_NODE_INFO) {
 					data_connector_list_.push_back(cid); 
 					data_connector_size_++;
@@ -142,8 +141,8 @@ int DB_Manager::process_list(void) {
 					bit_buffer.reset();
 					bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
 					switch(msg_head.msg_id) {
-					case SYNC_GET_TABLE_INDEX:
-						get_table_index(msg_head, bit_buffer);
+					case SYNC_SELECT_DB_DATA:
+						select_db_data(msg_head, bit_buffer);
 						break;
 					case SYNC_GENERATE_ID:
 						generate_id(msg_head, bit_buffer);
@@ -182,22 +181,31 @@ int DB_Manager::process_list(void) {
 	return 0;
 }
 
-void DB_Manager::get_table_index(Msg_Head &msg_head, Bit_Buffer &buffer) {
+void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	uint db_id = buffer.read_uint(16);
-	std::string table_name = "";
-	std::string index_name = "";
+	std::string struct_name = "";
+	std::string condition_name = "";
+	std::string condition_value = "";
 	std::string query_name = "";
-	std::string query_value = "";
-	buffer.read_str(table_name);
-	buffer.read_str(index_name);
+	std::string query_type = "";
+	buffer.read_str(struct_name);
+	buffer.read_str(condition_name);
+	buffer.read_str(condition_value);
 	buffer.read_str(query_name);
-	buffer.read_str(query_value);
-	int64_t key_index = DATA_MANAGER->get_table_index(db_id, table_name, index_name, query_name, query_value);
+	buffer.read_str(query_type);
+	uint data_type = buffer.read_uint(8);
 
-	msg_head.msg_id = SYNC_RES_TABLE_INDEX;
+	msg_head.msg_id = SYNC_RES_SELECT_DB_DATA;
 	Bit_Buffer bit_buffer;
-	bit_buffer.write_str(table_name.c_str());
-	bit_buffer.write_int64(key_index);
+	bit_buffer.write_uint(db_id, 16);
+	bit_buffer.write_str(struct_name.c_str());
+	bit_buffer.write_uint(data_type, 8);
+	int ret = DATA_MANAGER->select_db_data(db_id, struct_name, condition_name, condition_value, query_name, query_type, bit_buffer);
+	if(ret < 0) {
+		msg_head.msg_id = SYNC_NODE_CODE;
+		bit_buffer.reset();
+		bit_buffer.write_uint(SELECT_DB_DATA_FAIL, 16);
+	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
 
@@ -209,7 +217,7 @@ void DB_Manager::generate_id(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	buffer.read_str(type);
 	int64_t id = DATA_MANAGER->generate_id(db_id, table_name, type);
 
-	msg_head.msg_id = SYNC_DB_RES_ID;
+	msg_head.msg_id = SYNC_RES_GENERATE_ID;
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_str(type.c_str());
 	bit_buffer.write_int64(id);
