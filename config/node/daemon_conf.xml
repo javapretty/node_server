@@ -2,6 +2,7 @@
   <exec name="./node_server" label="test"></exec>
   <log file="0" level="0"></log>
   <node_list>
+    <!--进程节点列表-->
     <node type="1" id="10001" egid="1" name="center_server"></node>
     <node type="2" id="20001" egid="1" name="gate_server1"></node>
     <node type="2" id="20002" egid="2" name="gate_server2"></node>
