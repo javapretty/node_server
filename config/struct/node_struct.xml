@@ -41,7 +41,7 @@
 
 	<Idx_Info table_name="game.idx" index_name="type" index_type="string">
 		<arg type="string" name="type"/>
-		<arg type="int32" name="value"/>
+		<arg type="int" bit="32" name="value"/>
 	</Idx_Info>
 	
 	<Bag_Info table_name="game.bag" index_name="role_id" index_type="int64">
