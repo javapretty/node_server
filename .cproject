@@ -25,10 +25,8 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.328756252" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1460333974" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/base"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/db"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/network"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/node"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/struct"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/v8"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/xml"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -90,10 +88,8 @@
 								<option id="gnu.cpp.compiler.exe.release.option.debugging.level.1915525999" name="Debug Level" superClass="gnu.cpp.compiler.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1730318642" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/base"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/db"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/network"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/node"/>
-									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/struct"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/v8"/>
 									<listOptionValue builtIn="false" value="/usr/local/include/nodelib/xml"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
