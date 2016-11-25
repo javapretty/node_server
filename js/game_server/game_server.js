@@ -130,10 +130,10 @@ function process_game_node_msg(msg) {
 	}
 	case Msg.SYNC_RES_SELECT_DB_DATA:
 	    res_select_db_data(msg);
-	break;
+	    break;
 	case Msg.SYNC_RES_GENERATE_ID:
 	    res_generate_id(msg);
-	break;
+	    break;
 	case Msg.SYNC_SAVE_DB_DATA: {
 		var game_player = new Game_Player();
 		game_player.login(global.sid_gate_eid_map.get(msg.sid), msg.sid, msg.player_data);

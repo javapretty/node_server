@@ -189,6 +189,7 @@ function node_248() {
 function node_247() {
 	this.db_id = 0;
 	this.struct_name = "";
+	this.query_name = "";
 	this.query_value = 0;
 	this.data_type = 0;
 }

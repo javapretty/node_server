@@ -122,7 +122,7 @@ int DB_Manager::process_list(void) {
 				}
 			}
 			else {
-				//如果当前已经有创建好的data_connector,而且是NODE_MSG,sid不在本进程处理列表，就转发到connector
+				//如果当前进程处理的sid已超上限，而且有已经有创建好的data_connector,sid不在本进程处理列表，就转发到connector
 				if(node_info_.endpoint_gid == GID_DATA_SERVER && data_connector_size_ > 0 
 					&& session_size >= node_info_.max_session_count && sid_set_.count(msg_head.sid) <= 0) {
 					//保存转发到connector进程的seesion信息
@@ -140,6 +140,7 @@ int DB_Manager::process_list(void) {
 					}
 					bit_buffer.reset();
 					bit_buffer.set_ary(buffer->get_read_ptr(), buffer->readable_bytes());
+
 					switch(msg_head.msg_id) {
 					case SYNC_SELECT_DB_DATA:
 						select_db_data(msg_head, bit_buffer);
@@ -199,6 +200,7 @@ void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_uint(db_id, 16);
 	bit_buffer.write_str(struct_name.c_str());
+	bit_buffer.write_str(query_name.c_str());
 	bit_buffer.write_uint(data_type, 8);
 	int ret = DATA_MANAGER->select_db_data(db_id, struct_name, condition_name, condition_value, query_name, query_type, bit_buffer);
 	if(ret < 0) {

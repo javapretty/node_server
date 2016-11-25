@@ -49,6 +49,7 @@
 	<node_247 msg_id="247" msg_name="SYNC_RES_SELECT_DB_DATA">
     <arg type="uint" bit="16" name="db_id"/>
     <arg type="string" name="struct_name"/>
+    <arg type="string" name="query_name"/>
     <switch name="data_type" type="uint" bit="8" >
       <case val="1">
         <arg type="int64" name="query_value"/>
