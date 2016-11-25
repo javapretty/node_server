@@ -247,6 +247,20 @@ function node_1() {
 	this.node_code = 0;
 }
 
+function s2c_255() {
+	this.int64_vec = new Array();
+	this.string_vec = new Array();
+	this.type = 0;
+}
+
+function c2s_255() {
+	this.int_arg = 0;
+	this.int_exist = false;
+	this.int64_arg = 0;
+	this.string_arg = "";
+	this.type = 0;
+}
+
 function s2c_202() {
 	this.guild_id = 0;
 }

@@ -106,6 +106,9 @@ function process_game_client_msg(msg) {
 	case Msg.REQ_FETCH_BAG:
 		game_player.bag.fetch_bag();
 		break;
+	case Msg.REQ_TEST_SERVER:
+	    test_server(msg, game_player);
+	    break;
 	default:
 		send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
 		break;
@@ -260,4 +263,25 @@ function res_generate_id(msg) {
 		var game_player = new Game_Player();
 		game_player.login(global.sid_gate_eid_map.get(msg.sid), msg.sid, msg_res.player_data);
 	}
+}
+
+function test_server(msg, player) {
+    log_info("int_exist:", msg.int_exist, " int_arg:", msg.int_arg, " type:", msg.type);
+    var msg_res = new s2c_255();
+    msg_res.type = msg.type;
+    switch (msg.type) {
+        case 1: {
+            for (var i = 0; i < 2; ++i) {
+                msg_res.int64_vec.push(msg.int64_arg + i);
+            }
+            break;
+        }
+        case 2: {
+            for (var i = 0; i < 2; ++i) {
+                msg_res.string_vec.push(msg.string_arg + "_" + i);
+            }
+            break;
+        }
+    }
+    player.send_success_msg(Msg.RES_TEST_SERVER, msg_res);
 }
