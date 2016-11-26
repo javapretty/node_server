@@ -113,7 +113,7 @@ Guild_Manager.prototype.dissove_guild = function(player, msg) {
 
 	log_debug('dissove_guild, guild_id:', player.role_info.guild_id, ' role_id:', player.role_info.role_id);
 	for(var i = 0; i < guild.guild_info.member_list.length; i++) {
-	    var mem_player = role_id_public_player_map.get(guild.guild_info.member_list[i].role_id);
+	    var mem_player = global.role_id_public_player_map.get(guild.guild_info.member_list[i].role_id);
 		if(mem_player != null){
 		    this.sync_guild_info_to_game(mem_player, 0, "");
 		}

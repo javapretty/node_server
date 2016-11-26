@@ -79,7 +79,7 @@ function process_public_client_msg(msg) {
 function process_public_node_msg(msg) {
     switch (msg.msg_id) {
     case Msg.SYNC_NODE_CODE:
-        log_error("process_public_node_msg, node_code:", msg.node_code);
+        log_error("process_public_node_msg, node_code:", msg.node_code, " sid:", msg.sid);
         break;
     case Msg.SYNC_RES_SELECT_DB_DATA:
         res_select_db_data(msg);
