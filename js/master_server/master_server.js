@@ -37,7 +37,7 @@ function process_master_node_msg(msg) {
 }
 
 //可以使用curl命令，向服务器发送post消息，格式如下
-//curl -d "{\"msg_id\":1,\"node_type\":8,\"node_id\":80003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
+//curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.HTTP_CREATE_NODE_PROCESS:
