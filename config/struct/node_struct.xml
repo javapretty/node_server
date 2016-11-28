@@ -48,20 +48,20 @@
 		<arg type="int64" name="role_id"/>
 		<arg type="int" bit="32" name="copper"/>
 		<arg type="int" bit="32" name="gold"/>
-		<map vbit="16" type="Item_Info" key_type="int" key_bit="32" key_name="item_id" name="item_map"/>
+		<map vbit="16" key_type="int" key_bit="32" key_name="item_id" type="Item_Info" name="item_map"/>
 	</Bag_Info>
 	
 	<Mail_Info table_name="game.mail" index_name="role_id" index_type="int64">
 		<arg type="int64" name="role_id"/>
 		<arg type="int" bit="32" name="total_count"/>
-		<map vbit="16" type="Mail_Detail" key_type="int" key_bit="32" key_name="mail_id" name="mail_map"/>
+		<map vbit="16" key_type="int" key_bit="32" key_name="mail_id" type="Mail_Detail" name="mail_map"/>
 	</Mail_Info>
 
 	<Rank_Info table_name="game.rank" index_name="rank_type" index_type="int64">
 		<arg type="int64" name="rank_type"/>
 		<arg type="int64" name="min_role_id"/>
 		<arg type="int" bit="32" name="min_value"/>
-		<map vbit="16" type="Rank_Member_Detail" key_type="int64" key_name="role_id" name="member_map"/>
+		<map vbit="16" key_type="int64" key_name="role_id" type="Rank_Member_Detail" name="member_map"/>
 	</Rank_Info>
 
 	<Logout_Info table_name="log.logout" index_name="role_id" index_type="int64">
