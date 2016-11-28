@@ -129,4 +129,9 @@
 		<arg type="int" bit="32" name="endpoint_gid"/>
 		<arg type="string" name="node_name"/>
 	</http_1>
+  
+  <http_2 msg_id="2" msg_name="HTTP_GET_NODE_STATUS">
+    <arg type="int" bit="32" name="node_id"/>
+  </http_2>
+  
 </root>

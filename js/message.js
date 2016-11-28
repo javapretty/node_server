@@ -1,5 +1,6 @@
 if (typeof Msg == "undefined") {
 	var Msg = {};
+	Msg.HTTP_GET_NODE_STATUS = 2;
 	Msg.HTTP_CREATE_NODE_PROCESS = 1;
 	Msg.SYNC_DELETE_RUNTIME_DATA = 255;
 	Msg.SYNC_LOAD_RUNTIME_DATA = 253;

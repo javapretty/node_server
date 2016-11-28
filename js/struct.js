@@ -132,6 +132,10 @@ function Create_Role_Info() {
 	this.career = 0;
 }
 
+function http_2() {
+	this.node_id = 0;
+}
+
 function http_1() {
 	this.node_type = 0;
 	this.node_id = 0;

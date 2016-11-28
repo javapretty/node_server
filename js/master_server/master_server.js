@@ -36,16 +36,29 @@ function process_master_node_msg(msg) {
 	}
 }
 
-//可以使用curl命令，向服务器发送post消息，格式如下
-//curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
+//可以使用curl命令，向服务器发送post消息
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.HTTP_CREATE_NODE_PROCESS:
-		log_info('create node process, node_type:',msg.node_type,' node_id:',msg.node_id,' endpoint_gid:',msg.endpoint_gid,' node_name:',msg.node_name);
+	    //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
 		fork_process(msg.node_type, msg.node_id, msg.endpoint_gid, msg.node_name);
-		break;		
+		break;
+	case Msg.HTTP_GET_NODE_STATUS:
+	    //curl -d "{\"msg_id\":2,\"node_id\":0}" "http://127.0.0.1:8080" 
+	   get_node_status(msg);
+	   break;
 	default:
 		log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
 		break;
 	}
+}
+
+function get_node_status(msg) {
+    var proc_info = get_proc_info();
+    log_info("cpu_percent:",proc_info.cpu_percent," vm_size:",proc_info.vm_size," vm_rss:",proc_info.vm_rss,
+        " vm_stk:", proc_info.vm_stk, " vm_exe:", proc_info.vm_exe, " vm_data:", proc_info.vm_data);
+
+    var node_status = get_node_status();
+    log_info("start_time:", node_status.start_time, " total_send:", node_status.total_send, " total_recv:", node_status.total_recv,
+    " send_per_sec:", node_status.send_per_sec, " recv_per_sec:", node_status.recv_per_sec, " task_count:", node_status.task_count);
 }
