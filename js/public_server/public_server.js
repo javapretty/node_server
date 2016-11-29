@@ -134,8 +134,6 @@ function res_select_db_data(msg) {
             }
             else if (msg.query_value <= 0) {
                 var msg_res = new node_248();
-                msg_res.db_id = DB_Id.GAME;
-                msg_res.table_name = "game.idx";
                 msg_res.type = "guild_id";
                 send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
             }
@@ -164,7 +162,7 @@ function res_generate_id(msg) {
 		guild_info.create_time = util.now_sec();
 		
 		var msg_res = new node_251();
-		msg_res.save_type = Save_Type.SAVE_CACHE_DB;
+		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
 		msg_res.vector_data = true;
 		msg_res.db_id = DB_Id.GAME;
 		msg_res.struct_name = "Guild_Info";

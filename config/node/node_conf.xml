@@ -1,5 +1,6 @@
 <root>
   <log file="0" level="0"/>
+  <idx db_id="1001" struct_name="Idx_Info"/>
   <hotupdate>
     <folder path="js/"></folder>
     <folder path="config/"></folder>

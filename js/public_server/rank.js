@@ -19,7 +19,7 @@ Rank_Manager.prototype.load_data = function(obj) {
 
 Rank_Manager.prototype.save_data = function() {	
 	var msg = new node_251();
-	msg.save_type = Save_Type.SAVE_CACHE_DB;
+	msg.save_type = Save_Type.SAVE_DB_AND_CACHE;
 	msg.vector_data = true;
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Rank_Info";

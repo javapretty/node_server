@@ -228,8 +228,6 @@ function create_role(msg) {
 	global.sid_create_role_map.set(msg.sid, msg.role_info);
 	log_info('create_role, generate id from db, account:', msg.role_info.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
 	var msg_res = new node_248();
-	msg_res.db_id = DB_Id.GAME;
-	msg_res.table_name = "game.idx";
 	msg_res.type = "role_id";
 	send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
 }
@@ -243,7 +241,7 @@ function res_generate_id(msg) {
 	} else {
 		//创建角色时候，既保存到缓存，又保存到db
 		var msg_res = new node_251();
-		msg_res.save_type = Save_Type.SAVE_CACHE_DB;
+		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
 		msg_res.db_id = DB_Id.GAME;
 		msg_res.struct_name = "Player_Data";
 		msg_res.data_type = DB_Data_Type.PLAYER;

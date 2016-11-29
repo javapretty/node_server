@@ -124,9 +124,9 @@ if (typeof DB_Id == "undefined") {
 
 if (typeof Save_Type == "undefined") {
 	var Save_Type = {};
-	Save_Type.SAVE_CACHE 		    = 1;    //保存缓存
-	Save_Type.SAVE_CACHE_DB 	    = 2;    //保存缓存和数据库
-	Save_Type.SAVE_DB_CLEAR_CACHE 	= 3;    //保存数据库清空缓存
+	Save_Type.SAVE_CACHE 		  = 1;    //保存缓存
+	Save_Type.SAVE_DB_AND_CACHE   = 2;    //保存数据库和缓存
+	Save_Type.SAVE_DB_CLEAR_CACHE = 3;    //保存数据库清空缓存
 }
 
 if (typeof Rank_Type == "undefined") {

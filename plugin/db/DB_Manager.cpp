@@ -10,7 +10,14 @@
 #include "Node_Manager.h"
 #include "DB_Manager.h"
 
-DB_Manager::DB_Manager(void) : session_map_(10000), data_node_idx_(0), data_connector_size_(0) { }
+DB_Manager::DB_Manager(void) : 
+	idx_value_map_(get_hash_table_size(64)), 
+	save_idx_tick_(Time_Value::gettimeofday().sec()),
+	db_id_(0),
+	struct_name_(""),
+	session_map_(get_hash_table_size(10000)), 
+	data_node_idx_(0), 
+	data_connector_size_(0) { }
 
 DB_Manager::~DB_Manager(void) { }
 
@@ -57,6 +64,22 @@ int DB_Manager::init(const Node_Info &node_info) {
 					break;
 				}
 			XML_LOOP_END(child_node)
+		}
+	}
+
+	//初始化idx表信息
+	TiXmlNode* idx_node = xml.get_root_node("idx");
+	if(idx_node) {
+		db_id_ = xml.get_attr_int(idx_node, "db_id");
+		struct_name_ = xml.get_attr_str(idx_node, "struct_name");
+		Bit_Buffer buffer;
+		DATA_MANAGER->load_db_data(db_id_, struct_name_, 0, buffer);
+		uint length = buffer.read_uint(16);
+		for(uint i = 0; i < length; ++i) {
+			std::string type = "";
+			buffer.read_str(type);
+			int value = buffer.read_int(32);
+			idx_value_map_.insert(std::make_pair(type, value));
 		}
 	}
 	return 0;
@@ -182,6 +205,20 @@ int DB_Manager::process_list(void) {
 	return 0;
 }
 
+int DB_Manager::tick(int tick_time) {
+	if(tick_time - save_idx_tick_ >= 30) {
+		save_idx_tick_ = tick_time;
+		Bit_Buffer buffer;
+		buffer.write_uint(idx_value_map_.size(), 16);
+		for(Idx_Value_Map::iterator iter = idx_value_map_.begin(); iter != idx_value_map_.end(); ++iter) {
+			buffer.write_str(iter->first.c_str());
+			buffer.write_int(iter->second, 32);
+		}
+		DATA_MANAGER->save_db_data(SAVE_DB_AND_CACHE, true, db_id_, struct_name_, buffer);
+	}
+	return 0;
+}
+
 void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	uint db_id = buffer.read_uint(16);
 	std::string struct_name = "";
@@ -212,13 +249,18 @@ void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 }
 
 void DB_Manager::generate_id(Msg_Head &msg_head, Bit_Buffer &buffer) {
-	uint db_id = buffer.read_uint(16);
-	std::string table_name = "";
+	int idx = 1;
 	std::string type = "";
-	buffer.read_str(table_name);
 	buffer.read_str(type);
-	int64_t id = DATA_MANAGER->generate_id(db_id, table_name, type);
+	Idx_Value_Map::iterator iter = idx_value_map_.find(type);
+	if(iter != idx_value_map_.end()) {
+		idx = ++(iter->second);
+	}
+	else {
+		idx_value_map_.insert(std::make_pair(type, idx));
+	}
 
+	int64_t id = make_id(STRUCT_MANAGER->agent_num(), STRUCT_MANAGER->server_num(), idx);
 	msg_head.msg_id = SYNC_RES_GENERATE_ID;
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_str(type.c_str());

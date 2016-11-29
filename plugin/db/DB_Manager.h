@@ -49,6 +49,7 @@ enum DB_Msg {
 
 class DB_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
+	typedef std::unordered_map<std::string, int> Idx_Value_Map;
 	typedef std::unordered_map<uint, int> Session_Map;
 	typedef std::unordered_set<uint> UInt_Set;
 	typedef std::vector<int> Int_Vec;
@@ -58,6 +59,7 @@ public:
 	int init(const Node_Info &node_info);
 	virtual void run_handler(void);
 	virtual int process_list(void);
+	int tick(int tick_time);
 
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
@@ -89,8 +91,14 @@ private:
 private:
 	static DB_Manager *instance_;
 
+	Idx_Value_Map idx_value_map_;	//存放idx值信息map
+	int save_idx_tick_;				//保存idx表tick时间
+	int db_id_;						//数据库id
+	std::string struct_name_;		//idx表结构体名称
+
 	Data_List buffer_list_;			//消息列表
 	Node_Info node_info_;			//节点信息
+
 	Session_Map session_map_;		//转发到connector进程session信息
 	UInt_Set sid_set_;				//本进程sid列表
 	int data_node_idx_;				//data链接器id索引

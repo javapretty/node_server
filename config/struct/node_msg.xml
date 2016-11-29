@@ -61,8 +61,6 @@
 	</node_247>
 	
 	<node_248 msg_id="248" msg_name="SYNC_GENERATE_ID">
-		<arg type="uint" bit="16" name="db_id"/>
-		<arg type="string" name="table_name"/>
 		<arg type="string" name="type"/>
 	</node_248>
 	

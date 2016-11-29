@@ -185,8 +185,6 @@ function node_249() {
 }
 
 function node_248() {
-	this.db_id = 0;
-	this.table_name = "";
 	this.type = "";
 }
 
