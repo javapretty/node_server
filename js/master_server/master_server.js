@@ -20,7 +20,6 @@ function on_msg(msg) {
 	} else if (msg.msg_type == Msg_Type.HTTP_MSG) {
 		process_master_http_msg(msg);
 	}
-
 }
 
 function on_tick(timer_id) {}

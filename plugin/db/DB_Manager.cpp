@@ -208,6 +208,8 @@ int DB_Manager::process_list(void) {
 int DB_Manager::tick(int tick_time) {
 	if(tick_time - save_idx_tick_ >= 30) {
 		save_idx_tick_ = tick_time;
+		DATA_MANAGER->print_cache_data();
+		
 		Bit_Buffer buffer;
 		buffer.write_uint(idx_value_map_.size(), 16);
 		for(Idx_Value_Map::iterator iter = idx_value_map_.begin(); iter != idx_value_map_.end(); ++iter) {
