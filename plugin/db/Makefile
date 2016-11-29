@@ -1,7 +1,6 @@
 ##############################################################################
 #                                                                            #
 #        默认为release模式编译，debug模式请使用参数'MODE=DEBUG'              #
-#        默认不编译MongoDB功能，想编译的话请使用参数'MONGO=TRUE'             #
 #                                                                            #
 ##############################################################################
 
@@ -29,7 +28,6 @@ LIBDIR=-L./
 LIB=-lv8\
 	-lv8_libplatform\
 	-lmysqlcppconn\
-	$(MONGO_LIB)
 
 CC=g++
 
@@ -41,17 +39,7 @@ else
 BUILD_FLAG = -O3
 endif
 
-ifeq ($(MONGO), TRUE)
-MONGO_DB_IMPLENENT=-D MONGO_DB_IMPLEMENT
-MONGO_LIB=-lmongoclient\
-		  -lboost_filesystem\
-		  -lboost_thread-mt
-else
-MONGO_DB_IMPLENENT=
-MONGO_LIB=
-endif
-
-CONDITION=$(MONGO_DB_IMPLENENT)
+CONDITION=
 
 COM_FLAG=-Wall -c -fmessage-length=0 -std=c++11 -fPIC
 

@@ -50,7 +50,7 @@ int DB_Manager::init(const Node_Info &node_info) {
 					if(sub_node) {
 						XML_LOOP_BEGIN(sub_node)
 							std::string key = xml.get_key(sub_node);
-							if(key == "mysql") {
+							if(key == "mysql" || key == "mongodb") {
 								int db_id = xml.get_attr_int(sub_node, "db_id");
 								std::string ip = xml.get_attr_str(sub_node, "ip");
 								int port = xml.get_attr_int(sub_node, "port");
