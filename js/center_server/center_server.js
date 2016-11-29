@@ -68,17 +68,26 @@ function select_gate(msg) {
 		return on_close_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
-    var index = hash(msg.account) % (global.gate_list.length);
-    var gate_info = global.gate_list[index];
 	var token_info = new Token_Info();
 	token_info.cid = msg.cid;
 	token_info.token = generate_token(msg.account);
 	token_info.token_time = util.now_sec;
 	global.account_token_map.set(msg.account, token_info);
 	
+    //根据账号hash值选择gate
+	var hash_value = hash(msg.account);
+	var gate_len = global.gate_list.length;
+	var index = hash_value % gate_len;
+	var gate_info = global.gate_list[index];
 	var msg_res = new s2c_2();
-	msg_res.gate_ip = gate_info.endpoint_list[0].server_ip;
-	msg_res.gate_port = gate_info.endpoint_list[0].server_port;
+	for (var i = 0; i < gate_info.endpoint_list.length; ++i) {
+	    if (gate_info.endpoint_list[i].endpoint_gid == gate_info.endpoint_gid &&
+            gate_info.endpoint_list[i].endpoint_id == Endpoint.GATE_CLIENT_SERVER) {
+	        msg_res.gate_ip = gate_info.endpoint_list[i].server_ip;
+	        msg_res.gate_port = gate_info.endpoint_list[i].server_port;
+	        break;
+	    }
+	}
 	msg_res.token = token_info.token;
 	send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_SELECT_GATE, Msg_Type.S2C, 0, msg_res);
 }
@@ -110,7 +119,9 @@ function verify_token(msg) {
 	    global.sid_idx = 0;
 	}
 	global.sid_set.add(global.sid_idx);
-	var index = hash(msg.account) % (global.game_list.length);
+	var hash_value = hash(msg.account);
+	var game_len = global.game_list.length;
+	var index = hash_value % game_len;
 	var game_info = global.game_list[index];
 	var msg_res = new node_3();
 	msg_res.account = msg.account;
