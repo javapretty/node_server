@@ -128,8 +128,11 @@
 		<arg type="string" name="node_name"/>
 	</http_1>
   
-  <http_2 msg_id="2" msg_name="HTTP_GET_NODE_STATUS">
-    <arg type="int" bit="32" name="node_id"/>
+  <http_2 msg_id="2" msg_name="HTTP_REQ_NODE_STATUS">
   </http_2>
+  
+  <http_3 msg_id="3" msg_name="HTTP_RES_NODE_STATUS">
+		<struct type="Node_Status" name="node_status"/>
+  </http_3>
   
 </root>

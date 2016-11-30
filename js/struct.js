@@ -55,6 +55,21 @@ function Token_Info() {
 	this.token_time = 0;
 }
 
+function Node_Status() {
+	this.cpu_percent = 0;
+	this.vm_size = 0;
+	this.vm_rss = 0;
+	this.vm_stk = 0;
+	this.vm_exe = 0;
+	this.vm_data = 0;
+	this.start_time = 0;
+	this.total_send = 0;
+	this.total_recv = 0;
+	this.send_per_sec = 0;
+	this.recv_per_sec = 0;
+	this.task_count = 0;
+}
+
 function Node_Info() {
 	this.node_type = 0;
 	this.node_id = 0;
@@ -132,8 +147,11 @@ function Create_Role_Info() {
 	this.career = 0;
 }
 
+function http_3() {
+	this.node_status = new Node_Status();
+}
+
 function http_2() {
-	this.node_id = 0;
 }
 
 function http_1() {
