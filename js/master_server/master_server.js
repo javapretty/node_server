@@ -28,7 +28,10 @@ function process_master_node_msg(msg) {
 	switch(msg.msg_id) {
 	case Msg.SYNC_NODE_INFO:
 		send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
-		break;		
+		break;
+	case Msg.SYNC_NODE_STATUS: 
+	    global.node_status_map.set(msg.node_status.node_id, msg.node_status);
+	    break;
 	default:
 		log_error('process_master_node_msg, msg_id not exist:', msg.msg_id);
 		break;
@@ -47,7 +50,7 @@ function process_master_http_msg(msg) {
 	  	 req_node_status(msg);
 	  	 break;
 	case Msg.HTTP_HOT_UPDATE:
-	    //curl -d "{\"msg_id\":4,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
+	    //curl -d "{\"msg_id\":3,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
 	    hot_update(msg);
 	    break;
 	default:
@@ -57,29 +60,12 @@ function process_master_http_msg(msg) {
 }
 
 function req_node_status(msg) {
-    var proc_info = get_proc_info();
-    log_info("cpu_percent:",proc_info.cpu_percent," vm_size:",proc_info.vm_size," vm_rss:",proc_info.vm_rss,
-        " vm_stk:", proc_info.vm_stk, " vm_exe:", proc_info.vm_exe, " vm_data:", proc_info.vm_data);
-
-    var node_status = get_node_status();
-    log_info("start_time:", node_status.start_time, " total_send:", node_status.total_send, " total_recv:", node_status.total_recv,
-    " send_per_sec:", node_status.send_per_sec, " recv_per_sec:", node_status.recv_per_sec, " task_count:", node_status.task_count);
-    
-    var node_status = new Node_Status();
-    node_status.cpu_percent = proc_info.cpu_percent;
-    node_status.vm_size = proc_info.vm_size;
-    node_status.vm_rss = proc_info.vm_rss;
-    node_status.vm_stk = proc_info.vm_stk;
-    node_status.vm_exe = proc_info.vm_exe;
-    node_status.vm_data = proc_info.vm_data;
-    node_status.start_time = node_status.start_time;
-    node_status.total_send = node_status.total_send;
-    node_status.total_recv = node_status.total_recv;
-    node_status.send_per_sec = node_status.send_per_sec;
-    node_status.recv_per_sec = node_status.recv_per_sec;
-    node_status.task_count = node_status.task_count;
-    var msg_res = new http_3();
+    var node_status = util.get_node_status();
+    var msg_res = new http_201();
     msg_res.node_list.push(node_status);
+    for (var value of global.node_status_map.values()) {
+        msg_res.node_list.push(value);
+    }
 	send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_NODE_STATUS, msg.msg_type, 0, msg_res);
 }
 

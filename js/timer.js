@@ -17,14 +17,16 @@ function Timer() {
 		}
 		case Node_Type.GAME_SERVER: {
 			//注册玩家定时器，时间间隔500ms
-			this.register_timer(500, 0, this.game_player_handler);
+		    this.register_timer(500, 0, this.game_player_handler);
+		    //注册game_server定时器，时间间隔30s
+		    this.register_timer(30000, 0, this.game_server_handler);
 			break;
 		}
 		case Node_Type.PUBLIC_SERVER: {
 			//注册玩家定时器，时间间隔500ms，每次到期遍历在线玩家进行处理
 			this.register_timer(500, 0, this.public_player_handler);
-			//注册公共信息保存定时器，时间间隔30s
-			this.register_timer(30000, 0, this.public_save_handler);
+			//注册public_server定时器，时间间隔30s
+			this.register_timer(30000, 0, this.public_server_handler);
 			break;
 		}
 		default:
@@ -57,7 +59,14 @@ function Timer() {
 		for (var value of global.role_id_game_player_map.values()) {
   			value.tick(now);
 		}
-	}
+    }   
+
+    this.game_server_handler = function() {
+        //同步node进程状态到master
+        var msg = new node_8();
+        msg.node_status = util.get_node_status();
+        send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
+    }
 	
 	this.public_player_handler = function() {
 		var now = util.now_sec();
@@ -66,8 +75,13 @@ function Timer() {
 		}
 	}
 
-	this.public_save_handler = function() {
+	this.public_server_handler = function() {
 	    global.guild_manager.save_data_handler();
 	    global.rank_manager.save_data();
+
+        //同步node进程状态到master
+	    var msg = new node_8();
+	    msg.node_status = util.get_node_status();
+	    send_msg(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
 	}
 }

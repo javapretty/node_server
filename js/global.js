@@ -36,8 +36,12 @@ global.game_list = new Array();
 //account--Token_Info
 global.account_token_map = new Map();
 
+///////////////////master_server变量////////////////////////
+//node_id--node_status
+global.node_status_map = new Map();
+
 ///////////////////gate_server变量////////////////////////
-//gate node_info
+//gate进程节点信息
 global.gate_node_info = null;
 //game_node_id--game_cid
 global.game_nid_cid_map = new Map();

@@ -35,7 +35,7 @@
       <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="192.168.223.128" port="8100" protocol="0" timeout="60"></endpoint>
       <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="0" timeout="0"></endpoint>
-      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="192.168.223.128" port="8101" protocol="0" timeout="60"></endpoint>
+      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="192.158.223.128" port="8101" protocol="0" timeout="60"></endpoint>
       <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="0" timeout="0"></endpoint>
     </node>

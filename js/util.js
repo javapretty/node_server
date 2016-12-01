@@ -33,3 +33,28 @@ util.get_next_day_tick = function(hour, min = 0, sec = 0) {
 	var next_tick = time - now;
 	return next_tick > 0 ? next_tick : (next_tick + util.whole_day_sec);
 }
+
+util.get_node_status = function() {
+    var node_status = get_node_status();
+    var proc_info = get_proc_info();
+    var all_node_status = new Node_Status();
+    //进程状态信息
+    all_node_status.node_type = node_status.node_type;
+    all_node_status.node_id = node_status.node_id;
+    all_node_status.node_name = node_status.node_name;
+    all_node_status.start_time = node_status.start_time;
+    all_node_status.total_send = node_status.total_send;
+    all_node_status.total_recv = node_status.total_recv;
+    all_node_status.send_per_sec = node_status.send_per_sec;
+    all_node_status.recv_per_sec = node_status.recv_per_sec;
+    all_node_status.task_count = node_status.task_count;
+    //获取cpu内存信息
+    all_node_status.cpu_percent = proc_info.cpu_percent;
+    all_node_status.vm_size = proc_info.vm_size;
+    all_node_status.vm_rss = proc_info.vm_rss;
+    all_node_status.vm_stk = proc_info.vm_stk;
+    all_node_status.vm_exe = proc_info.vm_exe;
+    all_node_status.vm_data = proc_info.vm_data;
+    
+    return all_node_status;
+}
