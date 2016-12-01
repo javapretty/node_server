@@ -45,7 +45,11 @@ function process_master_http_msg(msg) {
 	case Msg.HTTP_REQ_NODE_STATUS:
 	  	 //curl -d "{\"msg_id\":2}" "http://127.0.0.1:8080"
 	  	 req_node_status(msg);
-	   break;
+	  	 break;
+	case Msg.HTTP_HOT_UPDATE:
+	    //curl -d "{\"msg_id\":4,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
+	    hot_update(msg);
+	    break;
 	default:
 		log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
 		break;
@@ -61,18 +65,35 @@ function req_node_status(msg) {
     log_info("start_time:", node_status.start_time, " total_send:", node_status.total_send, " total_recv:", node_status.total_recv,
     " send_per_sec:", node_status.send_per_sec, " recv_per_sec:", node_status.recv_per_sec, " task_count:", node_status.task_count);
     
-    	var msg_res = new http_3();
-    	msg_res.node_status.cpu_percent = proc_info.cpu_percent;
-    	msg_res.node_status.vm_size = proc_info.vm_size;
-    	msg_res.node_status.vm_rss = proc_info.vm_rss;
-    	msg_res.node_status.vm_stk = proc_info.vm_stk;
-    	msg_res.node_status.vm_exe = proc_info.vm_exe;
-    	msg_res.node_status.vm_data = proc_info.vm_data;
-    	msg_res.node_status.start_time = node_status.start_time;
-    	msg_res.node_status.total_send = node_status.total_send;
-    	msg_res.node_status.total_recv = node_status.total_recv;
-    	msg_res.node_status.send_per_sec = node_status.send_per_sec;
-    	msg_res.node_status.recv_per_sec = node_status.recv_per_sec;
-    	msg_res.node_status.task_count = node_status.task_count;
-		send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_NODE_STATUS, msg.msg_type, 0, msg_res);
+    var node_status = new Node_Status();
+    node_status.cpu_percent = proc_info.cpu_percent;
+    node_status.vm_size = proc_info.vm_size;
+    node_status.vm_rss = proc_info.vm_rss;
+    node_status.vm_stk = proc_info.vm_stk;
+    node_status.vm_exe = proc_info.vm_exe;
+    node_status.vm_data = proc_info.vm_data;
+    node_status.start_time = node_status.start_time;
+    node_status.total_send = node_status.total_send;
+    node_status.total_recv = node_status.total_recv;
+    node_status.send_per_sec = node_status.send_per_sec;
+    node_status.recv_per_sec = node_status.recv_per_sec;
+    node_status.task_count = node_status.task_count;
+    var msg_res = new http_3();
+    msg_res.node_list.push(node_status);
+	send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_NODE_STATUS, msg.msg_type, 0, msg_res);
+}
+
+function hot_update(msg) {
+    for(var i = 0; i < msg.file_list.length; ++i) {
+        if (msg.file_list[i] == "global.js") {
+            continue;
+        }
+
+        if (msg.file_list[i].indexOf(".js")) {
+            require(msg.file_list[i]);
+        }
+        else if (msg.file_list[i].indexOf(".xml")) {
+
+        }
+    }
 }

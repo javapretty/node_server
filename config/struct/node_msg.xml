@@ -120,19 +120,5 @@
 		<arg type="string" name="struct_name"/>
 		<arg type="int64" name="key_index"/>
 	</node_255>
-	
-	<http_1 msg_id="1" msg_name="HTTP_CREATE_NODE_PROCESS">
-		<arg type="int" bit="32" name="node_type"/>
-		<arg type="int" bit="32" name="node_id"/>
-		<arg type="int" bit="32" name="endpoint_gid"/>
-		<arg type="string" name="node_name"/>
-	</http_1>
-  
-  <http_2 msg_id="2" msg_name="HTTP_REQ_NODE_STATUS">
-  </http_2>
-  
-  <http_3 msg_id="3" msg_name="HTTP_RES_NODE_STATUS">
-		<struct type="Node_Status" name="node_status"/>
-  </http_3>
   
 </root>
