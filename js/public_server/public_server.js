@@ -4,7 +4,7 @@
 *	时间：2016/02/24
 */
 
-require('public_server/public_player.js');
+require("js/public_server/public_player.js");
 
 function init(node_info) {
 	log_info('public_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);

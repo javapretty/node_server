@@ -4,9 +4,9 @@
 *	时间：2016/02/24
 */
 
-require('game_server/game_player.js');
-require('game_server/bag.js');
-require('game_server/mail.js');
+require("js/game_server/game_player.js");
+require("js/game_server/bag.js");
+require("js/game_server/mail.js");
 
 function init(node_info) {
     log_info('game_server init, node_type:', node_info.node_type, ' node_id:', node_info.node_id, ' node_name:', node_info.node_name);

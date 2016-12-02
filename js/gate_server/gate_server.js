@@ -4,7 +4,7 @@
 *	时间：2016/09/22
 */
 
-require('gate_server/session.js');
+require("js/gate_server/session.js");
 
 function init(node_info) {
 	log_info('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);

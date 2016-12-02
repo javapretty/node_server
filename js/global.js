@@ -4,14 +4,14 @@
 *	时间：2016/11/22
 */
 
-require('enum.js');
-require('message.js');
-require('struct.js');
-require('config.js');
-require('util.js');
-require('timer.js');
-require('public_server/guild.js');
-require('public_server/rank.js');
+require("js/enum.js");
+require("js/message.js");
+require("js/struct.js");
+require("js/config.js");
+require("js/util.js");
+require("js/timer.js");
+require("js/public_server/guild.js");
+require("js/public_server/rank.js");
 
 //全局变量类
 var global = function () {};
