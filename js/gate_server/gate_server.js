@@ -8,7 +8,8 @@ require('gate_server/session.js');
 
 function init(node_info) {
 	log_info('gate_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
-	global.gate_node_info = node_info;
+	global.node_info = node_info;
+	global.timer.init();
 
 	var msg = new node_2();
 	msg.node_info = node_info;
@@ -39,7 +40,12 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(timer_id) {}
+function on_tick(timer_id) {
+    var timer_handler = global.timer.get_timer_handler(timer_id);
+    if (timer_handler != null) {
+        timer_handler();
+    }
+}
 
 function on_add_session(session) {
     global.cid_session_map.set(session.client_cid, session);
@@ -50,7 +56,7 @@ function on_add_session(session) {
 
 	//通知game
 	var msg_3 = new node_4();
-	msg_3.gate_nid = global.gate_node_info.node_id;
+	msg_3.gate_nid = global.node_info.node_id;
 	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_3);
 	
 	//通知client

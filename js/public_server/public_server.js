@@ -8,7 +8,9 @@ require('public_server/public_player.js');
 
 function init(node_info) {
 	log_info('public_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
-	global.timer.init(Node_Type.PUBLIC_SERVER);
+	global.node_info = node_info;
+	global.timer.init();
+
 	//加载公共数据
 	load_public_data();
 	var msg = new node_2();

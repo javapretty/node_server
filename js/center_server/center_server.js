@@ -5,8 +5,9 @@
 */
 
 function init(node_info) {
-	log_info('center_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
-	global.timer.init(Node_Type.CENTER_SERVER);
+    log_info('center_server init, node_type:', node_info.node_type, ' node_id:', node_info.node_id, ' node_name:', node_info.node_name);
+    global.node_info = node_info;
+    global.timer.init();
 }
 
 function on_hotupdate(file_path) { }

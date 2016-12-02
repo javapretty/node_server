@@ -16,6 +16,8 @@ require('public_server/rank.js');
 //全局变量类
 var global = function () {};
 
+//进程节点信息
+global.node_info = null;
 //配置管理器
 global.config = new Config();
 global.config.init();
@@ -41,8 +43,6 @@ global.account_token_map = new Map();
 global.node_status_map = new Map();
 
 ///////////////////gate_server变量////////////////////////
-//gate进程节点信息
-global.gate_node_info = null;
 //game_node_id--game_cid
 global.game_nid_cid_map = new Map();
 //client_cid--session
@@ -53,8 +53,6 @@ global.sid_session_map = new Map();
 global.account_session_map = new Map();
 
 ///////////////////game_server变量////////////////////////
-//game进程节点信息
-global.game_node_info = null;
 //sid--gate_endpoint_id
 global.sid_gate_eid_map = new Map();
 //sid--Create_Role_Info

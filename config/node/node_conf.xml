@@ -35,9 +35,11 @@
       <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="127.0.0.1" port="8100" protocol="0" timeout="60"></endpoint>
       <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="1" id="4" name="gate1_master_connector" ip="127.0.0.1" port="8400" protocol="0" timeout="0"></endpoint>
       <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="0" timeout="60"></endpoint>
       <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="0" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="2" id="4" name="gate2_master_connector" ip="127.0.0.1" port="8400" protocol="0" timeout="0"></endpoint>
     </node>
     <node type="3" global_script="js/global.js" main_script="js/data_server/data_server.js" max_session_count="10000">
       <hotupdate path="js/"></hotupdate>
@@ -45,7 +47,8 @@
       <plugin path="plugin/dbplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="data_server" ip="127.0.0.1" port="8200" protocol="0" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="2" name="data_connector" ip="127.0.0.1" port="8200" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="data_master_connector" ip="127.0.0.1" port="8400" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="2" id="1" name="data_connector" ip="127.0.0.1" port="8200" protocol="0" timeout="0"></endpoint>
       <mysql db_id="1001" ip="127.0.0.1" port="3306" user="root" password="123456" pool="game_pool"></mysql>
     </node>
     <node type="4" global_script="js/global.js" main_script="js/log_server/log_server.js" max_session_count="1000000">
@@ -54,7 +57,8 @@
       <plugin path="plugin/logplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="log_server" ip="127.0.0.1" port="8300" protocol="0" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="2" name="log_connector" ip="127.0.0.1" port="8300" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="log_master_connector" ip="127.0.0.1" port="8400" protocol="0" timeout="0"></endpoint>
+      <endpoint type="3" gid="2" id="1" name="log_connector" ip="127.0.0.1" port="8300" protocol="0" timeout="0"></endpoint>
       <mysql db_id="1002" ip="127.0.0.1" port="3306" user="root" password="123456" pool="log_pool"></mysql>
     </node>
     <node type="5" global_script="js/global.js" main_script="js/master_server/master_server.js">

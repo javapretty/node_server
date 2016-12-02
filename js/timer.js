@@ -8,29 +8,24 @@ function Timer() {
 	var timer_map = new Map();
 	var timer_id = 1;
 	
-	this.init = function(node_type) {
-		switch(node_type) {
+	this.init = function() {
+	    //注册node_server定时器，时间间隔30s
+	    this.register_timer(30000, 0, this.node_server_handler);
+
+	    switch(global.node_info.node_type) {
 		case Node_Type.CENTER_SERVER: {
 			//注册清除token定时器，时间间隔2s
-			this.register_timer(2000, 0, this.center_token_handler);
+		    this.register_timer(2000, 0, this.center_token_handler);
 			break;
 		}
 		case Node_Type.GAME_SERVER: {
 			//注册玩家定时器，时间间隔500ms
 		    this.register_timer(500, 0, this.game_player_handler);
-		    //注册game_server定时器，时间间隔30s
-		    this.register_timer(30000, 0, this.game_server_handler);
 			break;
 		}
-		case Node_Type.PUBLIC_SERVER: {
-			//注册玩家定时器，时间间隔500ms，每次到期遍历在线玩家进行处理
-			this.register_timer(500, 0, this.public_player_handler);
-			//注册public_server定时器，时间间隔30s
-			this.register_timer(30000, 0, this.public_server_handler);
-			break;
+		default: {
+		    break;
 		}
-		default:
-			break;
 		}
 	}
 	
@@ -44,7 +39,46 @@ function Timer() {
 		return timer_map.get(timer_id);
 	}
 	
-	/////////////////////////////////定时器处理函数/////////////////////////////////
+    /////////////////////////////////定时器处理函数/////////////////////////////////
+	this.node_server_handler = function() {
+	    switch(global.node_info.node_type) {
+	        case Node_Type.CENTER_SERVER: {
+	            break;
+	        }
+	        case Node_Type.GATE_SERVER: {
+	            util.sync_node_status(Endpoint.GATE_MASTER_CONNECTOR, 0);
+	            break;
+	        }
+	        case Node_Type.DATA_SERVER: {
+	            util.sync_node_status(Endpoint.DATA_MASTER_CONNECTOR, 0);
+	            break;
+	        }
+	        case Node_Type.LOG_SERVER: {
+	            util.sync_node_status(Endpoint.LOG_MASTER_CONNECTOR, 0);
+	            break;
+	        }
+	        case Node_Type.MASTER_SERVER: {
+	            var node_status = util.get_node_status();
+	            global.node_status_map.set(node_status.node_id, node_status);
+	            break;
+	        }
+	        case Node_Type.PUBLIC_SERVER: {
+	            global.guild_manager.save_data_handler();
+	            global.rank_manager.save_data();
+
+	            util.sync_node_status(Endpoint.PUBLIC_MASTER_CONNECTOR, 0);
+	            break;
+	        }
+	        case Node_Type.GAME_SERVER: {
+	            util.sync_node_status(Endpoint.GAME_MASTER_CONNECTOR, 0);
+	            break;
+	        }
+	        default: {
+	            break;
+	        }
+	    }
+	}
+
 	this.center_token_handler = function() {
 		var now = util.now_sec();
 		global.account_token_map.forEach(function(value, key, map) {
@@ -59,29 +93,5 @@ function Timer() {
 		for (var value of global.role_id_game_player_map.values()) {
   			value.tick(now);
 		}
-    }   
-
-    this.game_server_handler = function() {
-        //同步node进程状态到master
-        var msg = new node_8();
-        msg.node_status = util.get_node_status();
-        send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
     }
-	
-	this.public_player_handler = function() {
-		var now = util.now_sec();
-		for (var value of global.role_id_public_player_map.values()) {
-  			value.tick(now);
-		}
-	}
-
-	this.public_server_handler = function() {
-	    global.guild_manager.save_data_handler();
-	    global.rank_manager.save_data();
-
-        //同步node进程状态到master
-	    var msg = new node_8();
-	    msg.node_status = util.get_node_status();
-	    send_msg(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
-	}
 }

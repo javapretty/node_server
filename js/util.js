@@ -58,3 +58,9 @@ util.get_node_status = function() {
     
     return all_node_status;
 }
+
+util.sync_node_status = function(eid, cid) {
+    var msg = new node_8();
+    msg.node_status = util.get_node_status();
+    send_msg(eid, cid, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
+}

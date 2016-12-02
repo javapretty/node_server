@@ -77,13 +77,16 @@ if (typeof Endpoint == "undefined") {
 	
 	Endpoint.GATE_CLIENT_SERVER 	= 1;
 	Endpoint.GATE_NODE_SERVER 		= 2;
-	Endpoint.GATE_CENTER_CONNECTOR	= 3;
+	Endpoint.GATE_CENTER_CONNECTOR  = 3;
+	Endpoint.GATE_MASTER_CONNECTOR  = 4;
 	
-	Endpoint.DATA_SERVER			= 1;
-	Endpoint.DATA_CONNECTOR			= 2;
+	Endpoint.DATA_SERVER            = 1;
+	Endpoint.DATA_MASTER_CONNECTOR  = 2;
+	Endpoint.DATA_CONNECTOR         = 1;
 	
 	Endpoint.LOG_SERVER				= 1;
-	Endpoint.LOG_CONNECTOR			= 2;
+	Endpoint.LOG_MASTER_CONNECTOR   = 2;
+	Endpoint.LOG_CONNECTOR          = 1;
 	
 	Endpoint.MASTER_SERVER			= 1;
 	Endpoint.MASTER_HTTP_SERVER		= 2;

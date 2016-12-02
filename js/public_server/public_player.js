@@ -30,8 +30,6 @@ Public_Player.prototype.logout = function() {
 	global.role_id_public_player_map.delete(this.role_info.role_id);
 }
 
-Public_Player.prototype.tick = function(now) {}
-
 Public_Player.prototype.send_success_msg = function(msg_id, msg) {
 	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }

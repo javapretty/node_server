@@ -5,7 +5,9 @@
 */
 
 function init(node_info) {
-	log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+    log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
+    global.node_info = node_info;
+    global.timer.init();
 }
 
 function on_hotupdate(file_path) { }
@@ -22,7 +24,12 @@ function on_msg(msg) {
 	}
 }
 
-function on_tick(timer_id) {}
+function on_tick(timer_id) {
+    var timer_handler = global.timer.get_timer_handler(timer_id);
+    if (timer_handler != null) {
+        timer_handler();
+    }
+}
 
 function process_master_node_msg(msg) {
 	switch(msg.msg_id) {
@@ -60,9 +67,7 @@ function process_master_http_msg(msg) {
 }
 
 function req_node_status(msg) {
-    var node_status = util.get_node_status();
     var msg_res = new http_201();
-    msg_res.node_list.push(node_status);
     for (var value of global.node_status_map.values()) {
         msg_res.node_list.push(value);
     }
