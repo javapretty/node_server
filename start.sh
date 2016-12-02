@@ -1,9 +1,4 @@
 #!/bin/bash
-rm -rf /usr/local/lib64/libnodelib.so
-
-cp -f libnodelib.so /usr/local/lib64/
-
-/sbin/ldconfig
 
 chmod 777 ./daemon_server ./node_server
 
