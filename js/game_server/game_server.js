@@ -175,8 +175,7 @@ function process_node_code(msg) {
 }
 
 function fetch_role(msg) {
-    var game_player = global.role_id_game_player_map.get(msg.role_id);
-    if (game_player || global.logout_map.get(msg.sid)) {
+    if (global.sid_game_player_map.get(msg.sid) || global.logout_map.get(msg.sid)) {
 		log_error('relogin account:', msg.account);
 		return on_remove_session(msg.sid, Error_Code.DISCONNECT_RELOGIN);
 	}
