@@ -37,7 +37,7 @@ int Log_Manager::init(const Node_Info &node_info) {
 		TiXmlNode* child_node = xml.enter_node(node, "node_list");
 		if(child_node) {
 			XML_LOOP_BEGIN(child_node)
-				if(xml.get_attr_int(child_node, "type") == LOG_SERVER) {
+				if(xml.get_attr_int(child_node, "type") == node_info_.node_type) {
 					TiXmlNode* sub_node = xml.enter_node(child_node, "node");
 					if(sub_node) {
 						XML_LOOP_BEGIN(sub_node)
@@ -86,7 +86,7 @@ int Log_Manager::process_list(void) {
 				int fork_size = buffer_size / node_info_.max_session_count - log_connector_size_;
 				if(fork_size > 0 && log_fork_list_.count(log_node_idx_) <= 0) {
 					std::string node_name = "log_connector";
-					NODE_MANAGER->fork_process(LOG_SERVER, ++log_node_idx_, 2, node_name);
+					NODE_MANAGER->fork_process(node_info_.node_type, ++log_node_idx_, 2, node_name);
 					log_fork_list_.insert(log_node_idx_);
 				}
 			}

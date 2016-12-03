@@ -45,7 +45,7 @@ int DB_Manager::init(const Node_Info &node_info) {
 		TiXmlNode* child_node = xml.enter_node(node, "node_list");
 		if(child_node) {
 			XML_LOOP_BEGIN(child_node)
-				if(xml.get_attr_int(child_node, "type") == DATA_SERVER) {
+				if(xml.get_attr_int(child_node, "type") == node_info_.node_type) {
 					TiXmlNode* sub_node = xml.enter_node(child_node, "node");
 					if(sub_node) {
 						XML_LOOP_BEGIN(sub_node)
@@ -110,7 +110,7 @@ int DB_Manager::process_list(void) {
 				int fork_size = session_size / node_info_.max_session_count - data_connector_size_;
 				if(fork_size > 0 && data_fork_list_.count(data_node_idx_) <= 0) {
 					std::string node_name = "data_connector";
-					NODE_MANAGER->fork_process(DATA_SERVER, ++data_node_idx_, 2, node_name);
+					NODE_MANAGER->fork_process(node_info_.node_type, ++data_node_idx_, 2, node_name);
 					data_fork_list_.insert(data_node_idx_);
 				}
 			}
