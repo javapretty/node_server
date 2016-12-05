@@ -33,36 +33,36 @@ function on_tick(timer_id) {
 
 function process_master_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.SYNC_NODE_INFO:
-		send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
-		break;
-	case Msg.SYNC_NODE_STATUS: 
-	    global.node_status_map.set(msg.node_status.node_id, msg.node_status);
-	    break;
-	default:
-		log_error('process_master_node_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.SYNC_NODE_INFO:
+		    send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
+		    break;
+	    case Msg.SYNC_NODE_STATUS: 
+	        global.node_status_map.set(msg.node_status.node_id, msg.node_status);
+	        break;
+	    default:
+		    log_error('process_master_node_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 
 //可以使用curl命令，向服务器发送post消息
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.HTTP_CREATE_NODE_PROCESS:
-	   //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
-		fork_process(msg.node_type, msg.node_id, msg.endpoint_gid, msg.node_name);
-		break;
-	case Msg.HTTP_REQ_NODE_STATUS:
-	  	 //curl -d "{\"msg_id\":2}" "http://127.0.0.1:8080"
-	  	 req_node_status(msg);
-	  	 break;
-	case Msg.HTTP_HOT_UPDATE:
-	    //curl -d "{\"msg_id\":3,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
-	    hot_update(msg);
-	    break;
-	default:
-		log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.HTTP_CREATE_NODE_PROCESS:
+	       //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
+		    fork_process(msg.node_type, msg.node_id, msg.endpoint_gid, msg.node_name);
+		    break;
+	    case Msg.HTTP_REQ_NODE_STATUS:
+	  	     //curl -d "{\"msg_id\":2}" "http://127.0.0.1:8080"
+	  	     req_node_status(msg);
+	  	     break;
+	    case Msg.HTTP_HOT_UPDATE:
+	        //curl -d "{\"msg_id\":3,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
+	        hot_update(msg);
+	        break;
+	    default:
+		    log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 

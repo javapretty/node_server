@@ -34,11 +34,12 @@ int DB_Manager::init(const Node_Info &node_info) {
 	data_node_idx_ = node_info_.node_id;
 
 	Xml xml;
-	bool ret = xml.load_xml("./config/node/node_conf.xml");
+	int ret = xml.load_xml("./config/node/node_conf.xml");
 	if(ret < 0) {
 		LOG_FATAL("load config:node_conf.xml abort");
 		return -1;
 	}
+
 	//连接mysql
 	TiXmlNode* node = xml.get_root_node("node_list");
 	if(node) {
@@ -73,13 +74,15 @@ int DB_Manager::init(const Node_Info &node_info) {
 		db_id_ = xml.get_attr_int(idx_node, "db_id");
 		struct_name_ = xml.get_attr_str(idx_node, "struct_name");
 		Bit_Buffer buffer;
-		DATA_MANAGER->load_db_data(db_id_, struct_name_, 0, buffer);
-		uint length = buffer.read_uint(16);
-		for(uint i = 0; i < length; ++i) {
-			std::string type = "";
-			buffer.read_str(type);
-			int value = buffer.read_int(32);
-			idx_value_map_.insert(std::make_pair(type, value));
+		ret = DATA_MANAGER->load_db_data(db_id_, struct_name_, 0, buffer);
+		if(ret >= 0) {
+			uint length = buffer.read_uint(16);
+			for(uint i = 0; i < length; ++i) {
+				std::string type = "";
+				buffer.read_str(type);
+				int value = buffer.read_int(32);
+				idx_value_map_.insert(std::make_pair(type, value));
+			}
 		}
 	}
 	return 0;
@@ -119,7 +122,7 @@ int DB_Manager::process_list(void) {
 			buffer->read_head(msg_head);
 			int eid = msg_head.eid;
 			int cid = msg_head.cid;
-			if(msg_head.msg_id == SYNC_NODE_CODE || msg_head.msg_id == SYNC_NODE_INFO || msg_head.msg_id == SYNC_RES_GENERATE_ID || msg_head.msg_id == SYNC_RES_SELECT_DB_DATA
+			if(msg_head.msg_id == SYNC_NODE_INFO || msg_head.msg_id == SYNC_DB_RET_CODE || msg_head.msg_id == SYNC_RES_GENERATE_ID || msg_head.msg_id == SYNC_RES_SELECT_DB_DATA
 				|| ((msg_head.msg_id == SYNC_SAVE_DB_DATA || msg_head.msg_id == SYNC_SAVE_RUNTIME_DATA) && msg_head.msg_type == DATA_MSG)) {
 				//同步节点信息是子进程启动后发过来的
 				if(msg_head.msg_id == SYNC_NODE_INFO) {
@@ -235,6 +238,7 @@ void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	buffer.read_str(query_type);
 	uint data_type = buffer.read_uint(8);
 
+	uint8_t opt_msg_id = msg_head.msg_id;
 	msg_head.msg_id = SYNC_RES_SELECT_DB_DATA;
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_uint(db_id, 16);
@@ -243,9 +247,9 @@ void DB_Manager::select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	bit_buffer.write_uint(data_type, 8);
 	int ret = DATA_MANAGER->select_db_data(db_id, struct_name, condition_name, condition_value, query_name, query_type, bit_buffer);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		bit_buffer.reset();
-		bit_buffer.write_uint(SELECT_DB_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, query_name, 0);
 	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
@@ -277,6 +281,7 @@ void DB_Manager::load_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	int64_t key_index = buffer.read_int64();
 	uint data_type = buffer.read_uint(8);
 
+	uint8_t opt_msg_id = msg_head.msg_id;
 	msg_head.msg_id = SYNC_SAVE_DB_DATA;
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_uint(0, 2);
@@ -286,9 +291,9 @@ void DB_Manager::load_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	bit_buffer.write_uint(data_type, 8);
 	int ret = DATA_MANAGER->load_db_data(db_id, struct_name, key_index, bit_buffer);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		bit_buffer.reset();
-		bit_buffer.write_uint(LOAD_DB_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", key_index);
 	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
@@ -301,18 +306,16 @@ void DB_Manager::save_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	buffer.read_str(struct_name);
 	/*uint data_type*/buffer.read_uint(8);
 	int ret = DATA_MANAGER->save_db_data(save_type, vector_data, db_id, struct_name, buffer);
-	msg_head.msg_id = SYNC_NODE_CODE;
-	if(ret < 0) {
+	if(ret < 0 || (ret >=0 && save_type == SAVE_DB_CLEAR_CACHE)) {
+		uint8_t opt_msg_id = msg_head.msg_id;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		Bit_Buffer bit_buffer;
-		bit_buffer.write_uint(SAVE_DB_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", 0);
 		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
-	} else {
-		if(save_type == SAVE_DB_CLEAR_CACHE) {
-			//玩家下线保存，清除session信息
+
+		//玩家下线保存，清除session信息
+		if(ret >= 0) {
 			sid_set_.erase(msg_head.sid);
-			Bit_Buffer bit_buffer;
-			bit_buffer.write_uint(SAVE_DB_DATA_SUCCESS, 16);
-			NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 		}
 	}
 }
@@ -323,9 +326,10 @@ void DB_Manager::delete_db_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	buffer.read_str(struct_name);
 	int ret = DATA_MANAGER->delete_db_data(db_id, struct_name, buffer);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		uint8_t opt_msg_id = msg_head.msg_id;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		Bit_Buffer bit_buffer;
-		bit_buffer.write_uint(DELETE_DB_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", 0);
 		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 	}
 }
@@ -336,6 +340,7 @@ void DB_Manager::load_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	int64_t key_index = buffer.read_int64();
 	uint data_type = buffer.read_uint(8);
 
+	uint8_t opt_msg_id = msg_head.msg_id;
 	msg_head.msg_id = SYNC_SAVE_RUNTIME_DATA;
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_str(struct_name.c_str());
@@ -343,9 +348,9 @@ void DB_Manager::load_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	bit_buffer.write_uint(data_type, 8);
 	int ret = DATA_MANAGER->load_runtime_data(struct_name, key_index, bit_buffer);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		bit_buffer.reset();
-		bit_buffer.write_uint(LOAD_RUNTIME_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", key_index);
 	}
 	NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 }
@@ -357,9 +362,10 @@ void DB_Manager::save_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	/*uint data_type*/buffer.read_uint(8);
 	int ret = DATA_MANAGER->save_runtime_data(struct_name, key_index, buffer);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		uint8_t opt_msg_id = msg_head.msg_id;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		Bit_Buffer bit_buffer;
-		bit_buffer.write_uint(SAVE_RUNTIME_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", key_index);
 		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 	}
 }
@@ -370,9 +376,10 @@ void DB_Manager::delete_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer) {
 	int64_t key_index = buffer.read_int64();
 	int ret = DATA_MANAGER->delete_runtime_data(struct_name, key_index);
 	if(ret < 0) {
-		msg_head.msg_id = SYNC_NODE_CODE;
+		uint8_t opt_msg_id = msg_head.msg_id;
+		msg_head.msg_id = SYNC_DB_RET_CODE;
 		Bit_Buffer bit_buffer;
-		bit_buffer.write_uint(DELETE_RUNTIME_DATA_FAIL, 16);
+		build_ret_buffer(bit_buffer, opt_msg_id, ret, struct_name, "", key_index);
 		NODE_MANAGER->send_msg(msg_head, bit_buffer.data(), bit_buffer.get_byte_size());
 	}
 }

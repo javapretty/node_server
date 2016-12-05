@@ -21,20 +21,9 @@ enum Enpoint_Gid {
 	GID_DATA_CONNECTOR		= 2,
 };
 
-enum Node_Code {
-	SELECT_DB_DATA_FAIL			= 1,	//查询db数据失败
-	LOAD_DB_DATA_FAIL			= 2,	//加载db数据失败
-	SAVE_DB_DATA_FAIL			= 3,	//保存db数据失败
-	DELETE_DB_DATA_FAIL			= 4,	//删除db数据失败
-	LOAD_RUNTIME_DATA_FAIL		= 5,	//加载运行时数据失败
-	SAVE_RUNTIME_DATA_FAIL		= 6,	//保存运行时数据失败
-	DELETE_RUNTIME_DATA_FAIL	= 7,	//删除运行时数据失败
-	SAVE_DB_DATA_SUCCESS		= 8,	//保存db数据成功
-};
-
 enum DB_Msg {
-	SYNC_NODE_CODE = 1,
 	SYNC_NODE_INFO = 2,
+	SYNC_DB_RET_CODE = 245,
 	SYNC_SELECT_DB_DATA = 246,
 	SYNC_RES_SELECT_DB_DATA = 247,
 	SYNC_GENERATE_ID = 248,
@@ -68,6 +57,13 @@ public:
 		notify_lock_.unlock();
 	}
 
+private:
+	DB_Manager(void);
+	virtual ~DB_Manager(void);
+	DB_Manager(const DB_Manager &);
+	const DB_Manager &operator=(const DB_Manager &);
+
+private:
 	//根据条件查询db接口
 	void select_db_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 	void generate_id(Msg_Head &msg_head, Bit_Buffer &buffer);
@@ -82,11 +78,14 @@ public:
 	void save_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 	void delete_runtime_data(Msg_Head &msg_head, Bit_Buffer &buffer);
 
-private:
-	DB_Manager(void);
-	virtual ~DB_Manager(void);
-	DB_Manager(const DB_Manager &);
-	const DB_Manager &operator=(const DB_Manager &);
+	//构造返回buffer
+	void build_ret_buffer(Bit_Buffer &buffer, uint8_t opt_msg_id, int8_t ret, std::string struct_name, std::string query_name, int64_t key_index) {
+		buffer.write_uint(opt_msg_id, 8);
+		buffer.write_int(ret, 8);
+		buffer.write_str(struct_name.c_str());
+		buffer.write_str(query_name.c_str());
+		buffer.write_int64(key_index);
+	}
 
 private:
 	static DB_Manager *instance_;

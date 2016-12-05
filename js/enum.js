@@ -4,20 +4,6 @@
 *	时间：2016/02/24
 */
 
-if (typeof Node_Code == "undefined") {
-	var Node_Code = {};
-	Node_Code.RET_OK                    = 0;	//成功返回
-	Node_Code.SELECT_DB_DATA_FAIL       = 1;	//查询db数据失败
-	Node_Code.LOAD_DB_DATA_FAIL			= 2;	//加载db数据失败
-	Node_Code.SAVE_DB_DATA_FAIL			= 3;	//保存db数据失败
-	Node_Code.DELETE_DB_DATA_FAIL		= 4;	//删除db数据失败
-	Node_Code.LOAD_RUNTIME_DATA_FAIL	= 5;	//加载运行时数据失败
-	Node_Code.SAVE_RUNTIME_DATA_FAIL    = 6;	//保存运行时数据失败
-	Node_Code.DELETE_RUNTIME_DATA_FAIL  = 7;	//删除运行时数据失败
-	Node_Code.SAVE_DB_DATA_SUCCESS		= 8;	//保存db数据成功
-	Node_Code.VERIFY_TOKEN_FAIL			= 9;	//校验token失败
-}
-
 if (typeof Error_Code == "undefined") {
 	var Error_Code = {};
 
@@ -123,6 +109,13 @@ if (typeof DB_Id == "undefined") {
 	var DB_Id = {};
 	DB_Id.GAME	= 1001;	
 	DB_Id.LOG 	= 1002;
+}
+
+if (typeof DB_Ret_Code == "undefined") {
+    var DB_Ret_Code = {};
+    DB_Ret_Code.RET_OK = 0;
+    DB_Ret_Code.OPT_FAIL = -1;
+    DB_Ret_Code.DATA_NOT_EXIST = -2;
 }
 
 if (typeof Save_Type == "undefined") {

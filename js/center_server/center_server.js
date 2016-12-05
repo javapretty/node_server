@@ -19,28 +19,28 @@ function on_msg(msg) {
 	
 	if (msg.msg_type == Msg_Type.C2S) {
 		switch(msg.msg_id) {
-		case Msg.REQ_SELECT_GATE:
-			select_gate(msg);
-			break;	
-		default:
-			log_error('center_server process client msg, msg_id not exist:', msg.msg_id);
-			break;
+		    case Msg.REQ_SELECT_GATE:
+			    select_gate(msg);
+			    break;	
+		    default:
+			    log_error('center_server process client msg, msg_id not exist:', msg.msg_id);
+			    break;
 		}
 	} 
 	else if (msg.msg_type == Msg_Type.NODE_MSG) {
 		switch(msg.msg_id) {
-		case Msg.SYNC_NODE_INFO:
-			set_node_info(msg);
-			break;		
-		case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
-			verify_token(msg);
-			break;
-		case Msg.SYNC_GATE_CENTER_REMOVE_SESSION:
-		    global.sid_set.delete(msg.sid);
-			break;
-		default:
-			log_error('center_server process node msg, msg_id not exist:', msg.msg_id);
-			break;
+		    case Msg.SYNC_NODE_INFO:
+			    set_node_info(msg);
+			    break;		
+		    case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
+			    verify_token(msg);
+			    break;
+		    case Msg.SYNC_GATE_CENTER_REMOVE_SESSION:
+		        global.sid_set.delete(msg.sid);
+			    break;
+		    default:
+			    log_error('center_server process node msg, msg_id not exist:', msg.msg_id);
+			    break;
 		}	
 	}
 }
@@ -111,7 +111,7 @@ function verify_token(msg) {
 			on_close_session(msg.account, token_info.cid, Error_Code.TOKEN_ERROR);
 		}
 		var msg_res = new node_1();
-		msg_res.node_code = Node_Code.VERIFY_TOKEN_FAIL;
+		msg_res.node_code = Error_Code.TOKEN_ERROR;
 		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_NODE_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
 

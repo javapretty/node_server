@@ -66,81 +66,88 @@ function process_public_client_msg(msg) {
 	}
 	
 	switch(msg.msg_id) {
-	case Msg.REQ_CREATE_GUILD:
-	    global.guild_manager.create_guild(public_player, msg);
-		break;
-	case Msg.REQ_DISSOVE_GUILD:
-	    global.guild_manager.dissove_guild(public_player, msg);
-		break;
-	default:
-		log_error('process_public_client_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.REQ_CREATE_GUILD:
+	        global.guild_manager.create_guild(public_player, msg);
+		    break;
+	    case Msg.REQ_DISSOVE_GUILD:
+	        global.guild_manager.dissove_guild(public_player, msg);
+		    break;
+	    default:
+		    log_error('process_public_client_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 
 function process_public_node_msg(msg) {
     switch (msg.msg_id) {
-    case Msg.SYNC_NODE_CODE:
-        log_error("process_public_node_msg, node_code:", msg.node_code, " sid:", msg.sid);
-        break;
-    case Msg.SYNC_RES_SELECT_DB_DATA:
-        res_select_db_data(msg);
-		break;
-    case Msg.SYNC_RES_GENERATE_ID:
-        res_generate_id(msg);
-		break;
-	case Msg.SYNC_SAVE_DB_DATA: {
-		switch (msg.data_type) {
-		case DB_Data_Type.GUILD:
-		    global.guild_manager.load_data(msg);
-			break;
-		case DB_Data_Type.RANK:
-		    global.rank_manager.load_data(msg);
-			break;
-		default :
-			break;
-		}
-		break;
+        case Msg.SYNC_DB_RET_CODE:
+            process_db_ret_code(msg);
+            break;
+        case Msg.SYNC_RES_SELECT_DB_DATA:
+            res_select_db_data(msg);
+		    break;
+        case Msg.SYNC_RES_GENERATE_ID:
+            res_generate_id(msg);
+		    break;
+	    case Msg.SYNC_SAVE_DB_DATA: {
+		    switch (msg.data_type) {
+		        case DB_Data_Type.GUILD:
+		            global.guild_manager.load_data(msg);
+			        break;
+		        case DB_Data_Type.RANK:
+		            global.rank_manager.load_data(msg);
+			        break;
+		        default :
+			        break;
+		    }
+		    break;
+	    }
+	    case Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT: {
+		    //game通知public玩家上线下线
+		    if (msg.login) {
+		        var public_player = global.sid_public_player_map.get(msg.sid);
+			    if (public_player == null) {
+				    public_player = new Public_Player();
+			    }
+			    public_player.login(msg.cid, msg.sid, msg.role_info);	
+		    } 
+		    else {
+		        var public_player = global.sid_public_player_map.get(msg.sid);
+			    if (public_player) {
+				    public_player.logout();
+			    }
+		    }
+		    break;
+	    }
+	    default:
+		    log_error('proceess_public_node_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
-	case Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT: {
-		//game通知public玩家上线下线
-		if (msg.login) {
-		    var public_player = global.sid_public_player_map.get(msg.sid);
-			if (public_player == null) {
-				public_player = new Public_Player();
-			}
-			public_player.login(msg.cid, msg.sid, msg.role_info);	
-		} 
-		else {
-		    var public_player = global.sid_public_player_map.get(msg.sid);
-			if (public_player) {
-				public_player.logout();
-			}
-		}
-		break;
-	}
-	default:
-		log_error('proceess_public_node_msg, msg_id not exist:', msg.msg_id);
-		break;
-	}
+}
+
+function process_db_ret_code(msg) {
+    switch (msg.opt_msg_id) {
+        case Msg.SYNC_SELECT_DB_DATA: {
+            if (msg.ret_code == DB_Ret_Code.DATA_NOT_EXIST && msg.query_name == "guild_id") {
+                var msg_res = new node_248();
+                msg_res.type = "guild_id";
+                send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 function res_select_db_data(msg) {
     switch (msg.data_type) {
         case Select_Data_Type.INT64: {
-            if (msg.query_value > 0) {
+            if (msg.query_name == "guild_id" && msg.query_value > 0) {
                 var player = global.sid_public_player_map.get(msg.sid);
                 if (player) {
                     player.send_error_msg(Error_Code.GUILD_HAS_EXIST);
                 }
-            }
-            else if (msg.query_value <= 0) {
-                var msg_res = new node_248();
-                msg_res.type = "guild_id";
-                send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
-            }
-            else {
-                log_error("data_type:", msg.data_type, " query_value:", msg.query_value);
             }
             break;
         }

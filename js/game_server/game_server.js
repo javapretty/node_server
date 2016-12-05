@@ -94,83 +94,90 @@ function process_game_client_msg(msg) {
 	}
 	
 	switch(msg.msg_id) {
-	case Msg.REQ_FETCH_MAIL:
-		game_player.mail.fetch_mail();
-		break;
-	case Msg.REQ_PICKUP_MAIL:
-		game_player.mail.pickup_mail(msg);
-		break;
-	case Msg.REQ_DEL_MAIL:
-		game_player.mail.delete_mail(msg);
-		break;
-	case Msg.REQ_FETCH_BAG:
-		game_player.bag.fetch_bag();
-		break;
-	case Msg.REQ_TEST_SERVER:
-	    test_server(msg, game_player);
-	    break;
-	default:
-		send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
-		break;
+	    case Msg.REQ_FETCH_MAIL:
+		    game_player.mail.fetch_mail();
+		    break;
+	    case Msg.REQ_PICKUP_MAIL:
+		    game_player.mail.pickup_mail(msg);
+		    break;
+	    case Msg.REQ_DEL_MAIL:
+		    game_player.mail.delete_mail(msg);
+		    break;
+	    case Msg.REQ_FETCH_BAG:
+		    game_player.bag.fetch_bag();
+		    break;
+	    case Msg.REQ_TEST_SERVER:
+	        test_server(msg, game_player);
+	        break;
+	    default:
+		    send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
+		    break;
 	}
 }
 
 function process_game_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.SYNC_NODE_CODE:
-		process_node_code(msg);
-		break;
-	case Msg.SYNC_GATE_GAME_ADD_SESSION:
-		on_add_session(msg.sid, msg.gate_nid);
-		break;
-	case Msg.SYNC_GAME_GATE_LOGOUT: {
-	    var game_player = global.sid_game_player_map.get(msg.sid);
-		if (game_player) {
-			//gate通知玩家下线时候
-			game_player.logout();
-		}
-		break;	
-	}
-	case Msg.SYNC_RES_SELECT_DB_DATA:
-	    res_select_db_data(msg);
-	    break;
-	case Msg.SYNC_RES_GENERATE_ID:
-	    res_generate_id(msg);
-	    break;
-	case Msg.SYNC_SAVE_DB_DATA: {
-		var game_player = new Game_Player();
-		game_player.login(global.sid_gate_eid_map.get(msg.sid), msg.sid, msg.player_data);
-		break;	
-	}
-	case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {
-	    var game_player = global.role_id_game_player_map.get(msg.role_id);
-		if (game_player) {
-			game_player.set_guild_info(msg);
-		}
-		break;
-	}
-	default:
-		log_error('process_game_node_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.SYNC_GATE_GAME_ADD_SESSION:
+		    on_add_session(msg.sid, msg.gate_nid);
+		    break;
+	    case Msg.SYNC_GAME_GATE_LOGOUT: {
+	        var game_player = global.sid_game_player_map.get(msg.sid);
+		    if (game_player) {
+			    //gate通知玩家下线时候
+			    game_player.logout();
+		    }
+		    break;	
+	    }
+	    case Msg.SYNC_DB_RET_CODE:
+	        process_db_ret_code(msg);
+	        break;
+	    case Msg.SYNC_RES_SELECT_DB_DATA:
+	        res_select_db_data(msg);
+	        break;
+	    case Msg.SYNC_RES_GENERATE_ID:
+	        res_generate_id(msg);
+	        break;
+	    case Msg.SYNC_SAVE_DB_DATA: {
+		    var game_player = new Game_Player();
+		    game_player.login(global.sid_gate_eid_map.get(msg.sid), msg.sid, msg.player_data);
+		    break;	
+	    }
+	    case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {
+	        var game_player = global.role_id_game_player_map.get(msg.role_id);
+		    if (game_player) {
+			    game_player.set_guild_info(msg);
+		    }
+		    break;
+	    }
+	    default:
+		    log_error('process_game_node_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 
-function process_node_code(msg) {
-    switch (msg.node_code) {
-    case Node_Code.SELECT_DB_DATA_FAIL:
-        log_error('select db data fail, sid:', msg.sid);
-        on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
-        break;
-	case Node_Code.LOAD_DB_DATA_FAIL:
-		log_error('load player data fail, sid:', msg.sid);
-		on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
-		break;
-	case Node_Code.LOAD_RUNTIME_DATA_FAIL:
-		log_error('load runtime data fail, sid:', msg.sid);
-		break;
-	case Node_Code.SAVE_DB_DATA_SUCCESS:
-	    global.logout_map.delete(msg.sid);
-		break;
+function process_db_ret_code(msg) {
+    switch (msg.opt_msg_id) {
+        case Msg.SYNC_SELECT_DB_DATA: {
+            if (msg.ret_code == DB_Ret_Code.DATA_NOT_EXIST && msg.query_name == "role_id") {
+                var gate_eid = global.sid_gate_eid_map.get(msg.sid);
+                var msg_res = new s2c_5();
+                msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
+                send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
+            }
+            else if (msg.ret_code == DB_Ret_Code.OPT_FAIL) {
+                log_error('select db data fail, sid:', msg.sid);
+                on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
+            }
+            break;
+        }
+        case Msg.SYNC_SAVE_DB_DATA: {
+            if (msg.struct_name == "Player_Data") {
+                global.logout_map.delete(msg.sid);
+            }
+            break;
+        }
+        default:
+            break;
 	}
 }
 
@@ -195,25 +202,18 @@ function fetch_role(msg) {
 function res_select_db_data(msg) {
     switch(msg.data_type) {
         case Select_Data_Type.INT64: {
-        if (msg.query_value <= 0) {
-            var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-            var msg_res = new s2c_5();
-            msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
-            send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
+            if (msg.query_name == "role_id" && msg.query_value > 0) {
+                var msg_res = new node_250();
+                msg_res.db_id = DB_Id.GAME;
+                msg_res.key_index = msg.query_value;
+                msg_res.struct_name = "Player_Data";
+                msg_res.data_type = DB_Data_Type.PLAYER;
+                send_msg_to_db(Msg.SYNC_LOAD_DB_DATA, msg.sid, msg_res);
+            }
+            break;
         }
-        else if (msg.query_value > 0) {
-            var msg_res = new node_250();
-            msg_res.db_id = DB_Id.GAME;
-            msg_res.key_index = msg.query_value;
-            msg_res.struct_name = "Player_Data";
-            msg_res.data_type = DB_Data_Type.PLAYER;
-            send_msg_to_db(Msg.SYNC_LOAD_DB_DATA, msg.sid, msg_res);
-        }
-        else {
-            log_error("data_type:", msg.data_type, " query_value:", msg.query_value);
-        }
-        break;
-    }
+        default:
+            break;
     }
 }
 

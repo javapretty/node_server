@@ -195,6 +195,14 @@ function node_246() {
 	this.data_type = 0;
 }
 
+function node_245() {
+	this.opt_msg_id = 0;
+	this.ret_code = 0;
+	this.struct_name = "";
+	this.query_name = "";
+	this.key_index = 0;
+}
+
 function node_9() {
 	this.role_id = 0;
 	this.guild_id = 0;

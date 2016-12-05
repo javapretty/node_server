@@ -87,41 +87,41 @@ function on_close_session(cid, error_code) {
 
 function process_gate_client_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.REQ_HEARTBEAT: {
-	    var session = global.cid_session_map.get(msg.cid);
-		if (session) {
-			session.on_heartbeat(msg);
-		} else {
-			on_close_session(msg.cid, Error_Code.DISCONNECT_NOLOGIN);
-		}
-		break;
-	}
-	case Msg.REQ_CONNECT_GATE:
-		connect_gate(msg);
-		break;	
-	default:
-		log_error('process_gate_client_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.REQ_HEARTBEAT: {
+	        var session = global.cid_session_map.get(msg.cid);
+		    if (session) {
+			    session.on_heartbeat(msg);
+		    } else {
+			    on_close_session(msg.cid, Error_Code.DISCONNECT_NOLOGIN);
+		    }
+		    break;
+	    }
+	    case Msg.REQ_CONNECT_GATE:
+		    connect_gate(msg);
+		    break;	
+	    default:
+		    log_error('process_gate_client_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 
 function process_gate_node_msg(msg) {
 	switch(msg.msg_id) {
-	case Msg.SYNC_NODE_CODE:
-		process_node_code(msg);
-		break;
-	case Msg.SYNC_NODE_INFO:
-		set_node_info(msg);
-		break;
-	case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
-		verify_token(msg);
-		break;
-	case Msg.SYNC_GAME_GATE_LOGOUT:
-		game_logout(msg);
-		break;
-	default:
-		log_error('process_gate_node_msg, msg_id not exist:', msg.msg_id);
-		break;
+	    case Msg.SYNC_NODE_CODE:
+		    process_node_code(msg);
+		    break;
+	    case Msg.SYNC_NODE_INFO:
+		    set_node_info(msg);
+		    break;
+	    case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
+		    verify_token(msg);
+		    break;
+	    case Msg.SYNC_GAME_GATE_LOGOUT:
+		    game_logout(msg);
+		    break;
+	    default:
+		    log_error('process_gate_node_msg, msg_id not exist:', msg.msg_id);
+		    break;
 	}
 }
 
@@ -141,12 +141,10 @@ function connect_gate(msg) {
 
 function process_node_code(msg) {
 	switch (msg.node_code) {
-	case Node_Code.VERIFY_TOKEN_FAIL: {
-		var msg_res = new s2c_5();
-		msg_res.error_code = Error_Code.TOKEN_ERROR;
-		send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg_res);
-		break;
-	}
+	    case Error_Code.TOKEN_ERROR: {
+	        on_close_session(Error_Code.TOKEN_ERROR);
+		    break;
+	    }
 	}
 }
 

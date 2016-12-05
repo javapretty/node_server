@@ -40,6 +40,14 @@
     <arg type="string" name="guild_name"/>
   </node_9>
 
+  <node_245 msg_id="245" msg_name="SYNC_DB_RET_CODE">
+    <arg type="uint" bit="8" name="opt_msg_id"/>
+    <arg type="int" bit="8" name="ret_code"/>
+    <arg type="string" name="struct_name"/>
+    <arg type="string" name="query_name"/>
+    <arg type="int64" name="key_index"/>
+  </node_245>
+  
   <node_246 msg_id="246" msg_name="SYNC_SELECT_DB_DATA">
     <arg type="uint" bit="16" name="db_id"/>
     <arg type="string" name="struct_name"/>
