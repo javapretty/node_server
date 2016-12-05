@@ -24,7 +24,7 @@ extern "C" {
 		DB_MANAGER->push_buffer(buffer);
 	}
 
-	void tick(int tick_time) {
-		DB_MANAGER->tick(tick_time);
+	void push_tick(int tick_time) {
+		DB_MANAGER->push_tick(tick_time);
 	}
 }

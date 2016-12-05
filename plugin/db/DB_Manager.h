@@ -13,6 +13,7 @@
 #include "Bit_Buffer.h"
 #include "Buffer_List.h"
 #include "Object_Pool.h"
+#include "List.h"
 #include "Thread.h"
 #include "Node_Define.h"
 
@@ -38,6 +39,7 @@ enum DB_Msg {
 
 class DB_Manager: public Thread {
 	typedef Buffer_List<Mutex_Lock> Data_List;
+	typedef List<int, Mutex_Lock> Int_List;
 	typedef std::unordered_map<std::string, int> Idx_Value_Map;
 	typedef std::unordered_map<uint, int> Session_Map;
 	typedef std::unordered_set<uint> UInt_Set;
@@ -53,6 +55,12 @@ public:
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
 		buffer_list_.push_back(buffer);
+		notify_lock_.signal();
+		notify_lock_.unlock();
+	}
+	inline void push_tick(int tick_time) {
+		notify_lock_.lock();
+		tick_list_.push_back(tick_time);
 		notify_lock_.signal();
 		notify_lock_.unlock();
 	}
@@ -96,8 +104,9 @@ private:
 	std::string struct_name_;		//idx表结构体名称
 
 	Data_List buffer_list_;			//消息列表
-	Node_Info node_info_;			//节点信息
+	Int_List tick_list_;			//定时器tick列表
 
+	Node_Info node_info_;			//节点信息
 	Session_Map session_map_;		//转发到connector进程session信息
 	UInt_Set sid_set_;				//本进程sid列表
 	int data_node_idx_;				//data链接器id索引

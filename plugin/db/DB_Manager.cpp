@@ -101,7 +101,7 @@ int DB_Manager::process_list(void) {
 		notify_lock_.lock();
 
 		//put wait in while cause there can be spurious wake up (due to signal/ENITR)
-		while (buffer_list_.empty()) {
+		while (buffer_list_.empty() && tick_list_.empty()) {
 			notify_lock_.wait();
 		}
 
@@ -200,6 +200,13 @@ int DB_Manager::process_list(void) {
 
 			//回收buffer
 			NODE_MANAGER->push_buffer(eid, cid, buffer);
+		}
+
+		if(!tick_list_.empty()) {
+			int tick_time = tick_list_.pop_front();
+			if(tick_time > 0) {
+				tick(tick_time);
+			}
 		}
 
 		//操作完成解锁条件变量
