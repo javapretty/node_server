@@ -5,7 +5,7 @@
     <folder path="js/"></folder>
     <folder path="config/"></folder>
   </hotupdate>
-  <struct agent_num="1" server_num="1">
+  <struct log_trace="0" agent_num="1" server_num="1">
     <base_struct path="config/struct/client_msg.xml"></base_struct>
     <base_struct path="config/struct/http_msg.xml"></base_struct>
     <base_struct path="config/struct/node_msg.xml"></base_struct>
@@ -36,7 +36,7 @@
       <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="1" timeout="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
       <endpoint type="3" gid="1" id="4" name="gate1_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="1" timeout="60"></endpoint>
+      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="1" timeout="30"></endpoint>
       <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="1" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
       <endpoint type="3" gid="2" id="4" name="gate2_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
