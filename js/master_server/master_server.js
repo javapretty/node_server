@@ -8,15 +8,17 @@ function init(node_info) {
     log_info('master_server init, node_type:',node_info.node_type,' node_id:',node_info.node_id,' node_name:',node_info.node_name);
     global.node_info = node_info;
     global.timer.init();
+
+    var msg = new node_2();
+    msg.node_info = node_info;
+    send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
 function on_hotupdate(file_path) { }
 
 function on_drop(cid) { }
 
-function on_msg(msg) {
-	log_debug('master_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id);
-	
+function on_msg(msg) {	
 	if (msg.msg_type == Msg_Type.NODE_MSG) {
 		process_master_node_msg(msg);
 	} else if (msg.msg_type == Msg_Type.HTTP_MSG) {

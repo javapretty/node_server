@@ -31,8 +31,6 @@ function on_drop(cid) {
 }
 
 function on_msg(msg) {
-	log_debug('gate_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
 	if (msg.msg_type == Msg_Type.C2S) {
 		process_gate_client_msg(msg);
 	} else if (msg.msg_type == Msg_Type.NODE_MSG) {

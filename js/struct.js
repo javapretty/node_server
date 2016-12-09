@@ -278,6 +278,7 @@ function Node_Status() {
 	this.send_per_sec = 0;
 	this.recv_per_sec = 0;
 	this.task_count = 0;
+	this.session_count = 0;
 	this.cpu_percent = 0;
 	this.vm_size = 0;
 	this.vm_rss = 0;

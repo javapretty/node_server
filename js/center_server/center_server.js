@@ -15,8 +15,7 @@ function on_hotupdate(file_path) { }
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
+	//log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	if (msg.msg_type == Msg_Type.C2S) {
 		switch(msg.msg_id) {
 		    case Msg.REQ_SELECT_GATE:
@@ -94,13 +93,19 @@ function select_gate(msg) {
 }
 
 function set_node_info(msg) {
-	if (msg.node_info.node_type == Node_Type.GATE_SERVER) {
-	    global.gate_list.push(msg.node_info);
-	}
-	else if (msg.node_info.node_type == Node_Type.GAME_SERVER) {
-	    global.game_list.push(msg.node_info);
-	}
-	global.node_map.set(msg.node_info.node_id, msg.node_info);
+    switch(msg.node_info.node_type) {
+        case Node_Type.GATE_SERVER:
+            global.gate_list.push(msg.node_info);
+            break;
+        case Node_Type.GAME_SERVER:
+            global.game_list.push(msg.node_info);
+            break;
+        case Node_Type.MASTER_SERVER:
+            global.master_list.push(msg.cid);
+            break;
+        default:
+            break;
+    }
 }
 
 function verify_token(msg) {

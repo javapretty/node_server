@@ -10,6 +10,7 @@
     <arg type="int" bit="32" name="send_per_sec"/>
     <arg type="int" bit="32" name="recv_per_sec"/>
     <arg type="int" bit="32" name="task_count"/>
+    <arg type="int" bit="32" name="session_count"/>
     <arg type="float" name="cpu_percent"/>
     <arg type="int" bit="32" name="vm_size"/>
     <arg type="int" bit="32" name="vm_rss"/>

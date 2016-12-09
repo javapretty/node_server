@@ -9,8 +9,8 @@ function Timer() {
 	var timer_id = 1;
 	
 	this.init = function() {
-	    //注册node_server定时器，时间间隔30s
-	    this.register_timer(30000, 0, this.node_server_handler);
+	    //注册node_server定时器，时间间隔2s
+	    this.register_timer(2000, 0, this.node_server_handler);
 
 	    switch(global.node_info.node_type) {
 		case Node_Type.CENTER_SERVER: {
@@ -23,6 +23,11 @@ function Timer() {
 		    this.register_timer(500, 0, this.game_player_handler);
 			break;
 		}
+	    case Node_Type.PUBLIC_SERVER: {
+	        //注册public定时器，时间间隔30s
+	        this.register_timer(30000, 0, this.public_server_handler);
+	        break;
+	    }
 		default: {
 		    break;
 		}
@@ -43,18 +48,21 @@ function Timer() {
 	this.node_server_handler = function() {
 	    switch(global.node_info.node_type) {
 	        case Node_Type.CENTER_SERVER: {
+	            for(var i = 0; i < global.master_list.length; ++i) {
+	                util.sync_node_status(Endpoint.CENTER_NODE_SERVER, global.master_list[i], 0);
+	            }
 	            break;
 	        }
 	        case Node_Type.GATE_SERVER: {
-	            util.sync_node_status(Endpoint.GATE_MASTER_CONNECTOR, 0);
+	            util.sync_node_status(Endpoint.GATE_MASTER_CONNECTOR, 0, global.sid_session_map.length);
 	            break;
 	        }
 	        case Node_Type.DATA_SERVER: {
-	            util.sync_node_status(Endpoint.DATA_MASTER_CONNECTOR, 0);
+	            util.sync_node_status(Endpoint.DATA_MASTER_CONNECTOR, 0, 0);
 	            break;
 	        }
 	        case Node_Type.LOG_SERVER: {
-	            util.sync_node_status(Endpoint.LOG_MASTER_CONNECTOR, 0);
+	            util.sync_node_status(Endpoint.LOG_MASTER_CONNECTOR, 0, 0);
 	            break;
 	        }
 	        case Node_Type.MASTER_SERVER: {
@@ -63,14 +71,11 @@ function Timer() {
 	            break;
 	        }
 	        case Node_Type.PUBLIC_SERVER: {
-	            global.guild_manager.save_data_handler();
-	            global.rank_manager.save_data();
-
-	            util.sync_node_status(Endpoint.PUBLIC_MASTER_CONNECTOR, 0);
+	            util.sync_node_status(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, global.sid_game_player_map.length);
 	            break;
 	        }
 	        case Node_Type.GAME_SERVER: {
-	            util.sync_node_status(Endpoint.GAME_MASTER_CONNECTOR, 0);
+	            util.sync_node_status(Endpoint.GAME_MASTER_CONNECTOR, 0, global.sid_public_player_map.length);
 	            break;
 	        }
 	        default: {
@@ -93,5 +98,10 @@ function Timer() {
 		for (var value of global.role_id_game_player_map.values()) {
   			value.tick(now);
 		}
+    }
+
+    this.public_server_handler = function() {
+        global.guild_manager.save_data_handler();
+        global.rank_manager.save_data();
     }
 }
