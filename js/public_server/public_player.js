@@ -11,9 +11,8 @@ function Public_Player() {
 }
 
 //玩家上线，加载数据
-Public_Player.prototype.login = function(game_cid, sid, role_info) {
-	log_info('********public_player login, game_cid:', game_cid, ' sid:', sid, ' role_id:', role_info.role_id);
-
+Public_Player.prototype.login = function (game_cid, sid, role_info) {
+    log_info("public_player login, sid:", sid, " role_id:", role_info.role_id, " role_name:", role_info.role_name, " game_cid:", game_cid);
 	this.game_cid = game_cid;
 	this.sid = sid;
 	this.role_info = role_info;
@@ -24,8 +23,8 @@ Public_Player.prototype.login = function(game_cid, sid, role_info) {
 }
 
 //玩家离线，保存数据
-Public_Player.prototype.logout = function() {
-	log_info('********public_player logout, role_id:', this.role_info.role_id, ' sid:', this.sid, " role_name:", this.role_info.role_name);
+Public_Player.prototype.logout = function () {
+    log_info("public_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name, " game_cid:", this.game_cid);
 	global.sid_public_player_map.delete(this.sid);
 	global.role_id_public_player_map.delete(this.role_info.role_id);
 }

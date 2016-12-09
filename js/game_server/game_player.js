@@ -16,7 +16,7 @@ function Game_Player() {
 
 //玩家上线，加载数据
 Game_Player.prototype.login = function(gate_eid, sid, player_data) {
-	log_info('********game_player login, role_id:', player_data.role_info.role_id, ' role_name:', player_data.role_info.role_name, ' gate_eid:', gate_eid, ' sid:', sid);
+	log_info("game_player login, sid:",sid," role_id:",player_data.role_info.role_id," role_name:",player_data.role_info.role_name," gate_eid:", gate_eid);
 	this.gate_eid = gate_eid;
 	this.sid = sid;
 	this.role_info = player_data.role_info;
@@ -32,8 +32,8 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 }
 
 //玩家离线，保存数据
-Game_Player.prototype.logout = function() {
-	log_info('********game_player logout, role_id:', this.role_info.role_id, " role_name:", this.role_info.role_name, ' sid:', this.sid);
+Game_Player.prototype.logout = function () {
+    log_info("game_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name," gate_eid:",this.gate_eid);
 	this.role_info.logout_time = util.now_sec();
 	global.logout_map.set(this.sid, this.role_info.logout_time);
 	
@@ -80,8 +80,8 @@ Game_Player.prototype.sync_login_logout_to_public = function(login) {
 	send_msg_to_public(Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, msg);
 }
 
-Game_Player.prototype.sync_player_data_to_db = function(logout) {
-	log_info('********sync_player_data_to_db,logout:', logout, ' role_id:', this.role_info.role_id, ' role_name:', this.role_info.role_name);
+Game_Player.prototype.sync_player_data_to_db = function (logout) {
+    log_info("sync_player_data_to_db logout:",logout," sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name, " gate_eid:", this.gate_eid);
 	var msg = new node_251();
 	if(logout) {
 		msg.save_type = Save_Type.SAVE_DB_CLEAR_CACHE;

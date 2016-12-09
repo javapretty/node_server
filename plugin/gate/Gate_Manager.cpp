@@ -63,6 +63,8 @@ int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 		if (!session) {
 			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
 					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
+			//client发来的消息，无法找到session,断开连接
+			NODE_MANAGER->push_drop(msg_head.eid, msg_head.cid);
 			return -1;
 		}
 
@@ -93,12 +95,14 @@ int Gate_Manager::add_session(Session *session) {
 		return -1;
 	}
 
+	GUARD(Session_Map_Lock, mon, session_map_lock_);
 	cid_session_map_.insert(std::make_pair(session->client_cid, session));
 	sid_session_map_.insert(std::make_pair(session->sid, session));
 	return 0;
 }
 
 int Gate_Manager::remove_session(int cid) {
+	GUARD(Session_Map_Lock, mon, session_map_lock_);
 	Session_Map::iterator iter = cid_session_map_.find(cid);
 	if (iter != sid_session_map_.end()) {
 		Session *session = iter->second;
@@ -110,6 +114,7 @@ int Gate_Manager::remove_session(int cid) {
 }
 
 Session *Gate_Manager::find_session_by_cid(int cid) {
+	GUARD(Session_Map_Lock, mon, session_map_lock_);
 	Session_Map::iterator iter = cid_session_map_.find(cid);
 	if (iter != cid_session_map_.end()) {
 		return iter->second;
@@ -118,6 +123,7 @@ Session *Gate_Manager::find_session_by_cid(int cid) {
 }
 
 Session *Gate_Manager::find_session_by_sid(uint sid) {
+	GUARD(Session_Map_Lock, mon, session_map_lock_);
 	Session_Map::iterator iter = sid_session_map_.find(sid);
 	if (iter != sid_session_map_.end()) {
 		return iter->second;
