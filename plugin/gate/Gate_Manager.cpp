@@ -58,9 +58,10 @@ int Gate_Manager::process_list(void) {
 }
 
 int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
+	GUARD(Session_Map_Lock, mon, session_map_lock_);
 	if (msg_head.msg_type == C2S) {
-		Session *session = find_session_by_cid(msg_head.cid);
-		if (!session) {
+		Session_Map::iterator iter = cid_session_map_.find(msg_head.cid);
+		if (iter == cid_session_map_.end()) {
 			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
 					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
 			//client发来的消息，无法找到session,断开连接
@@ -68,22 +69,22 @@ int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 			return -1;
 		}
 
-		msg_head.eid = session->game_eid;
-		msg_head.cid = session->game_cid;
+		msg_head.eid = iter->second->game_eid;
+		msg_head.cid = iter->second->game_cid;
 		msg_head.msg_type = NODE_C2S;
-		msg_head.sid = session->sid;
+		msg_head.sid = iter->second->sid;
 	} else if (msg_head.msg_type == NODE_S2C) {
-		Session *session = find_session_by_sid(msg_head.sid);
-		if (!session) {
+		Session_Map::iterator iter = sid_session_map_.find(msg_head.sid);
+		if (iter == cid_session_map_.end()) {
 			LOG_ERROR("find_session_by_sid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
 					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
 			return -1;
 		}
 
-		msg_head.eid = session->client_eid;
-		msg_head.cid = session->client_cid;
+		msg_head.eid = iter->second->client_eid;
+		msg_head.cid = iter->second->client_cid;
 		msg_head.msg_type = S2C;
-		msg_head.sid = session->sid;
+		msg_head.sid = iter->second->sid;
 	}
 	NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
 	return 0;
@@ -111,22 +112,4 @@ int Gate_Manager::remove_session(int cid) {
 		session_pool_.push(session);
 	}
 	return 0;
-}
-
-Session *Gate_Manager::find_session_by_cid(int cid) {
-	GUARD(Session_Map_Lock, mon, session_map_lock_);
-	Session_Map::iterator iter = cid_session_map_.find(cid);
-	if (iter != cid_session_map_.end()) {
-		return iter->second;
-	}
-	return nullptr;
-}
-
-Session *Gate_Manager::find_session_by_sid(uint sid) {
-	GUARD(Session_Map_Lock, mon, session_map_lock_);
-	Session_Map::iterator iter = sid_session_map_.find(sid);
-	if (iter != sid_session_map_.end()) {
-		return iter->second;
-	}
-	return nullptr;
 }
