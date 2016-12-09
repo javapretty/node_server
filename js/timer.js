@@ -71,11 +71,11 @@ function Timer() {
 	            break;
 	        }
 	        case Node_Type.PUBLIC_SERVER: {
-	            util.sync_node_status(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, global.sid_game_player_map.size);
+	            util.sync_node_status(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, global.sid_public_player_map.size);
 	            break;
 	        }
 	        case Node_Type.GAME_SERVER: {
-	            util.sync_node_status(Endpoint.GAME_MASTER_CONNECTOR, 0, global.sid_public_player_map.size);
+	            util.sync_node_status(Endpoint.GAME_MASTER_CONNECTOR, 0, global.sid_game_player_map.size);
 	            break;
 	        }
 	        default: {
