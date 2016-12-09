@@ -106,8 +106,11 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_FETCH_BAG:
 		    game_player.bag.fetch_bag();
 		    break;
-	    case Msg.REQ_TEST_SERVER:
-	        test_server(msg, game_player);
+	    case Msg.REQ_TEST_ARG:
+	        test_arg(msg, game_player);
+	        break;
+	    case Msg.REQ_TEST_SWITCH:
+	        test_switch(msg, game_player);
 	        break;
 	    default:
 		    send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
@@ -262,9 +265,19 @@ function res_generate_id(msg) {
 	}
 }
 
-function test_server(msg, player) {
-    log_info("int_exist:", msg.int_exist, " int_arg:", msg.int_arg, " type:", msg.type);
+function test_arg(msg, player) {
+    var msg_res = new s2c_254();
+    msg_res.int4_arg = msg.int4_arg;
+    msg_res.uint8_arg = msg.uint8_arg;
+    msg_res.uint4_arg = msg.uint4_arg;
+    player.send_success_msg(Msg.RES_TEST_ARG, msg_res);
+}
+
+function test_switch(msg, player) {
     var msg_res = new s2c_255();
+    if (msg.exist) {
+        msg_res.int32_arg = msg.int32_arg;
+    }
     msg_res.type = msg.type;
     switch (msg.type) {
         case 1: {
@@ -280,5 +293,5 @@ function test_server(msg, player) {
             break;
         }
     }
-    player.send_success_msg(Msg.RES_TEST_SERVER, msg_res);
+    player.send_success_msg(Msg.RES_TEST_SWITCH, msg_res);
 }

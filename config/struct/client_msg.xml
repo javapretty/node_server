@@ -87,9 +87,21 @@
     <arg type="int64" name="guild_id"/>
   </s2c_202>
 
-  <c2s_255 msg_id="255" msg_name="REQ_TEST_SERVER">
-    <if name="int_exist">
-      <arg type="int" bit="16" name="int_arg"/>
+  <c2s_254 msg_id="254" msg_name="REQ_TEST_ARG">
+    <arg type="int" bit="4" name="int4_arg"/>
+    <arg type="uint" bit="8" name="uint8_arg"/>
+    <arg type="uint" bit="4" name="uint4_arg"/>
+  </c2s_254>
+
+  <s2c_254 msg_id="254" msg_name="RES_TEST_ARG">
+    <arg type="int" bit="4" name="int4_arg"/>
+    <arg type="uint" bit="8" name="uint8_arg"/>
+    <arg type="uint" bit="4" name="uint4_arg"/>
+  </s2c_254>
+
+  <c2s_255 msg_id="255" msg_name="REQ_TEST_SWITCH">
+    <if name="exist">
+      <arg type="int" bit="32" name="int32_arg"/>
     </if>
     <switch name="type" type="uint" bit="8">
       <case val="1">
@@ -101,7 +113,8 @@
     </switch>
   </c2s_255>
 
-  <s2c_255 msg_id="255" msg_name="RES_TEST_SERVER">
+  <s2c_255 msg_id="255" msg_name="RES_TEST_SWITCH">
+    <arg type="int" bit="32" name="int32_arg"/>
     <switch name="type" type="uint" bit="8" >
       <case val="1">
         <vector vbit="8" type="int64" name="int64_vec"/>
