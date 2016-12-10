@@ -65,7 +65,7 @@ int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
 					msg_head.eid, msg_head.cid, msg_head.msg_type, msg_head.msg_id, msg_head.sid);
 			//client发来的消息，无法找到session,断开连接
-			NODE_MANAGER->push_drop(msg_head.eid, msg_head.cid);
+			V8_MANAGER->push_drop(msg_head.eid, msg_head.cid);
 			return -1;
 		}
 
