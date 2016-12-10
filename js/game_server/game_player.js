@@ -47,17 +47,15 @@ Game_Player.prototype.logout = function () {
 }
 
 Game_Player.prototype.tick = function(now) {
-	//同步玩家数据到数据库
-	if(this.is_change){
-		if (now - this.sync_player_data_tick >= 30) {
-			this.sync_player_data_to_db(false);
-			this.sync_player_data_tick = now;
-		}
+	//同步数据到数据库
+    if (this.is_change && now - this.sync_player_data_tick >= 30) {
+        this.sync_player_data_to_db(false);
+        this.sync_player_data_tick = now;
+        this.is_change = false;
 	}
 }
 
 Game_Player.prototype.send_success_msg = function(msg_id, msg) {
-	this.is_change = true;
 	send_msg(this.gate_eid, 0 , msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
@@ -95,7 +93,6 @@ Game_Player.prototype.sync_player_data_to_db = function (logout) {
 	this.mail.save_data(msg.player_data);
 	this.bag.save_data(msg.player_data);
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);
-	this.is_change = false;
 }
 
 Game_Player.prototype.sync_logout_to_log = function() {

@@ -86,5 +86,6 @@ Mail.prototype.pickup_item_money = function(mail_detail) {
 	}
 	
 	mail_detail.pickup = true;
+	this.game_player.is_change = true;
 	return 0;
 }
