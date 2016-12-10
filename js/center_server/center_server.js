@@ -15,7 +15,6 @@ function on_hotupdate(file_path) { }
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	//log_debug('center_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
 	if (msg.msg_type == Msg_Type.C2S) {
 		switch(msg.msg_id) {
 		    case Msg.REQ_SELECT_GATE:

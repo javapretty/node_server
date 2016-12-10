@@ -46,6 +46,7 @@ function on_tick(timer_id) {
 }
 
 function on_add_session(session) {
+    log_info('add_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
     global.cid_session_map.set(session.client_cid, session);
     global.sid_session_map.set(session.sid, session);
     global.account_session_map.set(session.account, session);
@@ -64,6 +65,7 @@ function on_add_session(session) {
 }
 
 function on_remove_session(session) {
+    log_info('remove_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
 	//通知center
 	var msg = new node_7();
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, msg);	
@@ -124,7 +126,6 @@ function process_gate_node_msg(msg) {
 }
 
 function connect_gate(msg) {
-	log_debug('connect_gate, account:', msg.account, ' token:', msg.token);
 	if (global.account_session_map.get(msg.account)) {
 		log_error('account in gate server, ', msg.account);
 		return on_close_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
