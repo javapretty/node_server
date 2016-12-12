@@ -20,10 +20,7 @@ function on_hotupdate(file_path) { }
 
 function on_drop(cid) {
     var session = global.cid_session_map.get(cid);
-	if (session) {
-		var msg = new node_6();
-		send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, msg);
-		
+	if (session) {		
 		on_remove_session(session);
 		//删除C++层session
 		remove_session(cid);
@@ -46,30 +43,26 @@ function on_tick(timer_id) {
 }
 
 function on_add_session(session) {
-    log_info('add_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
+    log_info('gate add_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
     global.cid_session_map.set(session.client_cid, session);
     global.sid_session_map.set(session.sid, session);
     global.account_session_map.set(session.account, session);
 	//将session添加到C++层
 	add_session(session);
 
-	//通知game
-	var msg_3 = new node_4();
-	msg_3.gate_nid = global.node_info.node_id;
-	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_3);
-	
-	//通知client
-	var msg_res = new s2c_3();
-	msg_res.account = session.account;
-	send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, msg_res);
+	//通知game增加session
+	var msg_4 = new node_4();
+	msg_4.gate_nid = global.node_info.node_id;
+	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_4);
 }
 
 function on_remove_session(session) {
-    log_info('remove_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
-	//通知center
-	var msg = new node_7();
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, msg);	
-	
+    log_info('gate remove_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
+    //通知game移除session
+    send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, (new node_6()));
+	//通知center移除session
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, (new node_7()));
+
 	global.cid_session_map.delete(session.client_cid);
 	global.sid_session_map.delete(session.sid);
 	global.account_session_map.delete(session.account);
@@ -116,6 +109,12 @@ function process_gate_node_msg(msg) {
 	    case Msg.SYNC_GATE_CENTER_VERIFY_TOKEN:
 		    verify_token(msg);
 		    break;
+	    case Msg.SYNC_GATE_GAME_ADD_SESSION: {
+	        //通知client成功建立session
+	        var session = global.sid_session_map.get(msg.sid);
+	        send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, (new s2c_3()));
+	        break;
+	    }
 	    case Msg.SYNC_GAME_GATE_LOGOUT:
 		    game_logout(msg);
 		    break;
