@@ -9,7 +9,10 @@
 #include "Time_Value.h"
 #include "Node_Manager.h"
 
-static void sighandler(int sig_no) { exit(0); } /// for gprof need normal exit
+static void sighandler(int sig_no) { 
+	LOG_WARN("receive SIGUSR1 singal");
+	exit(0); 
+} //for gprof need normal exit
 
 struct option long_options[] = {
 		{"label",			required_argument,	0,	'l'},
