@@ -60,7 +60,7 @@ util.get_node_status = function() {
 }
 
 util.sync_node_status = function(eid, cid, session_count) {
-    var msg = new node_8();
+    var msg = new node_3();
     msg.node_status = util.get_node_status();
     msg.node_status.session_count = session_count;
     send_msg(eid, cid, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);

@@ -51,17 +51,17 @@ function on_add_session(session) {
 	add_session(session);
 
 	//通知game增加session
-	var msg_4 = new node_4();
-	msg_4.gate_nid = global.node_info.node_id;
-	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg_4);
+	var msg = new node_5();
+	msg.gate_nid = global.node_info.node_id;
+	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg);
 }
 
 function on_remove_session(session) {
     log_info('gate remove_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
     //通知game移除session
-    send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, (new node_6()));
+    send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, (new node_7()));
 	//通知center移除session
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, (new node_7()));
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, (new node_8()));
 
 	global.cid_session_map.delete(session.client_cid);
 	global.sid_session_map.delete(session.sid);
@@ -130,7 +130,7 @@ function connect_gate(msg) {
 		return on_close_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
 	}
 	
-	var msg_res = new node_3();
+	var msg_res = new node_4();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
 	msg_res.client_cid = msg.cid;

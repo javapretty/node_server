@@ -128,7 +128,7 @@ function verify_token(msg) {
 	var game_len = global.game_list.length;
 	var index = hash_value % game_len;
 	var game_info = global.game_list[index];
-	var msg_res = new node_3();
+	var msg_res = new node_4();
 	msg_res.account = msg.account;
 	msg_res.client_cid = msg.client_cid;
 	msg_res.game_nid = game_info.node_id;

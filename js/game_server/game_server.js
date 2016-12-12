@@ -63,7 +63,7 @@ function on_add_session(sid, gate_nid) {
 	var gate_eid = gate_nid % 10000 + 4;
 	global.sid_gate_eid_map.set(sid, gate_eid);
     //增加session时候通知gate，gate可以通知client成功建立session
-	send_msg(gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, (new node_4()));
+	send_msg(gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, (new node_5()));
 }
 
 function on_remove_session(sid, error_code) {
@@ -77,7 +77,7 @@ function on_remove_session(sid, error_code) {
 	    global.sid_gate_eid_map.delete(sid);
 	}
 	//移除session时候通知gate清理session
-	var msg = new node_6();
+	var msg = new node_7();
 	msg.error_code = error_code;
 	send_msg(gate_eid, 0, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, sid, msg);
 }

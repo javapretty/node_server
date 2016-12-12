@@ -210,19 +210,19 @@ function node_9() {
 }
 
 function node_8() {
-	this.node_status = new Node_Status();
 }
 
 function node_7() {
-}
-
-function node_6() {
 	this.error_code = 0;
 }
 
-function node_5() {
+function node_6() {
 	this.login = false;
 	this.role_info = new Role_Info();
+}
+
+function node_5() {
+	this.gate_nid = 0;
 }
 
 function node_254() {
@@ -232,14 +232,14 @@ function node_254() {
 }
 
 function node_4() {
-	this.gate_nid = 0;
-}
-
-function node_3() {
 	this.account = "";
 	this.token = "";
 	this.client_cid = 0;
 	this.game_nid = 0;
+}
+
+function node_3() {
+	this.node_status = new Node_Status();
 }
 
 function node_2() {

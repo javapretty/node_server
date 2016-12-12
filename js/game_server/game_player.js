@@ -72,7 +72,7 @@ Game_Player.prototype.sync_login_to_client = function() {
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
-	var msg = new node_5();
+	var msg = new node_6();
 	msg.login = login;
 	msg.role_info = this.role_info;
 	send_msg_to_public(Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, msg);
