@@ -87,6 +87,10 @@ function process_game_client_msg(msg) {
 		return fetch_role(msg);
 	} else if (msg.msg_id == Msg.REQ_CREATE_ROLE) { 
 		return create_role(msg);
+	} else if (msg.msg_id == Msg.REQ_TEST_ARG) {
+	    return test_arg(msg);
+	} else if (msg.msg_id == Msg.REQ_TEST_SWITCH) {
+	    return test_switch(msg);
 	}
 
 	var game_player = global.sid_game_player_map.get(msg.sid);
@@ -109,12 +113,6 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_FETCH_BAG:
 		    game_player.bag.fetch_bag();
 		    break;
-	    case Msg.REQ_TEST_ARG:
-	        test_arg(msg, game_player);
-	        break;
-	    case Msg.REQ_TEST_SWITCH:
-	        test_switch(msg, game_player);
-	        break;
 	    default:
 		    send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
 		    break;
@@ -266,15 +264,15 @@ function res_generate_id(msg) {
 	}
 }
 
-function test_arg(msg, player) {
+function test_arg(msg) {
     var msg_res = new s2c_254();
     msg_res.int4_arg = msg.int4_arg;
     msg_res.uint8_arg = msg.uint8_arg;
     msg_res.uint4_arg = msg.uint4_arg;
-    player.send_success_msg(Msg.RES_TEST_ARG, msg_res);
+    send_msg(global.sid_gate_eid_map.get(msg.sid), 0, Msg.RES_TEST_ARG, Msg_Type.NODE_S2C, msg.sid, msg_res);
 }
 
-function test_switch(msg, player) {
+function test_switch(msg) {
     var msg_res = new s2c_255();
     if (msg.exist) {
         msg_res.int32_arg = msg.int32_arg;
@@ -294,5 +292,5 @@ function test_switch(msg, player) {
             break;
         }
     }
-    player.send_success_msg(Msg.RES_TEST_SWITCH, msg_res);
+    send_msg(global.sid_gate_eid_map.get(msg.sid), 0, Msg.RES_TEST_SWITCH, Msg_Type.NODE_S2C, msg.sid, msg_res);
 }

@@ -14,9 +14,10 @@
     <arg type="float" name="cpu_percent"/>
     <arg type="int" bit="32" name="vm_size"/>
     <arg type="int" bit="32" name="vm_rss"/>
-    <arg type="int" bit="32" name="vm_stk"/>
-    <arg type="int" bit="32" name="vm_exe"/>
     <arg type="int" bit="32" name="vm_data"/>
+    <arg type="int" bit="32" name="heap_total"/>
+    <arg type="int" bit="32" name="heap_used"/>
+    <arg type="int" bit="32" name="external_mem"/>
   </Node_Status>
   
 	<http_1 msg_id="1" msg_name="HTTP_CREATE_NODE_PROCESS">
