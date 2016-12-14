@@ -87,10 +87,6 @@ function process_game_client_msg(msg) {
 		return fetch_role(msg);
 	} else if (msg.msg_id == Msg.REQ_CREATE_ROLE) { 
 		return create_role(msg);
-	} else if (msg.msg_id == Msg.REQ_TEST_ARG) {
-	    return test_arg(msg);
-	} else if (msg.msg_id == Msg.REQ_TEST_SWITCH) {
-	    return test_switch(msg);
 	}
 
 	var game_player = global.sid_game_player_map.get(msg.sid);
@@ -113,6 +109,12 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_FETCH_BAG:
 		    game_player.bag.fetch_bag();
 		    break;
+	    case Msg.REQ_TEST_ARG:
+	        test_arg(msg, game_player);
+	        break;
+	    case Msg.REQ_TEST_SWITCH:
+	        test_switch(msg, game_player);
+	        break;
 	    default:
 		    send_msg(Endpoint.GAME_PUBLIC_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
 		    break;
@@ -264,33 +266,46 @@ function res_generate_id(msg) {
 	}
 }
 
-function test_arg(msg) {
-    var msg_res = new s2c_254();
-    msg_res.int4_arg = msg.int4_arg;
-    msg_res.uint8_arg = msg.uint8_arg;
-    msg_res.uint4_arg = msg.uint4_arg;
-    send_msg(global.sid_gate_eid_map.get(msg.sid), 0, Msg.RES_TEST_ARG, Msg_Type.NODE_S2C, msg.sid, msg_res);
+function test_arg(msg, player) {
+    player.msg.int4_arg = msg.int4_arg;
+    player.msg.uint8_arg = msg.uint8_arg;
+    player.msg.uint4_arg = msg.uint4_arg;
+    player.send_success_msg(Msg.RES_TEST_ARG);
 }
 
-function test_switch(msg) {
-    var msg_res = new s2c_255();
+function test_switch(msg, player) {
     if (msg.exist) {
-        msg_res.int32_arg = msg.int32_arg;
+        player.msg.int32_arg = msg.int32_arg;
     }
-    msg_res.type = msg.type;
+    player.msg.type = msg.type;
     switch (msg.type) {
         case 1: {
+            if (typeof player.msg.int64_vec == "object") {
+                player.msg.int64_vec.length = 0;
+            } else {
+                log_warn("test_switch, new int64_vec, sid:", msg.sid);
+                player.msg.int64_vec = new Array();
+            }
+
+            player.msg.int64_vec = new Array();
             for (var i = 0; i < 2; ++i) {
-                msg_res.int64_vec.push(msg.int64_arg + i);
+                player.msg.int64_vec.push(msg.int64_arg + i);
             }
             break;
         }
         case 2: {
+            if (typeof player.msg.string_vec == "object") {
+                player.msg.string_vec.length = 0;
+            } else {
+                log_warn("test_switch, new string_vec, sid:", msg.sid);
+                player.msg.string_vec = new Array();
+            }
+
             for (var i = 0; i < 2; ++i) {
-                msg_res.string_vec.push(msg.string_arg + "_" + i);
+                player.msg.string_vec.push(msg.string_arg + "_" + i);
             }
             break;
         }
     }
-    send_msg(global.sid_gate_eid_map.get(msg.sid), 0, Msg.RES_TEST_SWITCH, Msg_Type.NODE_S2C, msg.sid, msg_res);
+    player.send_success_msg(Msg.RES_TEST_SWITCH);
 }
