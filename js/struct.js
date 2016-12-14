@@ -123,6 +123,7 @@ function Role_Info() {
 	this.logout_time = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
+	this.pos = new Position();
 }
 
 function Create_Role_Info() {
@@ -130,6 +131,11 @@ function Create_Role_Info() {
 	this.role_name = "";
 	this.gender = 0;
 	this.career = 0;
+}
+
+function Position() {
+	this.x = 0;
+	this.y = 0;
 }
 
 function node_255() {
@@ -313,6 +319,25 @@ function s2c_201() {
 
 function c2s_201() {
 	this.guild_name = "";
+}
+
+function s2c_12() {
+	this.sid = 0;
+}
+
+function s2c_11() {
+	this.sid = 0;
+	this.role_name = "";
+	this.level = 0;
+}
+
+function s2c_10() {
+	this.sid = 0;
+	this.move_path = new Array();
+}
+
+function c2s_10() {
+	this.move_path = new Array();
 }
 
 function s2c_9() {

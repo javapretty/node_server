@@ -7,6 +7,7 @@
 require("js/game_server/game_player.js");
 require("js/game_server/bag.js");
 require("js/game_server/mail.js");
+require("js/game_server/scene_entity.js");
 
 function init(node_info) {
     log_info('game_server init, node_type:', node_info.node_type, ' node_id:', node_info.node_id, ' node_name:', node_info.node_name);
@@ -18,6 +19,8 @@ function init(node_info) {
 	send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 	send_msg(Endpoint.GAME_GATE1_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 	send_msg(Endpoint.GAME_GATE2_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);	
+
+	create_aoi_manager(1001);//测试AOI场景
 }
 
 function on_hotupdate(file_path) { }
@@ -106,6 +109,9 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_FETCH_BAG:
 		    game_player.bag.fetch_bag();
 		    break;
+		case Msg.REQ_MOVE:
+			game_player.move(msg);
+			break;
 	    case Msg.REQ_TEST_SERVER:
 	        test_server(msg, game_player);
 	        break;

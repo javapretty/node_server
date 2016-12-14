@@ -5,13 +5,14 @@
 */
 
 function Game_Player() {
-	this.sync_player_data_tick = util.now_sec();
+	this.sync_player_data_tick = util.now_msec();
 	this.gate_eid = 0;
 	this.sid = 0;
 	this.is_change = false;
 	this.role_info = new Role_Info();
 	this.mail = new Mail();
 	this.bag = new Bag();
+	this.entity = new Scene_Entity(this);
 }
 
 //玩家上线，加载数据
@@ -23,7 +24,8 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	this.role_info.login_time = util.now_sec();
 	this.mail.load_data(this, player_data);
 	this.bag.load_data(this, player_data);
-	
+	this.entity.enter_scene(1001, this.role_info.pos.x, this.role_info.pos.y);
+
 	this.sync_login_to_client();
 	this.sync_login_logout_to_public(true);
 	global.sid_game_player_map.set(this.sid, this);
@@ -36,7 +38,10 @@ Game_Player.prototype.logout = function() {
 	log_info('********game_player logout, role_id:', this.role_info.role_id, " role_name:", this.role_info.role_name, ' sid:', this.sid);
 	this.role_info.logout_time = util.now_sec();
 	global.logout_map.set(this.sid, this.role_info.logout_time);
-	
+	this.role_info.pos.x = this.entity.pos.x;
+	this.role_info.pos.y = this.entity.pos.y;
+	this.entity.logout();
+
 	this.sync_player_data_to_db(true);
 	this.sync_logout_to_log();
 	this.sync_login_logout_to_public(false);
@@ -49,11 +54,12 @@ Game_Player.prototype.logout = function() {
 Game_Player.prototype.tick = function(now) {
 	//同步玩家数据到数据库
 	if(this.is_change){
-		if (now - this.sync_player_data_tick >= 30) {
+		if (now - this.sync_player_data_tick >= 30000) {
 			this.sync_player_data_to_db(false);
 			this.sync_player_data_tick = now;
 		}
 	}
+	this.entity.on_move(now);
 }
 
 Game_Player.prototype.send_success_msg = function(msg_id, msg) {
@@ -122,3 +128,18 @@ Game_Player.prototype.set_guild_info = function(msg) {
 	log_info('set_guild_info, role_id:', this.role_info.role_id, " role_name:", this.role_info.role_name, 
 	" guild_id:", this.role_info.guild_id, " guild_name:", this.role_info.guild_name);
 }
+
+//测试路径检测
+function check_path(move_path) {
+	return true;
+} 
+
+Game_Player.prototype.move = function(msg) {
+	log_info("PLAYER MOVE");
+	if(!check_path(msg.move_path)) {
+		log_error("check_path faire");
+		return;
+	}
+	this.entity.move_path = msg.move_path;
+}
+

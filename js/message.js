@@ -30,6 +30,10 @@ if (typeof Msg == "undefined") {
 	Msg.REQ_DISSOVE_GUILD = 202;
 	Msg.RES_CREATE_GUILD = 201;
 	Msg.REQ_CREATE_GUILD = 201;
+	Msg.RES_LEAVE_ZONE = 12;
+	Msg.RES_ENTER_ZONE = 11;
+	Msg.RES_MOVE = 10;
+	Msg.REQ_MOVE = 10;
 	Msg.RES_FETCH_BAG = 9;
 	Msg.REQ_FETCH_BAG = 9;
 	Msg.RES_DEL_MAIL = 8;
