@@ -13,9 +13,6 @@ function init(node_info) {
 
 	//加载公共数据
 	load_public_data();
-	var msg = new node_2();
-	msg.node_info = node_info;
-	send_msg(Endpoint.PUBLIC_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
 
 function on_hotupdate(file_path) { }
@@ -23,8 +20,6 @@ function on_hotupdate(file_path) { }
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	log_debug('public_server on_msg, cid:',msg.cid,' msg_type:',msg.msg_type,' msg_id:',msg.msg_id,' sid:', msg.sid);
-	
 	if (msg.msg_type == Msg_Type.NODE_C2S) {
 		process_public_client_msg(msg);
 	} else if (msg.msg_type == Msg_Type.NODE_MSG) {

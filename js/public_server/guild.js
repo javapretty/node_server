@@ -48,7 +48,7 @@ Guild_Manager.prototype.delete_guild = function(){
 	msg.struct_name = "Guild_Info";
 	msg.index_list = this.delete_list;
 	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DELETE_DATA, 0, msg);
-	this.delete_list = [];
+	this.delete_list.length = 0;
 }
 
 Guild_Manager.prototype.save_data_handler = function() {
@@ -100,9 +100,8 @@ Guild_Manager.prototype.db_create_guild = function(player, guild_info) {
 	this.guild_map.set(guild_info.guild_id, guild);
 	this.sync_guild_info_to_game(player, guild_info.guild_id, guild_info.guild_name);
 	
-	var msg_res = new s2c_201();
-	msg_res.guild_info = guild_info;
-	player.send_success_msg(Msg.RES_CREATE_GUILD, msg_res);
+	player.msg.guild_info = guild_info;
+	player.send_success_msg(Msg.RES_CREATE_GUILD);
 }
 
 Guild_Manager.prototype.dissove_guild = function(player, msg) {
@@ -121,7 +120,6 @@ Guild_Manager.prototype.dissove_guild = function(player, msg) {
 	this.guild_map.delete(player.role_info.guild_id);
 	this.delete_list.push(player.role_info.guild_id);
 	
-	var msg_res = new s2c_202();
-	msg_res.guild_id = player.role_info.guild_id;
-	player.send_success_msg(Msg.RES_DISSOVE_GUILD, msg_res);
+	player.msg.guild_id = player.role_info.guild_id;
+	player.send_success_msg(Msg.RES_DISSOVE_GUILD);
 }

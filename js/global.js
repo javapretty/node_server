@@ -29,12 +29,12 @@ global.timer = new Timer();
 global.sid_idx = 0;
 //sid set
 global.sid_set = new Set();
-//node_id--node_info
-global.node_map = new Map();
 //gate列表
 global.gate_list = new Array();
 //game列表
 global.game_list = new Array();
+//master cid列表
+global.master_list = new Array();
 //account--Token_Info
 global.account_token_map = new Map();
 

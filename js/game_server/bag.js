@@ -19,15 +19,20 @@ Bag.prototype.save_data = function(player_data) {
 }
 
 Bag.prototype.fetch_bag = function() {
-    var msg_res = new s2c_9();
-    for (var value of this.bag_info.item_map.values()) {
-        msg_res.item_list.push(value);
+    if (typeof this.game_player.msg.item_list == "object") {
+        this.game_player.msg.item_list.length = 0;
+    } else {
+        this.game_player.msg.item_list = new Array();
     }
-    this.game_player.send_success_msg(Msg.RES_FETCH_BAG, msg_res);
+
+    for (var value of this.bag_info.item_map.values()) {
+        this.game_player.msg.item_list.push(value);
+    }
+    this.game_player.send_success_msg(Msg.RES_FETCH_BAG);
 }
 	
 Bag.prototype.bag_add_money = function(copper, gold) {
-    if(typeof(copper) != "number" || typeof(gold) != "number") {
+    if(typeof copper != "number" || typeof gold != "number") {
         return Error_Code.CLIENT_PARAM_ERROR;
     }
 	this.bag_info.copper += copper;
@@ -37,7 +42,7 @@ Bag.prototype.bag_add_money = function(copper, gold) {
 }
 	
 Bag.prototype.bag_sub_money = function(copper, gold) {
-    if(typeof(copper) != "number" || typeof(gold) != "number") {
+    if(typeof copper != "number" || typeof gold != "number") {
         return Error_Code.CLIENT_PARAM_ERROR;
     }
 	if (this.bag_info.copper < copper) {

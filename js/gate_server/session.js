@@ -15,10 +15,11 @@ function Session() {
   	this.latency = 0;			//上次心跳到本次心跳经过的时间
 }
 
-Session.prototype.on_heartbeat = function(msg) {
+Session.prototype.on_heartbeat = function (msg) {
 	this.last_hb_time = util.now_sec();
 	this.latency = this.last_hb_time - msg.client_time;
 	if (this.latency < 0) this.latency = 0;
+
 	var msg_res = new s2c_1();
 	msg_res.server_time = this.last_hb_time;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_HEARTBEAT, Msg_Type.S2C, 0, msg_res);

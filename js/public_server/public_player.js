@@ -5,15 +5,15 @@
 */
 
 function Public_Player() {
-	this.game_cid = 0;
-	this.sid = 0;
+	this.game_cid = 0;          //玩家所在的game服务器cid
+	this.sid = 0;               //玩家sid
+	this.msg = new Object();    //玩家消息对象，所有消息的发送通过此对象
 	this.role_info = new Role_Info();
 }
 
 //玩家上线，加载数据
-Public_Player.prototype.login = function(game_cid, sid, role_info) {
-	log_info('********public_player login, game_cid:', game_cid, ' sid:', sid, ' role_id:', role_info.role_id);
-
+Public_Player.prototype.login = function (game_cid, sid, role_info) {
+    log_info("public_player login, sid:", sid, " role_id:", role_info.role_id, " role_name:", role_info.role_name, " game_cid:", game_cid);
 	this.game_cid = game_cid;
 	this.sid = sid;
 	this.role_info = role_info;
@@ -24,18 +24,17 @@ Public_Player.prototype.login = function(game_cid, sid, role_info) {
 }
 
 //玩家离线，保存数据
-Public_Player.prototype.logout = function() {
-	log_info('********public_player logout, role_id:', this.role_info.role_id, ' sid:', this.sid, " role_name:", this.role_info.role_name);
+Public_Player.prototype.logout = function () {
+    log_info("public_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name, " game_cid:", this.game_cid);
 	global.sid_public_player_map.delete(this.sid);
 	global.role_id_public_player_map.delete(this.role_info.role_id);
 }
 
-Public_Player.prototype.send_success_msg = function(msg_id, msg) {
-	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, msg_id, Msg_Type.NODE_S2C, this.sid, msg);
+Public_Player.prototype.send_success_msg = function(msg_id) {
+    send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, msg_id, Msg_Type.NODE_S2C, this.sid, this.msg);
 }
 
 Public_Player.prototype.send_error_msg = function(error_code) {
-	var msg = new s2c_5();
-	msg.error_code = error_code;
-	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
+	this.msg.error_code = error_code;
+	send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, this.msg);
 }

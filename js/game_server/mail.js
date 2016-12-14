@@ -19,20 +19,30 @@ Mail.prototype.save_data = function(player_data) {
 }
 
 Mail.prototype.fetch_mail = function() {
-	var msg_res = new s2c_6();
-	for (var value of this.mail_info.mail_map.values()) {
-  		msg_res.mail_list.push(value);
-	}
-  this.game_player.send_success_msg(Msg.RES_MAIL_INFO, msg_res);
+    if (typeof this.game_player.msg.mail_list == "object") {
+        this.game_player.msg.mail_list.length = 0;
+    } else {
+        this.game_player.msg.mail_list = new Array();
+    }
+
+    for (var value of this.mail_info.mail_map.values()) {
+  	    this.game_player.msg.mail_list.push(value);
+    }
+    this.game_player.send_success_msg(Msg.RES_MAIL_INFO);
 }
 
 Mail.prototype.pickup_mail = function(msg) {
-	var msg_res = new s2c_7();
+    if (typeof this.game_player.msg.mail_id_list == "object") {
+        this.game_player.msg.mail_id_list.length = 0;
+    } else {
+        this.game_player.msg.mail_id_list = new Array();
+    }
+
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);
 			if (result == 0) {
-				msg_res.mail_id_list.push(key);
+			    this.game_player.msg.mail_id_list.push(key);
 			}
     	});
 	} else {
@@ -43,19 +53,24 @@ Mail.prototype.pickup_mail = function(msg) {
 		
 		var result = this.pickup_item_money(value);
 		if (result == 0) {
-			msg_res.mail_id_list.push(msg.mail_id);
+		    this.game_player.msg.mail_id_list.push(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_PICKUP_MAIL, msg_res);
+	this.game_player.send_success_msg(Msg.RES_PICKUP_MAIL);
 }
 
 Mail.prototype.delete_mail = function(msg) {
-	var msg_res = new s2c_8();
+    if (typeof this.game_player.msg.mail_id_list == "object") {
+        this.game_player.msg.mail_id_list.length = 0;
+    } else {
+        this.game_player.msg.mail_id_list = new Array();
+    }
+
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);
 			if (result == 0) {
-				msg_res.mail_id_list.push(key);
+			    this.game_player.msg.mail_id_list.push(key);
 			}
     	});
     	this.mail_info.mail_map.clear();
@@ -67,11 +82,11 @@ Mail.prototype.delete_mail = function(msg) {
 		
 		var result = this.pickup_item_money(value);
 		if (result == 0) {
-			msg_res.mail_id_list.push(msg.mail_id);
+		    this.game_player.msg.mail_id_list.push(msg.mail_id);
 			this.mail_info.mail_map.delete(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_DEL_MAIL, msg_res);
+	this.game_player.send_success_msg(Msg.RES_DEL_MAIL);
 }
 
 Mail.prototype.pickup_item_money = function(mail_detail) {	
@@ -86,5 +101,6 @@ Mail.prototype.pickup_item_money = function(mail_detail) {
 	}
 	
 	mail_detail.pickup = true;
+	this.game_player.data_change = true;
 	return 0;
 }

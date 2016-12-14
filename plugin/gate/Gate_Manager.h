@@ -24,6 +24,7 @@ struct Session {
 class Gate_Manager: public Thread {
 public:
 	typedef Object_Pool<Session, Mutex_Lock> Session_Pool;
+	typedef Mutex_Lock Session_Map_Lock;
 	typedef std::unordered_map<uint, Session *> Session_Map;
 	typedef Buffer_List<Mutex_Lock> Data_List;
 public:
@@ -35,8 +36,6 @@ public:
 	inline Session *pop_session(void) { return session_pool_.pop(); }
 	int add_session(Session *session);
 	int remove_session(int cid);
-	Session *find_session_by_cid(int cid);
-	Session *find_session_by_sid(uint sid);
 
 	inline void push_buffer(Byte_Buffer *buffer) {
 		notify_lock_.lock();
@@ -44,7 +43,7 @@ public:
 		notify_lock_.signal();
 		notify_lock_.unlock();
 	}
-	//传递消息，用于路由节点
+	//传递消息
 	int transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer);
 
 private:
@@ -57,6 +56,7 @@ private:
 	static Gate_Manager *instance_;
 
 	Session_Pool session_pool_;
+	Session_Map_Lock session_map_lock_;
 	Session_Map cid_session_map_;	//cid--session_info
 	Session_Map sid_session_map_;	//sid--session_info
 

@@ -216,19 +216,19 @@ function node_9() {
 }
 
 function node_8() {
-	this.node_status = new Node_Status();
 }
 
 function node_7() {
-}
-
-function node_6() {
 	this.error_code = 0;
 }
 
-function node_5() {
+function node_6() {
 	this.login = false;
 	this.role_info = new Role_Info();
+}
+
+function node_5() {
+	this.gate_nid = 0;
 }
 
 function node_254() {
@@ -238,14 +238,14 @@ function node_254() {
 }
 
 function node_4() {
-	this.gate_nid = 0;
-}
-
-function node_3() {
 	this.account = "";
 	this.token = "";
 	this.client_cid = 0;
 	this.game_nid = 0;
+}
+
+function node_3() {
+	this.node_status = new Node_Status();
 }
 
 function node_2() {
@@ -284,26 +284,41 @@ function Node_Status() {
 	this.send_per_sec = 0;
 	this.recv_per_sec = 0;
 	this.task_count = 0;
+	this.session_count = 0;
 	this.cpu_percent = 0;
 	this.vm_size = 0;
 	this.vm_rss = 0;
-	this.vm_stk = 0;
-	this.vm_exe = 0;
 	this.vm_data = 0;
+	this.heap_total = 0;
+	this.heap_used = 0;
+	this.external_mem = 0;
 }
 
 function s2c_255() {
+	this.int32_arg = 0;
 	this.int64_vec = new Array();
 	this.string_vec = new Array();
 	this.type = 0;
 }
 
 function c2s_255() {
-	this.int_arg = 0;
-	this.int_exist = false;
+	this.int32_arg = 0;
+	this.exist = false;
 	this.int64_arg = 0;
 	this.string_arg = "";
 	this.type = 0;
+}
+
+function s2c_254() {
+	this.int4_arg = 0;
+	this.uint8_arg = 0;
+	this.uint4_arg = 0;
+}
+
+function c2s_254() {
+	this.int4_arg = 0;
+	this.uint8_arg = 0;
+	this.uint4_arg = 0;
 }
 
 function s2c_202() {
