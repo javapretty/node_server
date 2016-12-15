@@ -9,7 +9,7 @@ function init(node_info) {
     global.node_info = node_info;
     global.timer.init();
 
-    var msg = new node_2();
+    var msg = new Object();
     msg.node_info = node_info;
     send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
@@ -69,7 +69,8 @@ function process_master_http_msg(msg) {
 }
 
 function req_node_status(msg) {
-    var msg_res = new http_201();
+    var msg_res = new Object();
+    msg_res.node_list = new Array();
     for (var value of global.node_status_map.values()) {
         msg_res.node_list.push(value);
     }

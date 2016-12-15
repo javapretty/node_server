@@ -9,8 +9,7 @@ function Game_Player() {
 	this.sid = 0;               //玩家sid
 	this.data_change = false;   //玩家数据是否改变
 	this.save_data_tick = util.now_sec();   //玩家数据保存tick
-	this.msg = new Object();    //玩家消息对象，所有消息的发送通过此对象
-	this.role_info = new Role_Info();
+	this.role_info = null;
 	this.mail = new Mail();
 	this.bag = new Bag();
 }
@@ -56,64 +55,65 @@ Game_Player.prototype.tick = function(now) {
 	}
 }
 
-Game_Player.prototype.send_success_msg = function(msg_id) {
-	send_msg(this.gate_eid, 0 , msg_id, Msg_Type.NODE_S2C, this.sid, this.msg);
+Game_Player.prototype.send_success_msg = function(msg_id, msg) {
+	send_msg(this.gate_eid, 0 , msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
 Game_Player.prototype.send_error_msg = function(error_code) {
-    this.msg.error_code = error_code;
-    send_msg(this.gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, this.msg);
+	var msg = new Object();
+    msg.error_code = error_code;
+    send_msg(this.gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
 Game_Player.prototype.sync_login_to_client = function() {
-	this.msg.role_info = this.role_info;
-	this.send_success_msg(Msg.RES_ROLE_INFO);
+	var msg = new Object();
+	msg.role_info = this.role_info;
+	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
-    this.msg.login = login;
-    this.msg.role_info = this.role_info;
-	send_msg_to_public(Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, this.msg);
+	var msg = new Object();
+    msg.login = login;
+    msg.role_info = this.role_info;
+	send_msg_to_public(Msg.SYNC_GAME_PUBLIC_LOGIN_LOGOUT, this.sid, msg);
 }
 
 Game_Player.prototype.sync_player_data_to_db = function (logout) {
     log_info("sync_player_data_to_db logout:",logout," sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name, " gate_eid:", this.gate_eid);
+    var msg = new Object();
 	if(logout) {
-	    this.msg.save_type = Save_Type.SAVE_DB_CLEAR_CACHE;
+	    msg.save_type = Save_Type.SAVE_DB_CLEAR_CACHE;
 	} else {
-	    this.msg.save_type = Save_Type.SAVE_CACHE;
+	    msg.save_type = Save_Type.SAVE_CACHE;
 	}
-	this.msg.vector_data = false;
-	this.msg.db_id = DB_Id.GAME;
-	this.msg.struct_name = "Player_Data";
-	this.msg.data_type = DB_Data_Type.PLAYER;
-	if (typeof this.msg.player_data != "object") {
-	    this.msg.player_data = new Player_Data();
-	}
-	this.msg.player_data.role_info = this.role_info;
-	this.mail.save_data(this.msg.player_data);
-	this.bag.save_data(this.msg.player_data);
-	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, this.msg);
+	msg.vector_data = false;
+	msg.db_id = DB_Id.GAME;
+	msg.struct_name = "Player_Data";
+	msg.data_type = DB_Data_Type.PLAYER;
+	msg.player_data = new Object();
+	msg.player_data.role_info = this.role_info;
+	this.mail.save_data(msg.player_data);
+	this.bag.save_data(msg.player_data);
+	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);
 }
 
 Game_Player.prototype.sync_logout_to_log = function() {
-    this.msg.save_type = Save_Type.SAVE_DB_CLEAR_CACHE;
-    this.msg.vector_data = false;
-    this.msg.db_id = DB_Id.LOG;
-    this.msg.struct_name = "Logout_Info";
-    this.msg.data_type = DB_Data_Type.LOGOUT;
-    if (typeof this.msg.logout_info != "object") {
-        this.msg.logout_info = new Logout_Info();
-    }
-    this.msg.logout_info.role_id = this.role_info.role_id;
-    this.msg.logout_info.role_name = this.role_info.role_name;
-    this.msg.logout_info.account = this.role_info.account;
-    this.msg.logout_info.level = this.role_info.level;
-    this.msg.logout_info.exp = this.role_info.exp;
-    this.msg.logout_info.create_time = this.role_info.create_time;
-    this.msg.logout_info.login_time = this.role_info.login_time;
-    this.msg.logout_info.logout_time = this.role_info.logout_time;
-	send_msg_to_log(Msg.SYNC_SAVE_DB_DATA, this.sid, this.msg);
+	var msg = new Object();
+    msg.save_type = Save_Type.SAVE_DB_CLEAR_CACHE;
+    msg.vector_data = false;
+    msg.db_id = DB_Id.LOG;
+    msg.struct_name = "Logout_Info";
+    msg.data_type = DB_Data_Type.LOGOUT;
+    msg.logout_info = new Object();
+    msg.logout_info.role_id = this.role_info.role_id;
+    msg.logout_info.role_name = this.role_info.role_name;
+    msg.logout_info.account = this.role_info.account;
+    msg.logout_info.level = this.role_info.level;
+    msg.logout_info.exp = this.role_info.exp;
+    msg.logout_info.create_time = this.role_info.create_time;
+    msg.logout_info.login_time = this.role_info.login_time;
+    msg.logout_info.logout_time = this.role_info.logout_time;
+	send_msg_to_log(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);
 }
 
 Game_Player.prototype.set_guild_info = function(msg) {

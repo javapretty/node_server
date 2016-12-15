@@ -38,7 +38,7 @@ util.get_node_status = function() {
     var node_status = get_node_status();
     var proc_info = get_proc_info();
     var heap_info = get_heap_info();
-    var all_node_status = new Node_Status();
+    var all_node_status = new Object();
     //进程状态信息
     all_node_status.node_type = node_status.node_type;
     all_node_status.node_id = node_status.node_id;
@@ -62,7 +62,7 @@ util.get_node_status = function() {
 }
 
 util.sync_node_status = function(eid, cid, session_count) {
-    var msg = new node_3();
+    var msg = new Object();
     msg.node_status = util.get_node_status();
     msg.node_status.session_count = session_count;
     send_msg(eid, cid, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);

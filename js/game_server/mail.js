@@ -6,7 +6,7 @@
 
 function Mail() {
 	this.game_player = null;
-	this.mail_info = new Mail_Info();
+	this.mail_info = null;
 }
 
 Mail.prototype.load_data = function(game_player, player_data) {
@@ -19,30 +19,22 @@ Mail.prototype.save_data = function(player_data) {
 }
 
 Mail.prototype.fetch_mail = function() {
-    if (typeof this.game_player.msg.mail_list == "object") {
-        this.game_player.msg.mail_list.length = 0;
-    } else {
-        this.game_player.msg.mail_list = new Array();
-    }
-
+	var msg_res = new Object();
+	msg_res.mail_list = new Array();
     for (var value of this.mail_info.mail_map.values()) {
-  	    this.game_player.msg.mail_list.push(value);
+  	    msg_res.mail_list.push(value);
     }
-    this.game_player.send_success_msg(Msg.RES_MAIL_INFO);
+    this.game_player.send_success_msg(Msg.RES_MAIL_INFO, msg_res);
 }
 
 Mail.prototype.pickup_mail = function(msg) {
-    if (typeof this.game_player.msg.mail_id_list == "object") {
-        this.game_player.msg.mail_id_list.length = 0;
-    } else {
-        this.game_player.msg.mail_id_list = new Array();
-    }
-
+	var msg_res = new Object();
+	msg_res.mail_id_list = new Array();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);
 			if (result == 0) {
-			    this.game_player.msg.mail_id_list.push(key);
+			    msg_res.mail_id_list.push(key);
 			}
     	});
 	} else {
@@ -53,24 +45,20 @@ Mail.prototype.pickup_mail = function(msg) {
 		
 		var result = this.pickup_item_money(value);
 		if (result == 0) {
-		    this.game_player.msg.mail_id_list.push(msg.mail_id);
+		    msg_res.mail_id_list.push(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_PICKUP_MAIL);
+	this.game_player.send_success_msg(Msg.RES_PICKUP_MAIL, msg_res);
 }
 
 Mail.prototype.delete_mail = function(msg) {
-    if (typeof this.game_player.msg.mail_id_list == "object") {
-        this.game_player.msg.mail_id_list.length = 0;
-    } else {
-        this.game_player.msg.mail_id_list = new Array();
-    }
-
+	var msg_res = new Object();
+	msg_res.mail_id_list = new Array();
 	if (msg.mail_id == 0) {
 		this.mail_info.mail_map.forEach(function(value, key, map) {
 			var result = this.pickup_item_money(value);
 			if (result == 0) {
-			    this.game_player.msg.mail_id_list.push(key);
+			    msg_res.mail_id_list.push(key);
 			}
     	});
     	this.mail_info.mail_map.clear();
@@ -82,11 +70,11 @@ Mail.prototype.delete_mail = function(msg) {
 		
 		var result = this.pickup_item_money(value);
 		if (result == 0) {
-		    this.game_player.msg.mail_id_list.push(msg.mail_id);
+		    msg_res.mail_id_list.push(msg.mail_id);
 			this.mail_info.mail_map.delete(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_DEL_MAIL);
+	this.game_player.send_success_msg(Msg.RES_DEL_MAIL, msg_res);
 }
 
 Mail.prototype.pickup_item_money = function(mail_detail) {	

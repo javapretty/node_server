@@ -13,7 +13,7 @@ function init(node_info) {
     global.node_info = node_info;
 	global.timer.init();
 
-	var msg = new node_2();
+	var msg = new Object();
 	msg.node_info = node_info;
 	send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 	send_msg(Endpoint.GAME_GATE1_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
@@ -63,7 +63,7 @@ function on_add_session(sid, gate_nid) {
 	var gate_eid = gate_nid % 10000 + 4;
 	global.sid_gate_eid_map.set(sid, gate_eid);
     //增加session时候通知gate，gate可以通知client成功建立session
-	send_msg(gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, (new node_5()));
+	send_msg(gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, {});
 }
 
 function on_remove_session(sid, error_code) {
@@ -77,7 +77,7 @@ function on_remove_session(sid, error_code) {
 	    global.sid_gate_eid_map.delete(sid);
 	}
 	//移除session时候通知gate清理session
-	var msg = new node_7();
+	var msg = new Object();
 	msg.error_code = error_code;
 	send_msg(gate_eid, 0, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, sid, msg);
 }
@@ -167,7 +167,7 @@ function process_db_ret_code(msg) {
         case Msg.SYNC_SELECT_DB_DATA: {
             if (msg.ret_code == DB_Ret_Code.DATA_NOT_EXIST && msg.query_name == "role_id") {
                 var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-                var msg_res = new s2c_5();
+                var msg_res = new Object();
                 msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
                 send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
             }
@@ -193,7 +193,7 @@ function fetch_role(msg) {
 		return on_remove_session(msg.sid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
-	var msg_res = new node_246();
+	var msg_res = new Object();
 	msg_res.db_id = DB_Id.GAME;
 	msg_res.struct_name = "Role_Info";
 	msg_res.condition_name = "account";
@@ -209,7 +209,7 @@ function res_select_db_data(msg) {
         case Select_Data_Type.INT64: {
             if (msg.query_name == "role_id" && msg.query_value > 0) {
                 log_info('query role_id success sid:', msg.sid, ' role_id:', msg.query_value);
-                var msg_res = new node_250();
+                var msg_res = new Object();
                 msg_res.db_id = DB_Id.GAME;
                 msg_res.key_index = msg.query_value;
                 msg_res.struct_name = "Player_Data";
@@ -232,7 +232,7 @@ function create_role(msg) {
     log_info('create_role, account:', msg.role_info.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
 	//将创建角色信息保存起来，等待从db生成role_id后，将角色信息保存到db
 	global.sid_create_role_map.set(msg.sid, msg.role_info);
-	var msg_res = new node_248();
+	var msg_res = new Object();
 	msg_res.type = "role_id";
 	send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
 }
@@ -242,21 +242,39 @@ function res_generate_id(msg) {
         on_remove_session(msg.sid, Error_Code.GENERATE_ID_ERROR);
     } else {
 		//创建角色时候，既保存到缓存，又保存到db
-		var msg_res = new node_251();
+		var msg_res = new Object();
 		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
+		msg_res.vector_data = false;
 		msg_res.db_id = DB_Id.GAME;
 		msg_res.struct_name = "Player_Data";
 		msg_res.data_type = DB_Data_Type.PLAYER;
+		//初始化玩家数据
 		var role_info = global.sid_create_role_map.get(msg.sid);
+		msg_res.player_data = new Object();
+		msg_res.player_data.role_info = new Object();
 		msg_res.player_data.role_info.role_id = msg.id;
 		msg_res.player_data.role_info.account = role_info.account;
 		msg_res.player_data.role_info.role_name = role_info.role_name;
 		msg_res.player_data.role_info.level = 1;
+		msg_res.player_data.role_info.exp = 0;
 		msg_res.player_data.role_info.gender = role_info.gender;
 		msg_res.player_data.role_info.career = role_info.career;
 		msg_res.player_data.role_info.create_time = util.now_sec();
+		msg_res.player_data.role_info.login_time = msg_res.player_data.role_info.create_time;
+		msg_res.player_data.role_info.logout_time = 0;
+		msg_res.player_data.role_info.guild_id = 0;
+		msg_res.player_data.role_info.guild_name = "";
+		//初始化背包数据
+		msg_res.player_data.bag_info = new Object();
 		msg_res.player_data.bag_info.role_id = msg.id;
+		msg_res.player_data.bag_info.copper = 0;
+		msg_res.player_data.bag_info.gold = 0;
+		msg_res.player_data.bag_info.item_map = new Map();
+		//初始化邮件数据
+		msg_res.player_data.mail_info = new Object();
 		msg_res.player_data.mail_info.role_id = msg.id;
+		msg_res.player_data.mail_info.total_count = 0;
+		msg_res.player_data.mail_info.mail_map = new Map();
 		send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg_res);
 		
 		//创建角色时候，玩家成功登陆游戏
@@ -267,45 +285,34 @@ function res_generate_id(msg) {
 }
 
 function test_arg(msg, player) {
-    player.msg.int4_arg = msg.int4_arg;
-    player.msg.uint8_arg = msg.uint8_arg;
-    player.msg.uint4_arg = msg.uint4_arg;
-    player.send_success_msg(Msg.RES_TEST_ARG);
+	var msg_res = new Object();
+    msg_res.int4_arg = msg.int4_arg;
+    msg_res.uint8_arg = msg.uint8_arg;
+    msg_res.uint4_arg = msg.uint4_arg;
+    player.send_success_msg(Msg.RES_TEST_ARG, msg_res);
 }
 
 function test_switch(msg, player) {
-    if (msg.exist) {
-        player.msg.int32_arg = msg.int32_arg;
+	var msg_res = new Object();
+    if (msg.int32_arg != null) {
+        msg_res.int32_arg = msg.int32_arg;
     }
-    player.msg.type = msg.type;
+    msg_res.type = msg.type;
     switch (msg.type) {
         case 1: {
-            if (typeof player.msg.int64_vec == "object") {
-                player.msg.int64_vec.length = 0;
-            } else {
-                log_warn("test_switch, new int64_vec, sid:", msg.sid);
-                player.msg.int64_vec = new Array();
-            }
-
-            player.msg.int64_vec = new Array();
+            msg_res.int64_vec = new Array();
             for (var i = 0; i < 2; ++i) {
-                player.msg.int64_vec.push(msg.int64_arg + i);
+                msg_res.int64_vec.push(msg.int64_arg + i);
             }
             break;
         }
         case 2: {
-            if (typeof player.msg.string_vec == "object") {
-                player.msg.string_vec.length = 0;
-            } else {
-                log_warn("test_switch, new string_vec, sid:", msg.sid);
-                player.msg.string_vec = new Array();
-            }
-
+			msg_res.string_vec = new Array();
             for (var i = 0; i < 2; ++i) {
-                player.msg.string_vec.push(msg.string_arg + "_" + i);
+                msg_res.string_vec.push(msg.string_arg + "_" + i);
             }
             break;
         }
     }
-    player.send_success_msg(Msg.RES_TEST_SWITCH);
+    player.send_success_msg(Msg.RES_TEST_SWITCH, msg_res);
 }

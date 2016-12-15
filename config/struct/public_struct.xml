@@ -9,16 +9,16 @@
 	
 	<Role_Info table_name="game.role" index_name="role_id" index_type="int64">
 		<arg type="int64" name="role_id"/>
-    <arg type="string" name="role_name"/>
-    <arg type="string" name="account"/>
-    <arg type="uint" bit="8" name="level"/>
-    <arg type="uint" bit="32" name="exp"/>
-    <arg type="uint" bit="1" name="gender"/>
-    <arg type="uint" bit="2" name="career"/>
-    <arg type="int" bit="32" name="create_time"/>
+		<arg type="string" name="role_name"/>
+		<arg type="string" name="account"/>
+		<arg type="uint" bit="8" name="level"/>
+		<arg type="uint" bit="32" name="exp"/>
+		<arg type="uint" bit="1" name="gender"/>
+		<arg type="uint" bit="2" name="career"/>
+		<arg type="int" bit="32" name="create_time"/>
 		<arg type="int" bit="32" name="login_time"/>
 		<arg type="int" bit="32" name="logout_time"/>
-    <arg type="int64" name="guild_id"/>
+		<arg type="int64" name="guild_id"/>
 		<arg type="string" name="guild_name"/>
 	</Role_Info>
 

@@ -15,11 +15,15 @@
 		<arg type="string" name="account"/>
 		<arg type="string" name="token"/>
 		<arg type="int" bit="32" name="client_cid"/>
-		<arg type="int" bit="32" name="game_nid"/>
+    <if name="game_nid">
+      <arg type="int" bit="32" name="game_nid"/>
+    </if>
 	</node_4>
 
 	<node_5 msg_id="5" msg_name="SYNC_GATE_GAME_ADD_SESSION">
-		<arg type="int" bit="32" name="gate_nid"/>
+    <if name="gate_nid">
+      <arg type="int" bit="32" name="gate_nid"/>
+    </if>
 	</node_5>
 	
 	<node_6 msg_id="6" msg_name="SYNC_GAME_PUBLIC_LOGIN_LOGOUT">
@@ -28,7 +32,9 @@
 	</node_6>
 
 	<node_7 msg_id="7" msg_name="SYNC_GAME_GATE_LOGOUT">
-		<arg type="uint" bit="16" name="error_code"/>
+    <if name="error_code">
+      <arg type="uint" bit="16" name="error_code"/>
+    </if>
 	</node_7>
 	
 	<node_8 msg_id="8" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION">

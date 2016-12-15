@@ -53,7 +53,7 @@ function on_tick(timer_id) {
 function on_close_session(account, cid, error_code) {	
     global.account_token_map.delete(account);
     if (error_code != Error_Code.RET_OK) {
-        var msg = new s2c_5();
+        var msg = new Object();
         msg.error_code = error_code;
         send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
     }
@@ -67,7 +67,7 @@ function select_gate(msg) {
 		return on_close_session(msg.account, msg.cid, Error_Code.DISCONNECT_RELOGIN);
 	}
 
-	var token_info = new Token_Info();
+	var token_info = new Object();
 	token_info.cid = msg.cid;
 	token_info.token = generate_token(msg.account);
 	token_info.token_time = util.now_sec;
@@ -78,7 +78,7 @@ function select_gate(msg) {
 	var gate_len = global.gate_list.length;
 	var index = hash_value % gate_len;
 	var gate_info = global.gate_list[index];
-	var msg_res = new s2c_2();
+	var msg_res = new Object();
 	for (var i = 0; i < gate_info.endpoint_list.length; ++i) {
 	    if (gate_info.endpoint_list[i].endpoint_gid == gate_info.endpoint_gid &&
             gate_info.endpoint_list[i].endpoint_id == Endpoint.GATE_CLIENT_SERVER) {
@@ -114,7 +114,7 @@ function verify_token(msg) {
 		if (token_info) {
 			on_close_session(msg.account, token_info.cid, Error_Code.TOKEN_ERROR);
 		}
-		var msg_res = new node_1();
+		var msg_res = new Object();
 		msg_res.node_code = Error_Code.TOKEN_ERROR;
 		return send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_NODE_CODE, Msg_Type.NODE_MSG, msg.sid, msg_res);
 	}
@@ -128,8 +128,9 @@ function verify_token(msg) {
 	var game_len = global.game_list.length;
 	var index = hash_value % game_len;
 	var game_info = global.game_list[index];
-	var msg_res = new node_4();
+	var msg_res = new Object();
 	msg_res.account = msg.account;
+	msg_res.token = msg.token;
 	msg_res.client_cid = msg.client_cid;
 	msg_res.game_nid = game_info.node_id;
 	send_msg(Endpoint.CENTER_NODE_SERVER, msg.cid, Msg.SYNC_GATE_CENTER_VERIFY_TOKEN, Msg_Type.NODE_MSG, global.sid_idx, msg_res);

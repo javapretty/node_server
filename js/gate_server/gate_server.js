@@ -11,7 +11,7 @@ function init(node_info) {
 	global.node_info = node_info;
 	global.timer.init();
 
-	var msg = new node_2();
+	var msg = new Object();
 	msg.node_info = node_info;
 	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 }
@@ -51,7 +51,7 @@ function on_add_session(session) {
 	add_session(session);
 
 	//通知game增加session
-	var msg = new node_5();
+	var msg = new Object();
 	msg.gate_nid = global.node_info.node_id;
 	send_msg(session.game_eid, session.game_cid, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, session.sid, msg);
 }
@@ -59,9 +59,9 @@ function on_add_session(session) {
 function on_remove_session(session) {
     log_info('gate remove_session, sid:', session.sid, ' cid:', session.client_cid, " account:", session.account);
     //通知game移除session
-    send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, (new node_7()));
+    send_msg(session.game_eid, session.game_cid, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, session.sid, {});
 	//通知center移除session
-	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, (new node_8()));
+	send_msg(Endpoint.GATE_CENTER_CONNECTOR, 0, Msg.SYNC_GATE_CENTER_REMOVE_SESSION, Msg_Type.NODE_MSG, session.sid, {});
 
 	global.cid_session_map.delete(session.client_cid);
 	global.sid_session_map.delete(session.sid);
@@ -69,7 +69,7 @@ function on_remove_session(session) {
 }
 
 function on_close_session(cid, error_code) {
-	var msg = new s2c_5();
+	var msg = new Object();
 	msg.error_code = error_code;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
 	//删除C++层session
@@ -112,7 +112,7 @@ function process_gate_node_msg(msg) {
 	    case Msg.SYNC_GATE_GAME_ADD_SESSION: {
 	        //通知client成功建立session
 	        var session = global.sid_session_map.get(msg.sid);
-	        send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, (new s2c_3()));
+	        send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, {});
 	        break;
 	    }
 	    case Msg.SYNC_GAME_GATE_LOGOUT:
@@ -130,7 +130,7 @@ function connect_gate(msg) {
 		return on_close_session(msg.cid, Error_Code.DISCONNECT_RELOGIN);	
 	}
 	
-	var msg_res = new node_4();
+	var msg_res = new Object();
 	msg_res.account = msg.account;
 	msg_res.token = msg.token;
 	msg_res.client_cid = msg.cid;
