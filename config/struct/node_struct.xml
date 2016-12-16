@@ -8,7 +8,7 @@
 		<arg type="string" name="server_ip"/>
 		<arg type="int" bit="32" name="server_port"/>
 		<arg type="int" bit="32" name="protocol_type"/>
-		<arg type="int" bit="32" name="receive_timeout"/>
+		<arg type="int" bit="32" name="heartbeat_timeout"/>
 	</Endpoint_Info>
 	
 	<Node_Info>

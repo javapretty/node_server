@@ -23,8 +23,8 @@
     <node type="1" global_script="js/global.js" main_script="js/center_server/center_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/center_server/"></hotupdate>
-      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="127.0.0.1" port="8000" protocol="1" timeout="30"></endpoint>
-      <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
+      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="127.0.0.1" port="8000" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="2" global_script="js/global.js" main_script="js/gate_server/gate_server.js">
       <hotupdate path="js/"></hotupdate>
@@ -32,23 +32,23 @@
       <plugin path="plugin/gateplugin.so"></plugin>
       <msg_filter msg_type="1" min_msg_id="4" max_msg_id="255"></msg_filter>
       <msg_filter msg_type="4" min_msg_id="4" max_msg_id="255"></msg_filter>
-      <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="127.0.0.1" port="8100" protocol="1" timeout="30"></endpoint>
-      <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="4" name="gate1_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="1" timeout="30"></endpoint>
-      <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="4" name="gate2_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
+      <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="127.0.0.1" port="8100" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="4" name="gate1_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="2" id="4" name="gate2_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="3" global_script="js/global.js" main_script="js/data_server/data_server.js" max_session_count="10000">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/data_server/"></hotupdate>
       <plugin path="plugin/dbplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
-      <endpoint type="2" gid="1" id="1" name="data_server" ip="127.0.0.1" port="8200" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="2" name="data_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="1" name="data_connector" ip="127.0.0.1" port="8200" protocol="1" timeout="0"></endpoint>
+      <endpoint type="2" gid="1" id="1" name="data_server" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="data_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="2" id="1" name="data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
       <mysql db_id="1001" ip="127.0.0.1" port="3306" user="root" password="123456" pool="game_pool"></mysql>
     </node>
     <node type="4" global_script="js/global.js" main_script="js/log_server/log_server.js" max_session_count="1000000">
@@ -56,35 +56,35 @@
       <hotupdate path="js/log_server/"></hotupdate>
       <plugin path="plugin/logplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
-      <endpoint type="2" gid="1" id="1" name="log_server" ip="127.0.0.1" port="8300" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="2" name="log_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="2" id="1" name="log_connector" ip="127.0.0.1" port="8300" protocol="1" timeout="0"></endpoint>
+      <endpoint type="2" gid="1" id="1" name="log_server" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="log_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="2" id="1" name="log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
       <mysql db_id="1002" ip="127.0.0.1" port="3306" user="root" password="123456" pool="log_pool"></mysql>
     </node>
     <node type="5" global_script="js/global.js" main_script="js/master_server/master_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/master_server/"></hotupdate>
-      <endpoint type="2" gid="1" id="1" name="master_server" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="2" gid="1" id="2" name="master_http_server" ip="127.0.0.1" port="8080" protocol="3" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="3" name="master_center_connector" ip="127.0.0.1" port="8001" protocol="1" timeout="0"></endpoint>
+      <endpoint type="2" gid="1" id="1" name="master_server" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="2" gid="1" id="2" name="master_http_server" ip="127.0.0.1" port="8080" protocol="3" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="3" name="master_center_connector" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="6" global_script="js/global.js" main_script="js/public_server/public_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/public_server/"></hotupdate>
-      <endpoint type="2" gid="1" id="1" name="public_server" ip="127.0.0.1" port="8500" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="2" name="public_data_connector" ip="127.0.0.1" port="8200" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="3" name="public_log_connector" ip="127.0.0.1" port="8300" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="4" name="public_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
+      <endpoint type="2" gid="1" id="1" name="public_server" ip="127.0.0.1" port="8500" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="public_data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="3" name="public_log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="4" name="public_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="7" global_script="js/global.js" main_script="js/game_server/game_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/game_server/"></hotupdate>
-      <endpoint type="3" gid="1" id="1" name="game_data_connector" ip="127.0.0.1" port="8200" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="2" name="game_log_connector" ip="127.0.0.1" port="8300" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="3" name="game_master_connector" ip="127.0.0.1" port="8400" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="4" name="game_public_connector" ip="127.0.0.1" port="8500" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="5" name="game_gate1_connector" ip="127.0.0.1" port="8150" protocol="1" timeout="0"></endpoint>
-      <endpoint type="3" gid="1" id="6" name="game_gate2_connector" ip="127.0.0.1" port="8151" protocol="1" timeout="0"></endpoint>
+      <endpoint type="3" gid="1" id="1" name="game_data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="2" name="game_log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="3" name="game_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="4" name="game_public_connector" ip="127.0.0.1" port="8500" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="5" name="game_gate1_connector" ip="127.0.0.1" port="8150" protocol="1" heartbeat="0"></endpoint>
+      <endpoint type="3" gid="1" id="6" name="game_gate2_connector" ip="127.0.0.1" port="8151" protocol="1" heartbeat="0"></endpoint>
     </node>
   </node_list>
 </root>
