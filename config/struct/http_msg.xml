@@ -34,8 +34,16 @@
     <vector vbit="8" type="string" name="file_list"/>
   </http_3>
 
+  <http_4 msg_id="4" msg_name="HTTP_REQ_STACK_TRACE">
+    <arg type="int" bit="32" name="node_id"/>
+  </http_4>
+
   <http_201 msg_id="201" msg_name="HTTP_RES_NODE_STATUS">
     <vector vbit="8" type="Node_Status" name="node_list"/>
   </http_201>
+
+  <http_202 msg_id="202" msg_name="HTTP_RES_STACK_TRACE">
+    <arg type="string" name="stack_trace"/>
+  </http_202>
   
 </root>

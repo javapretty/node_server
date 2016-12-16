@@ -61,6 +61,9 @@ function process_master_http_msg(msg) {
 	    case Msg.HTTP_HOT_UPDATE:
 	        //curl -d "{\"msg_id\":3,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
 	        hot_update(msg);
+	    case Msg.HTTP_REQ_STACK_TRACE:
+	        //curl -d "{\"msg_id\":4,\"node_id\":70001}" "http://127.0.0.1:8080"
+	        req_stack_trace(msg);
 	        break;
 	    default:
 		    log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
@@ -90,4 +93,10 @@ function hot_update(msg) {
 
         }
     }
+}
+
+function req_stack_trace(msg) {
+	var msg_res = new Object();
+    msg_res.stack_trace = get_stack_trace();
+	send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_STACK_TRACE, msg.msg_type, 0, msg_res);
 }
