@@ -6,7 +6,7 @@
 
 function Bag() {
 	this.game_player = null;
-	this.bag_info = new Bag_Info();
+	this.bag_info = null;
 }
 	
 Bag.prototype.load_data = function(game_player, player_data) {
@@ -19,16 +19,12 @@ Bag.prototype.save_data = function(player_data) {
 }
 
 Bag.prototype.fetch_bag = function() {
-    if (typeof this.game_player.msg.item_list == "object") {
-        this.game_player.msg.item_list.length = 0;
-    } else {
-        this.game_player.msg.item_list = new Array();
-    }
-
+	var msg_res = new Object();
+	msg_res.item_list = new Array();
     for (var value of this.bag_info.item_map.values()) {
-        this.game_player.msg.item_list.push(value);
+        msg_res.item_list.push(value);
     }
-    this.game_player.send_success_msg(Msg.RES_FETCH_BAG);
+    this.game_player.send_success_msg(Msg.RES_FETCH_BAG, msg_res);
 }
 	
 Bag.prototype.bag_add_money = function(copper, gold) {

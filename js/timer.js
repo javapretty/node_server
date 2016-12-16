@@ -67,6 +67,7 @@ function Timer() {
 	        }
 	        case Node_Type.MASTER_SERVER: {
 	            var node_status = util.get_node_status();
+	            node_status.session_count = 0;
 	            global.node_status_map.set(node_status.node_id, node_status);
 	            break;
 	        }

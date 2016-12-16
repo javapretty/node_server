@@ -20,6 +20,7 @@ void add_session(const FunctionCallbackInfo<Value>& args) {
 		return;
 	}
 
+	HandleScope handle_scope(args.GetIsolate());
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	Local<Object> object = args[0]->ToObject(context).ToLocalChecked();
 	session->client_eid = (object->Get(context,
@@ -47,6 +48,7 @@ void remove_session(const FunctionCallbackInfo<Value>& args) {
 		return;
 	}
 
+	HandleScope handle_scope(args.GetIsolate());
 	Local<Context> context(args.GetIsolate()->GetCurrentContext());
 	int cid = args[0]->Int32Value(context).FromMaybe(0);
 	GATE_MANAGER->remove_session(cid);

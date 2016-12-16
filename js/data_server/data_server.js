@@ -11,7 +11,7 @@ function init(node_info) {
 
 	//db_connector进程启动时候，向db_server进程同步自己信息
 	if (node_info.endpoint_gid == 2) {
-		var msg = new node_2();
+		var msg = new Object();
 		msg.node_info = node_info;
 		send_msg(Endpoint.DB_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
 	}

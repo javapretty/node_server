@@ -5,7 +5,7 @@
 */
 
 function Guild() {
-    this.guild_info = new Guild_Info();
+    this.guild_info = null;
     this.is_change = false;
 }
 
@@ -24,12 +24,13 @@ Guild_Manager.prototype.load_data = function(msg) {
 }
 
 Guild_Manager.prototype.save_data = function(){
-	var msg = new node_251();
+	var msg = new Object();
 	msg.save_type = Save_Type.SAVE_DB_AND_CACHE;
 	msg.vector_data = true;
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Guild_Info";
 	msg.data_type = DB_Data_Type.GUILD;
+	msg.guild_list = new Array();
 	for (var value of this.guild_map.values()) {
         if(value.is_change) {
             value.is_change = false;
@@ -43,7 +44,7 @@ Guild_Manager.prototype.delete_guild = function(){
     if (this.delete_list.length <= 0) 
         return;
 		
-	var msg = new node_252();
+	var msg = new Object();
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Guild_Info";
 	msg.index_list = this.delete_list;
@@ -57,7 +58,7 @@ Guild_Manager.prototype.save_data_handler = function() {
 }
 
 Guild_Manager.prototype.sync_guild_info_to_game = function(player, guild_id, guild_name){
-	var msg = new node_9();
+	var msg = new Object();
 	msg.role_id = player.role_info.role_id;
 	msg.guild_id = guild_id;
 	msg.guild_name = guild_name;
@@ -68,10 +69,11 @@ Guild_Manager.prototype.member_join_guild = function(player, guild) {
     player.role_info.guild_id = guild.guild_info.guild_id;
     player.role_info.guild_name = guild.guild_info.guild_name;
 
-	var member_detail = new Guild_Member_Detail();
+	var member_detail = new Object();
 	member_detail.role_id = player.role_info.role_id;
 	member_detail.role_name = player.role_info.role_name;
 	member_detail.level = player.role_info.level;
+	guild.guild_info.member_list = new Array();
 	guild.guild_info.member_list.push(member_detail);
 	guild.is_change = true;
 }
@@ -80,7 +82,7 @@ Guild_Manager.prototype.create_guild = function(player, msg) {
 	//将公会名字暂时存到帮主player信息里面	
     player.role_info.guild_name = msg.guild_name;
 
-	var msg_res = new node_246();
+	var msg_res = new Object();
 	msg_res.db_id = DB_Id.GAME;
 	msg_res.struct_name = "Guild_Info";
 	msg_res.condition_name = "guild_name";
@@ -100,8 +102,9 @@ Guild_Manager.prototype.db_create_guild = function(player, guild_info) {
 	this.guild_map.set(guild_info.guild_id, guild);
 	this.sync_guild_info_to_game(player, guild_info.guild_id, guild_info.guild_name);
 	
-	player.msg.guild_info = guild_info;
-	player.send_success_msg(Msg.RES_CREATE_GUILD);
+	var msg_res = new Object();
+	msg_res.guild_info = guild_info;
+	player.send_success_msg(Msg.RES_CREATE_GUILD, msg_res);
 }
 
 Guild_Manager.prototype.dissove_guild = function(player, msg) {
@@ -120,6 +123,7 @@ Guild_Manager.prototype.dissove_guild = function(player, msg) {
 	this.guild_map.delete(player.role_info.guild_id);
 	this.delete_list.push(player.role_info.guild_id);
 	
-	player.msg.guild_id = player.role_info.guild_id;
-	player.send_success_msg(Msg.RES_DISSOVE_GUILD);
+	var msg_res = new Object();
+	msg_res.guild_id = player.role_info.guild_id;
+	player.send_success_msg(Msg.RES_DISSOVE_GUILD, msg_res);
 }

@@ -121,7 +121,7 @@
   </s2c_254>
 
   <c2s_255 msg_id="255" msg_name="REQ_TEST_SWITCH">
-    <if name="exist">
+    <if name="int32_arg">
       <arg type="int" bit="32" name="int32_arg"/>
     </if>
     <switch name="type" type="uint" bit="8">
@@ -135,7 +135,9 @@
   </c2s_255>
 
   <s2c_255 msg_id="255" msg_name="RES_TEST_SWITCH">
-    <arg type="int" bit="32" name="int32_arg"/>
+    <if name="int32_arg">
+      <arg type="int" bit="32" name="int32_arg"/>
+    </if>
     <switch name="type" type="uint" bit="8" >
       <case val="1">
         <vector vbit="8" type="int64" name="int64_vec"/>

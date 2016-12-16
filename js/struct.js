@@ -73,7 +73,7 @@ function Endpoint_Info() {
 	this.server_ip = "";
 	this.server_port = 0;
 	this.protocol_type = 0;
-	this.receive_timeout = 0;
+	this.heartbeat_timeout = 0;
 }
 
 function Mail_Detail() {
@@ -123,7 +123,7 @@ function Role_Info() {
 	this.logout_time = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
-	this.pos = new Position();
+	this.last_pos = new Position();
 }
 
 function Create_Role_Info() {
@@ -256,8 +256,16 @@ function node_1() {
 	this.node_code = 0;
 }
 
+function http_202() {
+	this.stack_trace = "";
+}
+
 function http_201() {
 	this.node_list = new Array();
+}
+
+function http_4() {
+	this.node_id = 0;
 }
 
 function http_3() {
@@ -303,7 +311,6 @@ function s2c_255() {
 
 function c2s_255() {
 	this.int32_arg = 0;
-	this.exist = false;
 	this.int64_arg = 0;
 	this.string_arg = "";
 	this.type = 0;

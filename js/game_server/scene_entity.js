@@ -88,7 +88,7 @@ Scene_Entity.prototype.move_process = function(now) {
 
 Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi_list) {
 	if(enter_list && enter_list.length > 0) {
-		var msg = new s2c_11();
+		var msg = new Object();
 		msg.sid = this.player.sid;
 		msg.role_name = this.player.role_info.role_name;
 		msg.level = this.player.role_info.level;
@@ -99,7 +99,7 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 		var msg_list = new Array();
 		for (var i = 0; i < enter_list.length; i++) {
 			var ply = global.sid_game_player_map.get(enter_list[i]);
-			var msg = new s2c_11();
+			var msg = new Object();
 			msg.sid = ply.sid;
 			msg.role_name = ply.role_info.role_name;
 			msg.level = ply.role_info.level;
@@ -109,7 +109,7 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 		}
 		this.centity.send_msg_list(Msg.RES_ENTER_ZONE, msg_list);
 		if(this.move_path.length > 0) {
-			var msg = new s2c_10();
+			var msg = new Object();
 			msg.sid = this.player.sid;
 			msg.frm_pos.x = this.frm_pos.x;
 			msg.frm_pos.y = this.frm_pos.y;
@@ -120,7 +120,7 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 		}
 	}
 	if(leave_list && leave_list.length > 0) {
-		var msg = new s2c_12();
+		var msg = new Object();
 		msg.sid = this.player.sid;
 		this.centity.broadcast_msg_to_all_without_self(leave_list, Msg.RES_LEAVE_ZONE, msg);
 		
@@ -128,7 +128,7 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 			var msg_list = new Array();
 			for (var i = 0; i < leave_list.length; i++) {
 				var ply = global.sid_game_player_map.get(leave_list[i]);
-				var msg = new s2c_12();
+				var msg = new Object();
 				msg.sid = ply.sid;
 				msg_list.push(msg);
 			}
@@ -136,7 +136,7 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 		}
 	}
 	if(aoi_list && aoi_list.length > 0) {
-		var msg = new s2c_10();
+		var msg = new Object();
 		msg.sid = this.player.sid;
 		msg.frm_pos.x = this.frm_pos.x;
 		msg.frm_pos.y = this.frm_pos.y;

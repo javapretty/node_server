@@ -43,7 +43,7 @@ function send_public_msg(cid, msg_id, sid, msg) {
 }
 
 function load_public_data() {
-	var msg = new node_250();
+	var msg = new Object();
 	msg.db_id = DB_Id.GAME;
 	msg.key_index = 0;
 	msg.struct_name = "Guild_Info";
@@ -124,7 +124,7 @@ function process_db_ret_code(msg) {
     switch (msg.opt_msg_id) {
         case Msg.SYNC_SELECT_DB_DATA: {
             if (msg.ret_code == DB_Ret_Code.DATA_NOT_EXIST && msg.query_name == "guild_id") {
-                var msg_res = new node_248();
+                var msg_res = new Object();
                 msg_res.type = "guild_id";
                 send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
             }
@@ -159,18 +159,20 @@ function res_generate_id(msg) {
 		player.send_error_msg(Error_Code.GENERATE_ID_ERROR);
 	} else {
 		//创建公会时候，既保存到缓存，又保存到db
-		var guild_info = new Guild_Info();
+		var guild_info = new Object();
 		guild_info.guild_id = msg.id;
 		guild_info.guild_name = player.role_info.guild_name;
 		guild_info.chief_id = player.role_info.role_id;
 		guild_info.create_time = util.now_sec();
+		guild_info.member_list = new Array();
 		
-		var msg_res = new node_251();
+		var msg_res = new Object();
 		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
 		msg_res.vector_data = true;
 		msg_res.db_id = DB_Id.GAME;
 		msg_res.struct_name = "Guild_Info";
 		msg_res.data_type = DB_Data_Type.GUILD;
+		msg_res.guild_list = new Array();
 		msg_res.guild_list.push(guild_info);
 		send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg_res);
 		

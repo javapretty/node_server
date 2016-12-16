@@ -18,12 +18,13 @@ Rank_Manager.prototype.load_data = function(obj) {
 }
 
 Rank_Manager.prototype.save_data = function() {	
-	var msg = new node_251();
+	var msg = new Object();
 	msg.save_type = Save_Type.SAVE_DB_AND_CACHE;
 	msg.vector_data = true;
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Rank_Info";
 	msg.data_type = DB_Data_Type.RANK;
+	msg.rank_list = new Array();
 	for (var value of this.rank_map.values()) {
 		msg.rank_list.push(value);
 	}
@@ -51,16 +52,18 @@ Rank_Manager.prototype.get_rank_value = function(type, player) {
 Rank_Manager.prototype.update_rank = function(type, player) {
 	var rank_info = this.rank_map.get(type);
 	if(rank_info == null) {
-		rank_info = new Rank_Info();
+		rank_info = new Object();
 		rank_info.rank_type = type;
+		rank_info.min_role_id = player.role_info.role_id;
 		rank_info.min_value = 0x7fffffff;
+		rank_info.member_map = new Map();
 		this.rank_map.set(type, rank_info);
 	}
 	
 	var rank_value = this.get_rank_value(type, player);
 	var rank_member = rank_info.member_map.get(player.role_info.role_id);
 	if(rank_member == null) {
-		rank_member = new Rank_Member_Detail();
+		rank_member = new Object();
 		rank_member.role_id = player.role_info.role_id;
 		rank_member.role_name = player.role_info.role_name;
 		rank_member.value = rank_value;
