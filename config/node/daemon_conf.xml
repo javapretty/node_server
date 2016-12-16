@@ -11,6 +11,6 @@
     <node type="5" id="50001" egid="1" name="master_server"></node>
     <node type="6" id="60001" egid="1" name="public_server"></node>
     <node type="7" id="70001" egid="1" name="game_server1"></node>
-    <node type="7" id="70002" egid="1" name="game_server2"></node>
+    <!--<node type="7" id="70002" egid="1" name="game_server2"></node>-->
   </node_list>
 </root>

@@ -67,3 +67,14 @@ util.sync_node_status = function(eid, cid, session_count) {
     msg.node_status.session_count = session_count;
     send_msg(eid, cid, Msg.SYNC_NODE_STATUS, Msg_Type.NODE_MSG, 0, msg);
 }
+
+util.calculate_distance = function(frm_pos, to_pos) {
+	return Math.sqrt((to_pos.x - frm_pos.x) * (to_pos.x - frm_pos.x) + (to_pos.y - frm_pos.y) * (to_pos.y - frm_pos.y));
+}
+
+util.abs = function(num) {
+	if(num < 0)
+		return -num;
+	return num;
+}
+

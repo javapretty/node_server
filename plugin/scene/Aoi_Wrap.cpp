@@ -33,17 +33,22 @@ Aoi_Entity *unwrap_aoi_entity(Local<Object> obj) {
 }
 
 void create_aoi_manager(const FunctionCallbackInfo<Value>& args) {
-	int ngr_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
-	bool ret = Aoi_Manager::create_aoi_manager(ngr_id);
+	int mgr_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	bool ret = Aoi_Manager::create_aoi_manager(mgr_id);
 
 	args.GetReturnValue().Set(ret);
 }
 
 void create_aoi_entity(const FunctionCallbackInfo<Value>& args) {
+	if (args.Length() != 3) {
+		LOG_ERROR("create_scene args error, length: %d, needs 3\n", args.Length());
+		return;
+	}
 	int sid = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	int eid = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
+	int radius = args[2]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 
-	Aoi_Entity *entity = Aoi_Entity::create_aoi_entity(sid, eid);
+	Aoi_Entity *entity = Aoi_Entity::create_aoi_entity(sid, eid, radius);
 	args.GetReturnValue().Set(wrap_aoi_entity(args.GetIsolate(), entity));
 }
 
@@ -132,11 +137,12 @@ void update_position(const FunctionCallbackInfo<Value>& args) {
 		EscapableHandleScope handle_scope(isolate);
 		
 		Local<Array> enter_list_obj = Array::New(isolate, enter_map.size());
+		Local<Value> value;
 		int index = 0;
 		for(AOI_MAP::iterator iter = enter_map.begin(); iter != enter_map.end(); iter++) {
 			if(iter->second->sid() == 0)
 				continue;
-			Local<Value> value = Number::New(isolate, iter->second->sid());
+			value = Number::New(isolate, iter->second->sid());
 			enter_list_obj->Set(context, index, value).FromJust();
 			index++;
 		}
@@ -146,7 +152,7 @@ void update_position(const FunctionCallbackInfo<Value>& args) {
 		for(AOI_MAP::iterator iter = leave_map.begin(); iter != leave_map.end(); iter++) {
 			if(iter->second->sid() == 0)
 				continue;
-			Local<Value> value = Number::New(isolate, iter->second->sid());
+			value = Number::New(isolate, iter->second->sid());
 			leave_list_obj->Set(context, index, value).FromJust();
 			index++;
 		}
@@ -156,7 +162,7 @@ void update_position(const FunctionCallbackInfo<Value>& args) {
 		for(AOI_MAP::iterator iter = aoi_map.begin(); iter != aoi_map.end(); iter++) {
 			if(iter->second->sid() == 0)
 				continue;
-			Local<Value> value = Number::New(isolate, iter->second->sid());
+			value = Number::New(isolate, iter->second->sid());
 			aoi_list_obj->Set(context, index, value).FromJust();
 			index++;
 		}

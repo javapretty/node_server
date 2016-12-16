@@ -20,6 +20,13 @@ Aoi_Manager::~Aoi_Manager(){
 AOI_MANAGER_MAP Aoi_Manager::aoi_manager_map_;
 AOI_ENTITY_MAP Aoi_Manager::aoi_entity_map_;
 
+void Aoi_Manager::print_list(AOI_LIST list) {
+	LOG_ERROR("aoi_manager is %p", this);
+	for(AOI_LIST::iterator iter = list.begin(); iter != list.end(); iter++){
+		LOG_ERROR("sid:%d in list", (*iter)->sid());
+	}
+}
+
 Aoi_Entity *Aoi_Manager::find_entity(int sid) {
 	AOI_ENTITY_MAP::iterator iter = aoi_entity_map_.find(sid);
 	if(iter != aoi_entity_map_.end())
@@ -81,7 +88,7 @@ void Aoi_Manager::insert_entity(Aoi_Entity *entity) {
 	AOI_LIST::iterator iter;
 	AOI_LIST::iterator pos = x_list_.end();
 	for(iter = x_list_.begin(); iter != x_list_.end(); iter++){
-		float diff = (*iter)->pos().x - entity->pos().x;
+		int diff = (*iter)->pos().x - entity->pos().x;
 		if(diff > 0){
 			pos = iter;
 			break;
@@ -92,7 +99,7 @@ void Aoi_Manager::insert_entity(Aoi_Entity *entity) {
 
 	pos = y_list_.end();
 	for(iter = y_list_.begin(); iter != y_list_.end(); iter++){
-		float diff = (*iter)->pos().y - entity->pos().y;
+		int diff = (*iter)->pos().y - entity->pos().y;
 		if(diff > 0){
 			pos = iter;
 			break;
@@ -230,7 +237,6 @@ void Aoi_Manager::update_aoi_map(Aoi_Entity *entity) {
 		if(x_map.find((*iter)->sid()) != x_map.end())
 			new_map[(*iter)->sid()] = *iter;
 	}
-
 	entity->update_aoi_map(new_map);
 }
 

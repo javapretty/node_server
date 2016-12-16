@@ -8,12 +8,12 @@ function Game_Player() {
 	this.gate_eid = 0;          //玩家连接的gate端点id
 	this.sid = 0;               //玩家sid
 	this.data_change = false;   //玩家数据是否改变
-	this.save_data_tick = util.now_sec();   //玩家数据保存tick
+	this.save_data_tick = util.now_msec();   //玩家数据保存tick
 	this.msg = new Object();    //玩家消息对象，所有消息的发送通过此对象
 	this.role_info = new Role_Info();
 	this.mail = new Mail();
 	this.bag = new Bag();
-	this.entity = new Scene_Entity(this);
+	this.entity = null;
 }
 
 //玩家上线，加载数据
@@ -25,13 +25,16 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	this.role_info.login_time = util.now_sec();
 	this.mail.load_data(this, player_data);
 	this.bag.load_data(this, player_data);
-	this.entity.enter_scene(1001, this.role_info.pos.x, this.role_info.pos.y);
+	this.entity = new Scene_Entity(this);
+	this.entity.speed = 120;
 
 	this.sync_login_to_client();
 	this.sync_login_logout_to_public(true);
 	global.sid_game_player_map.set(this.sid, this);
 	global.role_id_game_player_map.set(this.role_info.role_id, this);
 	global.role_name_game_player_map.set(this.role_info.role_name, this);
+	
+	this.entity.enter_scene(1001, this.role_info.pos.x, this.role_info.pos.y);
 }
 
 //玩家离线，保存数据
@@ -54,7 +57,7 @@ Game_Player.prototype.logout = function () {
 
 Game_Player.prototype.tick = function(now) {
 	//同步数据到数据库
-    if (this.data_change && now - this.save_data_tick >= 30) {
+    if (this.data_change && now - this.save_data_tick >= 30000) {
         this.sync_player_data_to_db(false);
         this.save_data_tick = now;
         this.data_change = false;
@@ -141,6 +144,25 @@ Game_Player.prototype.move = function(msg) {
 		log_error("check_path faire");
 		return;
 	}
-	this.entity.move_path = msg.move_path;
+	if(this.entity.move_path.length <= 0) {
+		for(var i = 0; i < msg.move_path.length; i++) {
+			var pos = new Object();
+			pos.x = msg.move_path[i].x * 32;
+			pos.y = msg.move_path[i].y * 64;
+			this.entity.move_path.push(pos);
+		}
+		this.entity.start_move();
+	}
+	else {
+		log_error(this.role_info.role_name + "is moving");
+		this.entity.stop_move();
+		for(var i = 0; i < msg.move_path.length; i++) {
+			var pos = new Object();
+			pos.x = msg.move_path[i].x * 32;
+			pos.y = msg.move_path[i].y * 32;
+			this.entity.move_path.push(pos);
+		}
+		this.entity.start_move();
+	}
 }
 

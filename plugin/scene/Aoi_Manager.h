@@ -31,6 +31,7 @@ private:
 	void insert_entity(Aoi_Entity *entity);
 	void update_list(Aoi_Entity *entity, bool direct, int xy);
 	void update_aoi_map(Aoi_Entity *entity);
+	void print_list(AOI_LIST list);
 private:
 	static AOI_MANAGER_MAP aoi_manager_map_;
 	static AOI_ENTITY_MAP aoi_entity_map_;

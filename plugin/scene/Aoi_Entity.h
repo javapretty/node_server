@@ -39,7 +39,7 @@ typedef Object_Pool<Aoi_Entity, Spin_Lock> Aoi_Entity_Pool;
 
 class Aoi_Entity {
 public:
-	static Aoi_Entity *create_aoi_entity(int sid, int eid);
+	static Aoi_Entity *create_aoi_entity(int sid, int eid, int radius);
 	static void reclaim_aoi_entity(Aoi_Entity *entity);
 public:
 	Aoi_Entity();
@@ -54,11 +54,12 @@ public:
 	inline void sid(int sid){sid_ = sid;}
 	inline int eid(){return eid_;}
 	inline void eid(int eid){eid_ = eid;}
+	inline int radius(){return radius_;}
+	inline void radius(int radius){radius_ = radius;}
 	inline void aoi_manager(Aoi_Manager *manager){aoi_manager_ = manager;}
 	inline Aoi_Manager *aoi_manager(){return aoi_manager_;}
 	inline Position &pos(){return pos_;}
 	inline Position &opos(){return opos_;}
-	inline int radius(){return radius_;}
 
 	inline void x_pos(AOI_LIST::iterator iter){x_pos_ = iter;}
 	inline void y_pos(AOI_LIST::iterator iter){y_pos_ = iter;}

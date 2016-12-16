@@ -344,11 +344,13 @@ function s2c_11() {
 	this.sid = 0;
 	this.role_name = "";
 	this.level = 0;
+	this.pos = new Position();
 }
 
 function s2c_10() {
 	this.sid = 0;
-	this.move_path = new Array();
+	this.frm_pos = new Position();
+	this.to_pos = new Position();
 }
 
 function c2s_10() {
