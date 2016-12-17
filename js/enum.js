@@ -57,6 +57,13 @@ if (typeof Node_Type == "undefined") {
 	Node_Type.GAME_SERVER	= 7;
 }
 
+if (typeof Endpoint_Type == "undefined") {
+	var Endpoint_Type = {};
+	Endpoint_Type.CLIENT_SERVER = 1;	//接受客户端链接的server
+	Endpoint_Type.SERVER 	= 2;		//接受内部节点连接的server
+	Endpoint_Type.CONNECTOR	= 3;		//内部节点链接器
+}
+
 if (typeof Endpoint == "undefined") {
 	var Endpoint = {};
 

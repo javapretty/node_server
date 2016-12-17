@@ -234,7 +234,7 @@ void broadcast_msg_sub(const FunctionCallbackInfo<Value>& args, bool with_self) 
 	msg_head.msg_id = args[1]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	msg_head.cid = 0;
 	msg_head.protocol = TCP;
-	msg_head.msg_type = 4;//NODE_S2C
+	msg_head.msg_type = NODE_S2C;
 		
 	Bit_Buffer buffer;
 	std::string struct_name = get_struct_name(msg_head.msg_type, msg_head.msg_id);
@@ -283,7 +283,7 @@ void send_msg_list(const FunctionCallbackInfo<Value>& args) {
 	msg_head.sid = entity->sid();
 	msg_head.eid = entity->eid();
 	msg_head.protocol = TCP;
-	msg_head.msg_type = 4;//NODE_S2C
+	msg_head.msg_type = NODE_S2C;
 
 	Local<Object> msg_list = args[1]->ToObject(context).ToLocalChecked();
 	if (!msg_list->IsArray()) {
