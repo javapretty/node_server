@@ -13,6 +13,7 @@
     <base_struct path="config/struct/node_struct.xml"></base_struct>
     <msg_struct path="config/struct/client_msg.xml"></msg_struct>
     <msg_struct path="config/struct/http_msg.xml"></msg_struct>
+    <msg_struct path="config/struct/websocket_msg.xml"></msg_struct>
     <msg_struct path="config/struct/node_msg.xml"></msg_struct>
     <msg_struct path="config/struct/public_struct.xml"></msg_struct>
     <msg_struct path="config/struct/node_struct.xml"></msg_struct>
@@ -23,7 +24,7 @@
     <node type="1" global_script="js/global.js" main_script="js/center_server/center_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/center_server/"></hotupdate>
-      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="192.168.116.128" port="8000" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="192.168.116.128" port="8000" protocol="4" heartbeat="30"></endpoint>
       <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="2" global_script="js/global.js" main_script="js/gate_server/gate_server.js">

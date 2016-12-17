@@ -1,0 +1,13 @@
+<root>
+  
+  <ws_c2s_1 msg_id="1" msg_name="REQ_WEBSOCKET_TEST">
+    <arg type="string" name="str"/>
+    <arg type="int" bit="16" name="int"/>
+  </ws_c2s_1>
+
+  <ws_s2c_1 msg_id="1" msg_name="RES_WEBSOCKET_TEST">
+    <arg type="string" name="str"/>
+    <arg type="int" bit="16" name="int"/>
+  </ws_s2c_1>
+  
+</root>

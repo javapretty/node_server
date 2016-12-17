@@ -41,6 +41,16 @@ function on_msg(msg) {
 			    break;
 		}	
 	}
+	else if (msg.msg_type == Msg_Type.WS_C2S_MSG) {
+		switch(msg.msg_id) {
+			case Msg.REQ_WEBSOCKET_TEST:
+				websocket_test(msg);
+				break;
+			default:
+			    log_error('center_server process websocket msg, msg_id not exist:', msg.msg_id);
+				break;
+		}
+	}
 }
 
 function on_tick(timer_id) {
@@ -137,3 +147,12 @@ function verify_token(msg) {
     //关闭session
 	on_close_session(msg.account, token_info.cid, Error_Code.RET_OK);
 }
+
+function websocket_test(msg) {
+	log_info("websocket test str is " + msg.str + " test int is " + msg.int);
+	var res = new Object();
+	res.str = "websocket_test result";
+	res.int = msg.int + 10;
+    send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_WEBSOCKET_TEST, Msg_Type.WS_S2C_MSG, 0, res);
+}
+
