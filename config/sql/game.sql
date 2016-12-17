@@ -58,6 +58,8 @@ CREATE TABLE `role` (
 	logout_time int(11) NOT NULL default '0',
 	guild_id bigint(20) NOT NULL default '0',
 	guild_name varchar(120) NOT NULL default '',
-	last_pos text NOT NULL,
+	last_scene int(11) NOT NULL default '0',
+	last_x int(11) NOT NULL default '0',
+	last_y int(11) NOT NULL default '0',
 	PRIMARY KEY (role_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;

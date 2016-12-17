@@ -24,7 +24,9 @@
 		<arg type="int" bit="32" name="logout_time"/>
 		<arg type="int64" name="guild_id"/>
 		<arg type="string" name="guild_name"/>
-		<struct type="Position" name="last_pos"/>
+		<arg type="uint" bit="16" name="last_scene"/>
+		<arg type="uint" bit="16" name="last_x"/>
+		<arg type="uint" bit="16" name="last_y"/>
 	</Role_Info>
 
 	<Guild_Info table_name="game.guild" index_name="guild_id" index_type="int64">

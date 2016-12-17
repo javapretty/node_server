@@ -8,9 +8,9 @@ function Scene_Entity(player) {
 	this.centity = create_aoi_entity(player.sid, player.gate_eid, 800);
 	this.scene_id = 0;
 	this.player = player;
-	this.pos = new Position();
-	this.frm_pos = new Position();//起始位置
-	this.to_pos = new Position();//目标位置
+	this.pos = new Object();
+	this.frm_pos = new Object();//起始位置
+	this.to_pos = new Object();//目标位置
 	this.speed = 0;
 	this.move_tick = util.now_msec(); //移动tick
 	this.move_path = new Array(); //移动路径
@@ -92,8 +92,8 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 		msg.sid = this.player.sid;
 		msg.role_name = this.player.role_info.role_name;
 		msg.level = this.player.role_info.level;
-		msg.pos.x = this.pos.x;
-		msg.pos.y = this.pos.y;
+		msg.pos_x = this.pos.x;
+		msg.pos_y = this.pos.y;
 		this.centity.broadcast_msg_to_all_without_self(enter_list, Msg.RES_ENTER_ZONE, msg);
 	
 		var msg_list = new Array();
@@ -103,18 +103,18 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 			msg.sid = ply.sid;
 			msg.role_name = ply.role_info.role_name;
 			msg.level = ply.role_info.level;
-			msg.pos.x = ply.entity.pos.x;
-			msg.pos.y = ply.entity.pos.y;
+			msg.pos_x = ply.entity.pos.x;
+			msg.pos_y = ply.entity.pos.y;
 			msg_list.push(msg);
 		}
 		this.centity.send_msg_list(Msg.RES_ENTER_ZONE, msg_list);
 		if(this.move_path.length > 0) {
 			var msg = new Object();
 			msg.sid = this.player.sid;
-			msg.frm_pos.x = this.frm_pos.x;
-			msg.frm_pos.y = this.frm_pos.y;
-			msg.to_pos.x = this.to_pos.x;
-			msg.to_pos.y = this.to_pos.y;
+			msg.frm_x = this.frm_pos.x;
+			msg.frm_y = this.frm_pos.y;
+			msg.to_x = this.to_pos.x;
+			msg.to_y = this.to_pos.y;
 
 			this.centity.broadcast_msg_to_all_without_self(enter_list, Msg.RES_MOVE, msg);
 		}
@@ -138,10 +138,10 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 	if(aoi_list && aoi_list.length > 0) {
 		var msg = new Object();
 		msg.sid = this.player.sid;
-		msg.frm_pos.x = this.frm_pos.x;
-		msg.frm_pos.y = this.frm_pos.y;
-		msg.to_pos.x = this.to_pos.x;
-		msg.to_pos.y = this.to_pos.y;
+		msg.frm_x = this.frm_pos.x;
+		msg.frm_y = this.frm_pos.y;
+		msg.to_x = this.to_pos.x;
+		msg.to_y = this.to_pos.y;
 
 		this.centity.broadcast_msg_to_all_without_self(aoi_list, Msg.RES_MOVE, msg);
 	}

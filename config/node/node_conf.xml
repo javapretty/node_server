@@ -23,7 +23,7 @@
     <node type="1" global_script="js/global.js" main_script="js/center_server/center_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/center_server/"></hotupdate>
-      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="127.0.0.1" port="8000" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="1" gid="1" id="1" name="center_client_server" ip="192.168.116.128" port="8000" protocol="1" heartbeat="30"></endpoint>
       <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="2" global_script="js/global.js" main_script="js/gate_server/gate_server.js">
@@ -32,11 +32,11 @@
       <plugin path="plugin/gateplugin.so"></plugin>
       <msg_filter msg_type="1" min_msg_id="4" max_msg_id="255"></msg_filter>
       <msg_filter msg_type="4" min_msg_id="4" max_msg_id="255"></msg_filter>
-      <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="127.0.0.1" port="8100" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="1" gid="1" id="1" name="gate1_client_server" ip="192.168.116.128" port="8100" protocol="1" heartbeat="30"></endpoint>
       <endpoint type="2" gid="1" id="2" name="gate1_node_server" ip="127.0.0.1" port="8150" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="gate1_center_connector" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="4" name="gate1_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>
-      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="127.0.0.1" port="8101" protocol="1" heartbeat="30"></endpoint>
+      <endpoint type="1" gid="2" id="1" name="gate2_client_server" ip="192.168.116.128" port="8101" protocol="1" heartbeat="30"></endpoint>
       <endpoint type="2" gid="2" id="2" name="gate2_node_server" ip="127.0.0.1" port="8151" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="2" id="3" name="gate2_center_connector" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="2" id="4" name="gate2_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>

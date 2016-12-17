@@ -78,15 +78,18 @@
   
   <s2c_10 msg_id="10" msg_name="RES_MOVE">
 	<arg type="uint" bit="32" name="sid"/>
-    <struct type="Position" name="frm_pos"/>
-    <struct type="Position" name="to_pos"/>
+    <arg type="uint" bit="16" name="frm_x"/>
+    <arg type="uint" bit="16" name="frm_y"/>
+    <arg type="uint" bit="16" name="to_x"/>
+    <arg type="uint" bit="16" name="to_y"/>
   </s2c_10>
   
   <s2c_11 msg_id="11" msg_name="RES_ENTER_ZONE">
 	<arg type="uint" bit="32" name="sid"/>
 	<arg type="string" name="role_name"/>
 	<arg type="uint" bit="8" name="level"/>
-    <struct type="Position" name="pos"/>
+    <arg type="uint" bit="16" name="pos_x"/>
+    <arg type="uint" bit="16" name="pos_y"/>
   </s2c_11>
   
   <s2c_12 msg_id="12" msg_name="RES_LEAVE_ZONE">

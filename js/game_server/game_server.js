@@ -270,6 +270,9 @@ function res_generate_id(msg) {
 		msg_res.player_data.role_info.logout_time = 0;
 		msg_res.player_data.role_info.guild_id = 0;
 		msg_res.player_data.role_info.guild_name = "";
+		msg_res.player_data.role_info.last_scene = 1001;
+		msg_res.player_data.role_info.last_x = 0;
+		msg_res.player_data.role_info.last_y = 0;
 		//初始化背包数据
 		msg_res.player_data.bag_info = new Object();
 		msg_res.player_data.bag_info.role_id = msg.id;

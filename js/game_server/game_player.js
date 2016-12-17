@@ -33,7 +33,7 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	global.role_id_game_player_map.set(this.role_info.role_id, this);
 	global.role_name_game_player_map.set(this.role_info.role_name, this);
 	
-	this.entity.enter_scene(1001, this.role_info.last_pos.x, this.role_info.last_pos.y);
+	this.entity.enter_scene(this.role_info.last_scene, this.role_info.last_x, this.role_info.last_y);
 }
 
 //玩家离线，保存数据
@@ -41,8 +41,9 @@ Game_Player.prototype.logout = function () {
     log_info("game_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name," gate_eid:",this.gate_eid);
 	this.role_info.logout_time = util.now_sec();
 	global.logout_map.set(this.sid, this.role_info.logout_time);
-	this.role_info.pos.x = this.entity.pos.x;
-	this.role_info.pos.y = this.entity.pos.y;
+	this.role_info.last_scene = this.entity.scene_id;
+	this.role_info.last_x = this.entity.pos.x;
+	this.role_info.last_y = this.entity.pos.y;
 	this.entity.logout();
 
 	this.sync_player_data_to_db(true);
@@ -137,11 +138,13 @@ Game_Player.prototype.set_guild_info = function(msg) {
 
 //测试路径检测
 function check_path(move_path) {
+	if(move_path.length <= 0)
+		return false;
 	return true;
 } 
 
 Game_Player.prototype.move = function(msg) {
-	log_info("PLAYER MOVE");
+	//log_info("PLAYER MOVE");
 	if(!check_path(msg.move_path)) {
 		log_error("check_path faire");
 		return;
@@ -156,7 +159,7 @@ Game_Player.prototype.move = function(msg) {
 		this.entity.start_move();
 	}
 	else {
-		log_error(this.role_info.role_name + "is moving");
+		//log_error(this.role_info.role_name + "is moving");
 		this.entity.stop_move();
 		for(var i = 0; i < msg.move_path.length; i++) {
 			var pos = new Object();

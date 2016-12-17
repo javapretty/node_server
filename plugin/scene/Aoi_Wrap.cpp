@@ -35,7 +35,8 @@ Aoi_Entity *unwrap_aoi_entity(Local<Object> obj) {
 void create_aoi_manager(const FunctionCallbackInfo<Value>& args) {
 	int mgr_id = args[0]->Int32Value(args.GetIsolate()->GetCurrentContext()).FromMaybe(0);
 	bool ret = Aoi_Manager::create_aoi_manager(mgr_id);
-
+	if(!ret)
+		LOG_ERROR("create_scene %d failre", mgr_id);
 	args.GetReturnValue().Set(ret);
 }
 
