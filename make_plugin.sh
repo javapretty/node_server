@@ -3,7 +3,7 @@ cd db && make
 cd ../
 cd gate && make
 cd ../
-cd scene && make
+cd aoi && make
 cd ../
 cd log && make
 cd ../../
