@@ -1,5 +1,7 @@
 if (typeof Msg == "undefined") {
 	var Msg = {};
+	Msg.RES_TEST_WEBSOCKET = 1;
+	Msg.REQ_TEST_WEBSOCKET = 1;
 	Msg.SYNC_DELETE_RUNTIME_DATA = 255;
 	Msg.SYNC_LOAD_RUNTIME_DATA = 253;
 	Msg.SYNC_DELETE_DB_DATA = 252;
@@ -20,8 +22,6 @@ if (typeof Msg == "undefined") {
 	Msg.SYNC_NODE_STATUS = 3;
 	Msg.SYNC_NODE_INFO = 2;
 	Msg.SYNC_NODE_CODE = 1;
-	Msg.RES_WEBSOCKET_TEST = 1;
-	Msg.REQ_WEBSOCKET_TEST = 1;
 	Msg.HTTP_RES_STACK_TRACE = 202;
 	Msg.HTTP_RES_NODE_STATUS = 201;
 	Msg.HTTP_REQ_STACK_TRACE = 4;

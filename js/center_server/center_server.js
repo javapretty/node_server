@@ -41,10 +41,10 @@ function on_msg(msg) {
 			    break;
 		}	
 	}
-	else if (msg.msg_type == Msg_Type.WS_C2S_MSG) {
+	else if (msg.msg_type == Msg_Type.WS_C2S) {
 		switch(msg.msg_id) {
-			case Msg.REQ_WEBSOCKET_TEST:
-				websocket_test(msg);
+			case Msg.REQ_TEST_WEBSOCKET:
+				test_websocket(msg);
 				break;
 			default:
 			    log_error('center_server process websocket msg, msg_id not exist:', msg.msg_id);
@@ -148,11 +148,11 @@ function verify_token(msg) {
 	on_close_session(msg.account, token_info.cid, Error_Code.RET_OK);
 }
 
-function websocket_test(msg) {
-	log_info("websocket test str is " + msg.str + " test int is " + msg.int);
+function test_websocket(msg) {
+	log_info("test_websocket str:" + msg.str + " int:" + msg.int);
 	var res = new Object();
-	res.str = "websocket_test result";
+	res.str = "test_websocket res:";
 	res.int = msg.int + 10;
-    send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_WEBSOCKET_TEST, Msg_Type.WS_S2C_MSG, 0, res);
+    send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_TEST_WEBSOCKET, Msg_Type.WS_S2C, 0, res);
 }
 
