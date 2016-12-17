@@ -14,11 +14,15 @@ function init(node_info) {
     global.node_info = node_info;
 	global.timer.init();
 
-	var msg = new Object();
-	msg.node_info = node_info;
-	send_msg(Endpoint.GAME_MASTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
-	send_msg(Endpoint.GAME_GATE1_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
-	send_msg(Endpoint.GAME_GATE2_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);	
+    var msg = new Object();
+    msg.node_info = node_info;
+    for(var i = 0; i < node_info.endpoint_list.length; ++i) {
+    	if(node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR
+    		&& node_info.endpoint_list[i].endpoint_name != "game_data_connector"
+    		&& node_info.endpoint_list[i].endpoint_name != "game_log_connector") {
+    		send_msg(node_info.endpoint_list[i].endpoint_id, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+    	}
+    }
 
 	create_aoi_manager(1001);//测试AOI场景
 }

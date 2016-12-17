@@ -11,6 +11,16 @@ function init(node_info) {
 	global.node_info = node_info;
 	global.timer.init();
 
+    var msg = new Object();
+    msg.node_info = node_info;
+    for(var i = 0; i < node_info.endpoint_list.length; ++i) {
+    	if(node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR
+    		&& node_info.endpoint_list[i].endpoint_name != "public_data_connector"
+    		&& node_info.endpoint_list[i].endpoint_name != "public_log_connector") {
+    		send_msg(node_info.endpoint_list[i].endpoint_id, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+    	}
+    }
+    
 	//加载公共数据
 	load_public_data();
 }
@@ -75,6 +85,8 @@ function process_public_client_msg(msg) {
 
 function process_public_node_msg(msg) {
     switch (msg.msg_id) {
+    	case Msg.SYNC_NODE_INFO:
+            break;
         case Msg.SYNC_DB_RET_CODE:
             process_db_ret_code(msg);
             break;

@@ -11,7 +11,11 @@ function init(node_info) {
 
     var msg = new Object();
     msg.node_info = node_info;
-    send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
+    for(var i = 0; i < node_info.endpoint_list.length; ++i) {
+    	if(node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR) {
+    		send_msg(node_info.endpoint_list[i].endpoint_id, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+    	}
+    }    
 }
 
 function on_hotupdate(file_path) { }
@@ -51,7 +55,7 @@ function process_master_node_msg(msg) {
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
 	    case Msg.HTTP_CREATE_NODE_PROCESS:
-	       //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70003,\"endpoint_gid\":1,\"node_name\":\"game_server3\"}" "http://127.0.0.1:8080" 
+	       //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70002,\"endpoint_gid\":1,\"node_name\":\"game_server2\"}" "http://127.0.0.1:8080" 
 		    fork_process(msg.node_type, msg.node_id, msg.endpoint_gid, msg.node_name);
 		    break;
 	    case Msg.HTTP_REQ_NODE_STATUS:
