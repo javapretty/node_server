@@ -22,5 +22,5 @@ Session.prototype.on_heartbeat = function (msg) {
 
 	var msg_res = new Object();
 	msg_res.server_time = this.last_hb_time;
-	send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_HEARTBEAT, Msg_Type.S2C, 0, msg_res);
+	send_msg(Endpoint.GATE_CLIENT_SERVER, msg.cid, Msg.RES_HEARTBEAT, Msg_Type.TCP_S2C, 0, msg_res);
 }

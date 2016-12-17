@@ -32,7 +32,7 @@ function on_drop(cid) {
 }
 
 function on_msg(msg) {
-	if (msg.msg_type == Msg_Type.C2S) {
+	if (msg.msg_type == Msg_Type.TCP_C2S) {
 		process_gate_client_msg(msg);
 	} else if (msg.msg_type == Msg_Type.NODE_MSG) {
 		process_gate_node_msg(msg);
@@ -75,7 +75,7 @@ function on_remove_session(session) {
 function on_close_session(cid, error_code) {
 	var msg = new Object();
 	msg.error_code = error_code;
-	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.TCP_S2C, 0, msg);
 	//删除C++层session
 	remove_session(cid);
 	//关闭客户端网络层链接
@@ -116,7 +116,7 @@ function process_gate_node_msg(msg) {
 	    case Msg.SYNC_GATE_GAME_ADD_SESSION: {
 	        //通知client成功建立session
 	        var session = global.sid_session_map.get(msg.sid);
-	        send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.S2C, 0, {});
+	        send_msg(session.client_eid, session.client_cid, Msg.RES_CONNECT_GATE, Msg_Type.TCP_S2C, 0, {});
 	        break;
 	    }
 	    case Msg.SYNC_GAME_GATE_LOGOUT:

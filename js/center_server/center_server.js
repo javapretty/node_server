@@ -15,7 +15,7 @@ function on_hotupdate(file_path) { }
 function on_drop(cid) { }
 
 function on_msg(msg) {
-	if (msg.msg_type == Msg_Type.C2S) {
+	if (msg.msg_type == Msg_Type.TCP_C2S) {
 		switch(msg.msg_id) {
 		    case Msg.REQ_SELECT_GATE:
 			    select_gate(msg);
@@ -65,7 +65,7 @@ function on_close_session(account, cid, error_code) {
     if (error_code != Error_Code.RET_OK) {
         var msg = new Object();
         msg.error_code = error_code;
-        send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.S2C, 0, msg);
+        send_msg(Endpoint.CENTER_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.TCP_S2C, 0, msg);
     }
 	//关闭客户端网络层链接
 	close_client(Endpoint.CENTER_CLIENT_SERVER, cid);	
@@ -98,7 +98,7 @@ function select_gate(msg) {
 	    }
 	}
 	msg_res.token = token_info.token;
-	send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_SELECT_GATE, Msg_Type.S2C, 0, msg_res);
+	send_msg(Endpoint.CENTER_CLIENT_SERVER, msg.cid, Msg.RES_SELECT_GATE, Msg_Type.TCP_S2C, 0, msg_res);
 }
 
 function set_node_info(msg) {

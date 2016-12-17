@@ -59,7 +59,7 @@ int Gate_Manager::process_list(void) {
 
 int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 	GUARD(Session_Map_Lock, mon, session_map_lock_);
-	if (msg_head.msg_type == C2S) {
+	if (msg_head.msg_type == TCP_C2S) {
 		Session_Map::iterator iter = cid_session_map_.find(msg_head.cid);
 		if (iter == cid_session_map_.end()) {
 			LOG_ERROR("find_session_by_cid error, eid:%d, cid:%d, msg_type:%d, msg_id:%d, sid:%d",
@@ -83,7 +83,7 @@ int Gate_Manager::transmit_msg(Msg_Head &msg_head, Byte_Buffer *buffer) {
 
 		msg_head.eid = iter->second->client_eid;
 		msg_head.cid = iter->second->client_cid;
-		msg_head.msg_type = S2C;
+		msg_head.msg_type = TCP_S2C;
 		msg_head.sid = iter->second->sid;
 	}
 	NODE_MANAGER->send_msg(msg_head, buffer->get_read_ptr(), buffer->readable_bytes());
