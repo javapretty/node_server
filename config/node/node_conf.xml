@@ -81,7 +81,6 @@
     <node type="7" global_script="js/global.js" main_script="js/game_server/game_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/game_server/"></hotupdate>
-      <plugin path="plugin/aoiplugin.so"></plugin>
       <endpoint type="3" gid="1" id="1" name="game_data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="2" name="game_log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="game_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>

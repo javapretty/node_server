@@ -23,7 +23,7 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	this.sid = sid;
 	this.role_info = player_data.role_info;
 	this.role_info.login_time = util.now_sec();
-	this.entity.load_data(this, player_data);
+	//this.entity.load_data(this, player_data);
 	this.mail.load_data(this, player_data);
 	this.bag.load_data(this, player_data);
 
@@ -56,7 +56,7 @@ Game_Player.prototype.tick = function(now) {
         this.save_data_tick = now;
         this.data_change = false;
 	}
-	this.entity.on_move(now);
+	//this.entity.on_move(now);
 }
 
 Game_Player.prototype.send_success_msg = function(msg_id, msg) {
@@ -96,7 +96,7 @@ Game_Player.prototype.sync_player_data_to_db = function (logout) {
 	msg.data_type = DB_Data_Type.PLAYER;
 	msg.player_data = new Object();
 	msg.player_data.role_info = this.role_info;
-	this.entity.save_data(msg.player_data, logout);
+	//this.entity.save_data(msg.player_data, logout);
 	this.mail.save_data(msg.player_data);
 	this.bag.save_data(msg.player_data);
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);

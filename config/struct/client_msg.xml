@@ -97,7 +97,7 @@
   </c2s_253>
   
   <s2c_253 msg_id="253" msg_name="RES_MOVE">
-  <arg type="uint" bit="32" name="sid"/>
+    <arg type="uint" bit="32" name="sid"/>
     <arg type="uint" bit="16" name="frm_x"/>
     <arg type="uint" bit="16" name="frm_y"/>
     <arg type="uint" bit="16" name="to_x"/>

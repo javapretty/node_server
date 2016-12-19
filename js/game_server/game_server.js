@@ -24,7 +24,7 @@ function init(node_info) {
     	}
     }
 
-	create_aoi_manager(1001);//测试AOI场景
+	//create_aoi_manager(1001);
 }
 
 function on_hotupdate(file_path) { }
