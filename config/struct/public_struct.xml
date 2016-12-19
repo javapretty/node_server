@@ -24,6 +24,7 @@
 		<arg type="int" bit="32" name="logout_time"/>
 		<arg type="int64" name="guild_id"/>
 		<arg type="string" name="guild_name"/>
+		<arg type="uint" bit="16" name="speed"/>
 		<arg type="uint" bit="16" name="last_scene"/>
 		<arg type="uint" bit="16" name="last_x"/>
 		<arg type="uint" bit="16" name="last_y"/>

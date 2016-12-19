@@ -17,15 +17,6 @@ Bag.prototype.load_data = function(game_player, player_data) {
 Bag.prototype.save_data = function(player_data) {
 	player_data.bag_info = this.bag_info;
 }
-
-Bag.prototype.fetch_bag = function() {
-	var msg_res = new Object();
-	msg_res.item_list = new Array();
-    for (var value of this.bag_info.item_map.values()) {
-        msg_res.item_list.push(value);
-    }
-    this.game_player.send_success_msg(Msg.RES_FETCH_BAG, msg_res);
-}
 	
 Bag.prototype.bag_add_money = function(copper, gold) {
     if(typeof copper != "number" || typeof gold != "number") {

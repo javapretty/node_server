@@ -58,6 +58,7 @@ CREATE TABLE `role` (
 	logout_time int(11) NOT NULL default '0',
 	guild_id bigint(20) NOT NULL default '0',
 	guild_name varchar(120) NOT NULL default '',
+	speed int(11) NOT NULL default '0',
 	last_scene int(11) NOT NULL default '0',
 	last_x int(11) NOT NULL default '0',
 	last_y int(11) NOT NULL default '0',

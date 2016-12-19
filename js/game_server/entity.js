@@ -1,23 +1,43 @@
 /*
- *   描述：scene_entity类
+ *   描述：entity类
  *   作者：李俊良
  *   时间：2016/12/8
 */
 
-function Scene_Entity(player) {
-	this.centity = create_aoi_entity(player.sid, player.gate_eid, 800);
+function Entity() {
+	this.centity = null;
+	this.player = null;
 	this.scene_id = 0;
-	this.player = player;
 	this.pos = new Object();
-	this.frm_pos = new Object();//起始位置
-	this.to_pos = new Object();//目标位置
+	this.frm_pos = new Object();		//起始位置
+	this.to_pos = new Object();			//目标位置
 	this.speed = 0;
-	this.move_tick = util.now_msec(); //移动tick
-	this.move_path = new Array(); //移动路径
-	this.last_mv_tm = 0;//上次移动时间
+	this.move_tick = util.now_msec(); 	//移动tick
+	this.move_path = new Array(); 		//移动路径
+	this.last_mv_tm = 0;				//上次移动时间
 }
 
-Scene_Entity.prototype.on_move = function(now) {
+Entity.prototype.load_data = function(game_player, player_data) {
+	this.centity = create_aoi_entity(game_player.sid, game_player.gate_eid, 800);
+	this.player = game_player;
+	this.speed = player_data.role_info.speed;
+
+	this.enter_scene(player_data.role_info.last_scene, player_data.role_info.last_x, player_data.role_info.last_y);
+}
+
+Entity.prototype.save_data = function(player_data, logout) {
+	player_data.role_info.last_scene = this.scene_id;
+	player_data.role_info.last_x = this.pos.x;
+	player_data.role_info.last_y = this.pos.y;
+
+	if(logout) {
+		this.leave_scene();
+		this.centity.reclaim();
+		this.centity = null;
+	}
+}
+
+Entity.prototype.on_move = function(now) {
 	if(this.move_path.length <= 0)
 		return;
 	if(now - this.move_tick < 300)
@@ -27,23 +47,58 @@ Scene_Entity.prototype.on_move = function(now) {
 	this.move_process(now);
 }
 
-Scene_Entity.prototype.start_move = function() {
+Entity.prototype.check_path = function(move_path) {
+	if(move_path.length <= 0)
+		return false;
+
+	return true;
+} 
+
+Entity.prototype.move = function(msg) {
+	if(!this.check_path(msg.move_path)) {
+		log_error("check_path faire");
+		return;
+	}
+
+	if(this.move_path.length <= 0) {
+		for(var i = 0; i < msg.move_path.length; i++) {
+			var pos = new Object();
+			pos.x = msg.move_path[i].x * 32;
+			pos.y = msg.move_path[i].y * 64;
+			this.move_path.push(pos);
+		}
+		this.start_move();
+	}
+	else {
+		//log_error(this.role_info.role_name + "is moving");
+		this.stop_move();
+		for(var i = 0; i < msg.move_path.length; i++) {
+			var pos = new Object();
+			pos.x = msg.move_path[i].x * 32;
+			pos.y = msg.move_path[i].y * 32;
+			this.move_path.push(pos);
+		}
+		this.start_move();
+	}
+}
+
+Entity.prototype.start_move = function() {
 	this.last_mv_tm = util.now_msec();
 	this.frm_pos.x = this.pos.x;
 	this.frm_pos.y = this.pos.y;
 	this.to_pos.x = this.move_path[0].x;
 	this.to_pos.y = this.move_path[0].y;
 	var aoi_list = this.centity.get_aoi_list();
-	this.send_broadcast_msg(null, null, aoi_list);
+	this.broadcast_msg(null, null, aoi_list);
 }
 
-Scene_Entity.prototype.stop_move = function() {
+Entity.prototype.stop_move = function() {
 	var cur_msec = util.now_msec();
 	this.move_path.length = 0;
 	this.move_process(cur_msec);
 }
 
-Scene_Entity.prototype.move_process = function(now) {
+Entity.prototype.move_process = function(now) {
 	var change_target = false;
 	var dlt_tm = now - this.last_mv_tm;
 	var move_distance = dlt_tm * this.speed / 1000;
@@ -77,16 +132,16 @@ Scene_Entity.prototype.move_process = function(now) {
 		if(change_target) { 
 			this.frm_pos.x = this.pos.x;
 			this.frm_pos.y = this.pos.y;
-			this.send_broadcast_msg(aoi_map.enter_list, aoi_map.leave_list, aoi_map.aoi_list);
+			this.broadcast_msg(aoi_map.enter_list, aoi_map.leave_list, aoi_map.aoi_list);
 		}
 		else {
-			this.send_broadcast_msg(aoi_map.enter_list, aoi_map.leave_list, null);
+			this.broadcast_msg(aoi_map.enter_list, aoi_map.leave_list, null);
 		}
 	}
 	this.last_mv_tm = now;
 }
 
-Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi_list) {
+Entity.prototype.broadcast_msg = function(enter_list, leave_list, aoi_list) {
 	if(enter_list && enter_list.length > 0) {
 		var msg = new Object();
 		msg.sid = this.player.sid;
@@ -147,26 +202,20 @@ Scene_Entity.prototype.send_broadcast_msg = function(enter_list, leave_list, aoi
 	}
 }
 
-Scene_Entity.prototype.enter_scene = function(scene_id, x, y) {
+Entity.prototype.enter_scene = function(scene_id, x, y) {
 	this.scene_id = scene_id;
 	this.pos.x = x;
 	this.pos.y = y;
 	var enter_list = this.centity.enter_aoi(scene_id, x, y);
-	this.send_broadcast_msg(enter_list, null, null);
+	this.broadcast_msg(enter_list, null, null);
 }
 
-Scene_Entity.prototype.leave_scene = function() {
+Entity.prototype.leave_scene = function() {
 	this.scene_id = -1;
 	this.pos.x = 0;
 	this.pos.y = 0;
 	var leave_list = this.centity.get_aoi_list();
-	this.send_broadcast_msg(null, leave_list, null);
+	this.broadcast_msg(null, leave_list, null);
 	this.centity.leave_aoi();
-}
-
-Scene_Entity.prototype.logout = function() {
-	this.leave_scene();
-	this.centity.reclaim();
-	this.centity = null;
 }
 

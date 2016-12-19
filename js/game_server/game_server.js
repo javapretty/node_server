@@ -7,7 +7,7 @@
 require("js/game_server/game_player.js");
 require("js/game_server/bag.js");
 require("js/game_server/mail.js");
-require("js/game_server/scene_entity.js");
+require("js/game_server/entity.js");
 
 function init(node_info) {
     log_info('game_server init, node_type:', node_info.node_type, ' node_id:', node_info.node_id, ' node_name:', node_info.node_name);
@@ -113,11 +113,7 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_DEL_MAIL:
 		    game_player.mail.delete_mail(msg);
 		    break;
-	    case Msg.REQ_FETCH_BAG:
-		    game_player.bag.fetch_bag();
-		    break;
 		case Msg.REQ_MOVE:
-			game_player.move(msg);
 			break;
 	    case Msg.REQ_TEST_ARG:
 	        test_arg(msg, game_player);
@@ -274,6 +270,7 @@ function res_generate_id(msg) {
 		msg_res.player_data.role_info.logout_time = 0;
 		msg_res.player_data.role_info.guild_id = 0;
 		msg_res.player_data.role_info.guild_name = "";
+		msg_res.player_data.role_info.speed = 120;
 		msg_res.player_data.role_info.last_scene = 1001;
 		msg_res.player_data.role_info.last_x = 0;
 		msg_res.player_data.role_info.last_y = 0;
