@@ -1,6 +1,6 @@
 <root>
   <node_1 msg_id="1" msg_name="SYNC_NODE_CODE">
-		<arg type="uint" bit="16" name="node_code"/>
+		<arg type="uint" bit="16" name="error_code"/>
 	</node_1>
 	
 	<node_2 msg_id="2" msg_name="SYNC_NODE_INFO">

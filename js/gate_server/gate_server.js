@@ -32,6 +32,7 @@ function on_drop(cid) {
 }
 
 function on_msg(msg) {
+    //log_debug("gate on msg, msg_id:", msg.msg_id, " msg_type:", msg.msg_type, " cid:", msg.cid, " sid:", msg.sid);
 	if (msg.msg_type == Msg_Type.TCP_C2S) {
 		process_gate_client_msg(msg);
 	} else if (msg.msg_type == Msg_Type.NODE_MSG) {
@@ -73,6 +74,7 @@ function on_remove_session(session) {
 }
 
 function on_close_session(cid, error_code) {
+    log_info('gate close_session, cid:', cid, ' error_code:', error_code);
 	var msg = new Object();
 	msg.error_code = error_code;
 	send_msg(Endpoint.GATE_CLIENT_SERVER, cid, Msg.RES_ERROR_CODE, Msg_Type.TCP_S2C, 0, msg);
@@ -142,11 +144,13 @@ function connect_gate(msg) {
 }
 
 function process_node_code(msg) {
-	switch (msg.node_code) {
+    switch (msg.error_code) {
 	    case Error_Code.TOKEN_ERROR: {
-	        on_close_session(Error_Code.TOKEN_ERROR);
+	        on_close_session(msg.sid, msg.error_code);
 		    break;
 	    }
+	   	default:
+	        break;
 	}
 }
 

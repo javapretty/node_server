@@ -35,8 +35,8 @@ if (typeof Error_Code == "undefined") {
 
 if (typeof Msg_Type == "undefined") {
 	var Msg_Type = {};
-	Msg_Type.TCP_C2S		= 1;	//客户端发到服务器的消息
-	Msg_Type.TCP_S2C		= 2;	//服务器发到客户端的消息
+	Msg_Type.TCP_C2S	= 1;	//客户端发到服务器的消息
+	Msg_Type.TCP_S2C	= 2;	//服务器发到客户端的消息
 	Msg_Type.NODE_C2S   = 3;	//客户端经过gate中转发到服务器的消息
 	Msg_Type.NODE_S2C   = 4;	//服务器经过gate中转发到客户端的消息
 	Msg_Type.NODE_MSG   = 5;	//服务器进程节点间通信的消息
