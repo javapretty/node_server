@@ -34,6 +34,12 @@ util.get_next_day_tick = function(hour, min = 0, sec = 0) {
 	return next_tick > 0 ? next_tick : (next_tick + util.whole_day_sec);
 }
 
+util.sync_node_info = function(eid) {
+    var msg = new Object();
+    msg.node_info = global.node_info;
+    send_msg(eid, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);
+}
+
 util.get_node_status = function() {
     var node_status = get_node_status();
     var proc_info = get_proc_info();

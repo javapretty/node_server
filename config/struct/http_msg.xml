@@ -5,8 +5,8 @@
     <arg type="int" bit="32" name="node_id"/>
     <arg type="string" name="node_name"/>
     <arg type="int" bit="32" name="start_time"/>
-    <arg type="int" bit="32" name="total_send"/>
-    <arg type="int" bit="32" name="total_recv"/>
+    <arg type="int64" name="total_send"/>
+    <arg type="int64" name="total_recv"/>
     <arg type="int" bit="32" name="send_per_sec"/>
     <arg type="int" bit="32" name="recv_per_sec"/>
     <arg type="int" bit="32" name="task_count"/>

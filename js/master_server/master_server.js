@@ -9,18 +9,20 @@ function init(node_info) {
     global.node_info = node_info;
     global.timer.init();
 
-    var msg = new Object();
-    msg.node_info = node_info;
     for(var i = 0; i < node_info.endpoint_list.length; ++i) {
     	if(node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR) {
-    		send_msg(node_info.endpoint_list[i].endpoint_id, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+    	    util.sync_node_info(node_info.endpoint_list[i].endpoint_id);
     	}
     }    
 }
 
 function on_hotupdate(file_path) { }
 
-function on_drop(cid) { }
+function on_drop_eid(eid) { 
+    util.sync_node_info(eid);
+}
+
+function on_drop_cid(cid) { }
 
 function on_msg(msg) {	
 	if (msg.msg_type == Msg_Type.NODE_MSG) {

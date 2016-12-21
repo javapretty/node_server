@@ -12,7 +12,9 @@ function init(node_info) {
 
 function on_hotupdate(file_path) { }
 
-function on_drop(cid) { }
+function on_drop_eid(eid) { }
+
+function on_drop_cid(cid) { }
 
 function on_msg(msg) {
 	if (msg.msg_type == Msg_Type.TCP_C2S) {

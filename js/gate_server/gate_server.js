@@ -11,18 +11,20 @@ function init(node_info) {
 	global.node_info = node_info;
 	global.timer.init();
 
-    var msg = new Object();
-    msg.node_info = node_info;
     for(var i = 0; i < node_info.endpoint_list.length; ++i) {
-    	if(node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR) {
-    		send_msg(node_info.endpoint_list[i].endpoint_id, 0, Msg.SYNC_NODE_INFO, Msg_Type.NODE_MSG, 0, msg);		
+        if (node_info.endpoint_list[i].endpoint_type == Endpoint_Type.CONNECTOR) {
+            util.sync_node_info(node_info.endpoint_list[i].endpoint_id);
     	}
     }
 }
 
 function on_hotupdate(file_path) { }
 
-function on_drop(cid) {
+function on_drop_eid(eid) {
+    util.sync_node_info(eid);
+}
+
+function on_drop_cid(cid) {
     var session = global.cid_session_map.get(cid);
 	if (session) {		
 		on_remove_session(session);
@@ -155,6 +157,7 @@ function process_node_code(msg) {
 }
 
 function set_node_info(msg) {
+    log_info("set_node_info game_nid:", msg.node_info.node_id, " game_cid:", msg.cid);
     global.game_nid_cid_map.set(msg.node_info.node_id, msg.cid);
 }
 
