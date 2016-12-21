@@ -28,7 +28,14 @@ function init(node_info) {
 function on_hotupdate(file_path) { }
 
 function on_drop_eid(eid) {
-    util.sync_node_info(eid);
+    for (var i = 0; i < global.node_info.endpoint_list.length; ++i) {
+        if (global.node_info.endpoint_list[i].endpoint_id == eid
+    		&& global.node_info.endpoint_list[i].endpoint_name != "game_data_connector"
+            && global.node_info.endpoint_list[i].endpoint_name != "game_log_connector") {
+            util.sync_node_info(eid);
+            break;
+        }
+    }
 }
 
 function on_drop_cid(cid) { }
