@@ -45,6 +45,10 @@
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
+	<ClCompile Include="plugin\aoi\Aoi_Entity.cpp" />
+    <ClCompile Include="plugin\aoi\Aoi_Manager.cpp" />
+	<ClCompile Include="plugin\aoi\Aoi_Wrap.cpp" />
+    <ClCompile Include="plugin\aoi\main.cpp" />
     <ClCompile Include="plugin\db\DB_Manager.cpp" />
     <ClCompile Include="plugin\db\main.cpp" />
     <ClCompile Include="plugin\gate\Gate_Manager.cpp" />
@@ -52,13 +56,19 @@
     <ClCompile Include="plugin\gate\main.cpp" />
     <ClCompile Include="plugin\log\Log_Manager.cpp" />
     <ClCompile Include="plugin\log\main.cpp" />
+	<ClCompile Include="plugin\monitor\Monitor_Manager.cpp" />
+    <ClCompile Include="plugin\monitor\main.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+	<ClInclude Include="plugin\aoi\Aoi_Entity.h" />
+	<ClInclude Include="plugin\aoi\Aoi_Manager.h" />
+	<ClInclude Include="plugin\aoi\Aoi_Wrap.h" />
     <ClInclude Include="plugin\db\DB_Manager.h" />
     <ClInclude Include="plugin\gate\Gate_Manager.h" />
     <ClCompile Include="plugin\gate\Gate_Wrap.h" />
     <ClInclude Include="plugin\log\Log_Manager.h" />
+	<ClInclude Include="plugin\monitor\Monitor_Manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

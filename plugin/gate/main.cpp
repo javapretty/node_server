@@ -5,7 +5,7 @@
  *      Author: zhangyalei
  */
 
-#include "Node_Manager.h"
+#include "Node_Define.h"
 #include "Gate_Wrap.h"
 #include "Gate_Manager.h"
 

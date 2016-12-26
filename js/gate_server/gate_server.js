@@ -157,8 +157,8 @@ function process_node_code(msg) {
 }
 
 function set_node_info(msg) {
-    log_info("set_node_info game_nid:", msg.node_info.node_id, " game_cid:", msg.cid);
-    global.game_nid_cid_map.set(msg.node_info.node_id, msg.cid);
+    log_info("set_node_info game node_id:", msg.node_info.node_id, " game_cid:", msg.cid);
+    global.game_cid_map.set(msg.node_info.node_id, msg.cid);
 }
 
 function verify_token(msg) {
@@ -166,7 +166,7 @@ function verify_token(msg) {
 	session.client_eid = Endpoint.GATE_CLIENT_SERVER;
 	session.client_cid = msg.client_cid;
 	session.game_eid = Endpoint.GATE_NODE_SERVER;
-	session.game_cid = global.game_nid_cid_map.get(msg.game_nid);
+	session.game_cid = global.game_cid_map.get(msg.game_nid);
 	session.sid = msg.sid;
 	session.account = msg.account;
 	on_add_session(session);

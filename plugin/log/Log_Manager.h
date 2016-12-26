@@ -16,7 +16,7 @@
 #include "Thread.h"
 #include "Node_Define.h"
 
-enum DB_MESSAGE_CMD {
+enum Msg_Id {
 	SYNC_NODE_INFO = 2,
 	SYNC_SAVE_DB_DATA = 251,
 };

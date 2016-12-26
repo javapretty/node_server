@@ -22,7 +22,7 @@ enum Enpoint_Gid {
 	GID_DATA_CONNECTOR		= 2,
 };
 
-enum DB_Msg {
+enum Msg_Id {
 	SYNC_NODE_INFO = 2,
 	SYNC_DB_RET_CODE = 245,
 	SYNC_SELECT_DB_DATA = 246,

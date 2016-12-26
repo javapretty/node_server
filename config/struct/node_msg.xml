@@ -11,40 +11,51 @@
     <struct type="Node_Status" name="node_status"/>
   </node_3>
 
-	<node_4 msg_id="4" msg_name="SYNC_GATE_CENTER_VERIFY_TOKEN">
+  <node_4 msg_id="4" msg_name="SYNC_NODE_STACK_INFO">
+    <if name="drop_cid">
+      <arg type="int" bit="32" name="stack_drop_cid"/>
+      <arg type="int" bit="32" name="stack_timer_id"/>
+      <arg type="int" bit="32" name="stack_msg_id"/>
+      <arg type="int" bit="32" name="stack_msg_type"/>
+      <arg type="int" bit="32" name="stack_sid"/>
+      <arg type="string" name="stack_trace"/>
+    </if>
+  </node_4>
+
+	<node_5 msg_id="5" msg_name="SYNC_GATE_CENTER_VERIFY_TOKEN">
 		<arg type="string" name="account"/>
 		<arg type="string" name="token"/>
 		<arg type="int" bit="32" name="client_cid"/>
     <if name="game_nid">
       <arg type="int" bit="32" name="game_nid"/>
     </if>
-	</node_4>
+	</node_5>
 
-	<node_5 msg_id="5" msg_name="SYNC_GATE_GAME_ADD_SESSION">
+	<node_6 msg_id="6" msg_name="SYNC_GATE_GAME_ADD_SESSION">
     <if name="gate_nid">
       <arg type="int" bit="32" name="gate_nid"/>
     </if>
-	</node_5>
+	</node_6>
 	
-	<node_6 msg_id="6" msg_name="SYNC_GAME_PUBLIC_LOGIN_LOGOUT">
+	<node_7 msg_id="7" msg_name="SYNC_GAME_PUBLIC_LOGIN_LOGOUT">
 		<arg type="bool" name="login"/>
 		<struct type="Role_Info" name="role_info"/>
-	</node_6>
+	</node_7>
 
-	<node_7 msg_id="7" msg_name="SYNC_GAME_GATE_LOGOUT">
+	<node_8 msg_id="8" msg_name="SYNC_GAME_GATE_LOGOUT">
     <if name="error_code">
       <arg type="uint" bit="16" name="error_code"/>
     </if>
-	</node_7>
-	
-	<node_8 msg_id="8" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION">
 	</node_8>
+	
+	<node_9 msg_id="9" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION">
+	</node_9>
 
-  <node_9 msg_id="9" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
+  <node_10 msg_id="10" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
     <arg type="int64" name="role_id"/>
     <arg type="int64" name="guild_id"/>
     <arg type="string" name="guild_name"/>
-  </node_9>
+  </node_10>
 
   <node_245 msg_id="245" msg_name="SYNC_DB_RET_CODE">
     <arg type="uint" bit="8" name="opt_msg_id"/>

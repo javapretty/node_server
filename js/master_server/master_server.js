@@ -42,10 +42,14 @@ function on_tick(timer_id) {
 function process_master_node_msg(msg) {
 	switch(msg.msg_id) {
 	    case Msg.SYNC_NODE_INFO:
+	        global.node_cid_map.set(msg.node_info.node_id, msg.cid);
 		    send_msg(Endpoint.MASTER_CENTER_CONNECTOR, 0, msg.msg_id, msg.msg_type, msg.sid, msg);
 		    break;
 	    case Msg.SYNC_NODE_STATUS: 
 	        global.node_status_map.set(msg.node_status.node_id, msg.node_status);
+	        break;
+	    case Msg.SYNC_NODE_STACK_INFO:
+	        send_msg(Endpoint.MASTER_HTTP_SERVER, msg.sid, Msg.HTTP_RES_STACK_INFO, Msg_Type.HTTP_MSG, 0, msg);
 	        break;
 	    default:
 		    log_error('process_master_node_msg, msg_id not exist:', msg.msg_id);
@@ -57,7 +61,7 @@ function process_master_node_msg(msg) {
 function process_master_http_msg(msg) {
 	switch(msg.msg_id) {
 	    case Msg.HTTP_CREATE_NODE_PROCESS:
-	       //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70002,\"endpoint_gid\":1,\"node_name\":\"game_server2\"}" "http://127.0.0.1:8080" 
+	        //curl -d "{\"msg_id\":1,\"node_type\":7,\"node_id\":70002,\"endpoint_gid\":1,\"node_name\":\"game_server2\"}" "http://127.0.0.1:8080" 
 		    fork_process(msg.node_type, msg.node_id, msg.endpoint_gid, msg.node_name);
 		    break;
 	    case Msg.HTTP_REQ_NODE_STATUS:
@@ -67,9 +71,9 @@ function process_master_http_msg(msg) {
 	    case Msg.HTTP_HOT_UPDATE:
 	        //curl -d "{\"msg_id\":3,\"file_list\":[\"game_server/game_player.js\"]}" "http://127.0.0.1:8080"
 	        hot_update(msg);
-	    case Msg.HTTP_REQ_STACK_TRACE:
-	        //curl -d "{\"msg_id\":4,\"node_id\":70001}" "http://127.0.0.1:8080"
-	        req_stack_trace(msg);
+	    case Msg.HTTP_REQ_STACK_INFO:
+	        //curl -d "{\"msg_id\":4,\"node_type\":7,\"node_id\":70001}" "http://127.0.0.1:8080"
+	        req_stack_info(msg);
 	        break;
 	    default:
 		    log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
@@ -101,8 +105,15 @@ function hot_update(msg) {
     }
 }
 
-function req_stack_trace(msg) {
-	var msg_res = new Object();
-    msg_res.stack_trace = get_stack_trace();
-	send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_STACK_TRACE, msg.msg_type, 0, msg_res);
+function req_stack_info(msg) {
+    var eid = 0;
+    var cid = 0;
+    if(msg.msg_type == Node_Type.CENTER_SERVER) {
+        eid = Endpoint.MASTER_CENTER_CONNECTOR;
+    }
+    else {
+        eid = Endpoint.MASTER_SERVER;
+        cid = global.node_cid_map.get(msg.node_id);
+    }
+    send_msg(eid, cid, Msg.SYNC_NODE_STACK_INFO, Msg_Type.NODE_MSG, msg.cid, {});
 }

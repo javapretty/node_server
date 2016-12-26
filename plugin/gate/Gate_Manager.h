@@ -22,7 +22,6 @@ struct Session {
 };
 
 class Gate_Manager: public Thread {
-public:
 	typedef Object_Pool<Session, Mutex_Lock> Session_Pool;
 	typedef Mutex_Lock Session_Map_Lock;
 	typedef std::unordered_map<uint, Session *> Session_Map;
