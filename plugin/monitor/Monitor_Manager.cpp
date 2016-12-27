@@ -58,6 +58,7 @@ int Monitor_Manager::sync_node_stack_info(int eid, int cid, int sid) {
 	int drop_cid = V8_MANAGER->drop_cid();
 	int timer_id = V8_MANAGER->timer_id();
 	Msg_Head stack_msg_head = V8_MANAGER->msg_head();
+	std::string stack_trace = "";
 
 	Bit_Buffer bit_buffer;
 	bit_buffer.write_int(drop_cid, 32);
@@ -65,7 +66,7 @@ int Monitor_Manager::sync_node_stack_info(int eid, int cid, int sid) {
 	bit_buffer.write_int(stack_msg_head.msg_id, 32);
 	bit_buffer.write_int(stack_msg_head.msg_type, 32);
 	bit_buffer.write_int(stack_msg_head.sid, 32);
-	bit_buffer.write_str("");
+	bit_buffer.write_str(stack_trace.c_str());
 	Msg_Head msg_head;
 	msg_head.eid = eid;
 	msg_head.cid = cid;
