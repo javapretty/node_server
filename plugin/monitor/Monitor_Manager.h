@@ -8,30 +8,22 @@
 #ifndef GATE_MANAGER_H_
 #define GATE_MANAGER_H_
 
-#include "Base_Define.h"
 #include "Buffer_List.h"
 #include "Thread.h"
+#include "Node_Define.h"
 
 enum Msg_Id {
 	SYNC_NODE_STACK_INFO = 4,
 };
 
 class Monitor_Manager: public Thread {
-	typedef Buffer_List<Mutex_Lock> Data_List;
 public:
 	static Monitor_Manager *instance(void);
 
+	void init(const Node_Info &node_info) { node_info_ = node_info; }
 	virtual void run_handler(void);
 	virtual int process_list(void);
-
-	inline void push_buffer(Byte_Buffer *buffer) {
-		notify_lock_.lock();
-		buffer_list_.push_back(buffer);
-		notify_lock_.signal();
-		notify_lock_.unlock();
-	}
-
-	int sync_node_stack_info(Msg_Head &msg_head);
+	int sync_node_stack_info(int eid, int cid, int sid);
 
 private:
 	Monitor_Manager(void);
@@ -41,8 +33,7 @@ private:
 
 private:
 	static Monitor_Manager *instance_;
-
-	Data_List buffer_list_;			//娑堟伅鍒楄〃
+	Node_Info node_info_;			//节点信息
 };
 
 #define MONITOR_MANAGER Monitor_Manager::instance()

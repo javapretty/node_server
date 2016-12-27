@@ -23,14 +23,13 @@
     <node type="1" global_script="js/global.js" main_script="js/center_server/center_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/center_server/"></hotupdate>
-      <plugin path="plugin/monitorplugin.so"></plugin>
-      <msg_filter msg_type="5" min_msg_id="4" max_msg_id="4"></msg_filter>
       <endpoint type="1" gid="1" id="1" name="center_client_server" ip="127.0.0.1" port="8000" protocol="1" heartbeat="30"></endpoint>
       <endpoint type="2" gid="1" id="2" name="center_node_server" ip="127.0.0.1" port="8001" protocol="1" heartbeat="0"></endpoint>
     </node>
     <node type="2" global_script="js/global.js" main_script="js/gate_server/gate_server.js">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/gate_server/"></hotupdate>
+      <plugin path="plugin/monitorplugin.so"></plugin>
       <plugin path="plugin/gateplugin.so"></plugin>
       <msg_filter msg_type="1" min_msg_id="4" max_msg_id="255"></msg_filter>
       <msg_filter msg_type="4" min_msg_id="4" max_msg_id="255"></msg_filter>
@@ -46,6 +45,7 @@
     <node type="3" global_script="js/global.js" main_script="js/data_server/data_server.js" max_session_count="10000">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/data_server/"></hotupdate>
+      <plugin path="plugin/monitorplugin.so"></plugin>
       <plugin path="plugin/dbplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="data_server" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
@@ -56,6 +56,7 @@
     <node type="4" global_script="js/global.js" main_script="js/log_server/log_server.js" max_session_count="1000000">
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/log_server/"></hotupdate>
+      <plugin path="plugin/monitorplugin.so"></plugin>
       <plugin path="plugin/logplugin.so"></plugin>
       <msg_filter msg_type="5" min_msg_id="1" max_msg_id="255"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="log_server" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
@@ -74,7 +75,6 @@
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/public_server/"></hotupdate>
       <plugin path="plugin/monitorplugin.so"></plugin>
-      <msg_filter msg_type="5" min_msg_id="4" max_msg_id="4"></msg_filter>
       <endpoint type="2" gid="1" id="1" name="public_server" ip="127.0.0.1" port="8500" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="2" name="public_data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="public_log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
@@ -84,7 +84,6 @@
       <hotupdate path="js/"></hotupdate>
       <hotupdate path="js/game_server/"></hotupdate>
       <plugin path="plugin/monitorplugin.so"></plugin>
-      <msg_filter msg_type="5" min_msg_id="4" max_msg_id="4"></msg_filter>
       <endpoint type="3" gid="1" id="1" name="game_data_connector" ip="127.0.0.1" port="8200" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="2" name="game_log_connector" ip="127.0.0.1" port="8300" protocol="1" heartbeat="0"></endpoint>
       <endpoint type="3" gid="1" id="3" name="game_master_connector" ip="127.0.0.1" port="8400" protocol="1" heartbeat="0"></endpoint>

@@ -15,10 +15,7 @@ extern "C" {
 	void init(Local<ObjectTemplate> &global, Isolate *isolate) {}
 
 	void create_thread(const Node_Info &node_info) {
+		MONITOR_MANAGER->init(node_info);
 		MONITOR_MANAGER->thr_create();
-	}
-
-	void push_buffer(Byte_Buffer *buffer) {
-		MONITOR_MANAGER->push_buffer(buffer);
 	}
 }

@@ -36,13 +36,13 @@
   <http_2 msg_id="2" msg_name="HTTP_REQ_NODE_STATUS">
   </http_2>
 
-  <http_3 msg_id="3" msg_name="HTTP_HOT_UPDATE">
-    <vector vbit="8" type="string" name="file_list"/>
+  <http_3 msg_id="3" msg_name="HTTP_REQ_STACK_INFO">
+    <arg type="int" bit="32" name="node_id"/>
   </http_3>
 
-  <http_4 msg_id="4" msg_name="HTTP_REQ_STACK_INFO">
-    <arg type="int" bit="32" name="node_type"/>
+  <http_4 msg_id="4" msg_name="HTTP_HOT_UPDATE">
     <arg type="int" bit="32" name="node_id"/>
+    <arg type="string" name="file_path"/>
   </http_4>
 
   <http_201 msg_id="201" msg_name="HTTP_RES_NODE_STATUS">

@@ -12,14 +12,12 @@
   </node_3>
 
   <node_4 msg_id="4" msg_name="SYNC_NODE_STACK_INFO">
-    <if name="drop_cid">
-      <arg type="int" bit="32" name="stack_drop_cid"/>
-      <arg type="int" bit="32" name="stack_timer_id"/>
-      <arg type="int" bit="32" name="stack_msg_id"/>
-      <arg type="int" bit="32" name="stack_msg_type"/>
-      <arg type="int" bit="32" name="stack_sid"/>
-      <arg type="string" name="stack_trace"/>
-    </if>
+    <arg type="int" bit="32" name="stack_drop_cid"/>
+    <arg type="int" bit="32" name="stack_timer_id"/>
+    <arg type="int" bit="32" name="stack_msg_id"/>
+    <arg type="int" bit="32" name="stack_msg_type"/>
+    <arg type="int" bit="32" name="stack_sid"/>
+    <arg type="string" name="stack_trace"/>
   </node_4>
 
 	<node_5 msg_id="5" msg_name="SYNC_GATE_CENTER_VERIFY_TOKEN">
