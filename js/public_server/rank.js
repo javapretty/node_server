@@ -25,9 +25,9 @@ Rank_Manager.prototype.save_data = function() {
 	msg.struct_name = "Rank_Info";
 	msg.data_type = DB_Data_Type.RANK;
 	msg.rank_list = new Array();
-	for (var value of this.rank_map.values()) {
-		msg.rank_list.push(value);
-	}
+	this.rank_map.forEach(function(value, key, map) {
+        msg.rank_list.push(value);
+    });
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, 0, msg);
 }
 
@@ -96,10 +96,10 @@ Rank_Manager.prototype.update_rank = function(type, player) {
 
 Rank_Manager.prototype.refresh_min_rank_value = function(rank_info){
 	rank_info.min_value = 0x7fffffff;
-	for (var value of rank_info.member_map.values()) {
-  		if(value.value < rank_info.min_value){
+	rank_info.member_map.forEach(function(value, key, map) {
+        if(value.value < rank_info.min_value){
 			rank_info.min_value = value.value;
 			rank_info.min_role_id = value.role_id;
 		}
-	}
+    });
 }

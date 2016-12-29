@@ -86,9 +86,9 @@ function process_master_http_msg(msg) {
 function req_node_status(msg) {
     var msg_res = new Object();
     msg_res.node_list = new Array();
-    for (var value of global.node_status_map.values()) {
+    global.node_status_map.forEach(function(value, key, map) {
         msg_res.node_list.push(value);
-    }
+    });
 	send_msg(Endpoint.MASTER_HTTP_SERVER, msg.cid, Msg.HTTP_RES_NODE_STATUS, msg.msg_type, 0, msg_res);
 }
 

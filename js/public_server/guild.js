@@ -31,12 +31,12 @@ Guild_Manager.prototype.save_data = function(){
 	msg.struct_name = "Guild_Info";
 	msg.data_type = DB_Data_Type.GUILD;
 	msg.guild_list = new Array();
-	for (var value of this.guild_map.values()) {
+	this.guild_map.forEach(function(value, key, map) {
         if(value.is_change) {
             value.is_change = false;
             msg.guild_list.push(value.guild_info);
 	    }
-	}
+    });
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, 0, msg);
 }
 

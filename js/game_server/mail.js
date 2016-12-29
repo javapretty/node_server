@@ -21,9 +21,9 @@ Mail.prototype.save_data = function(player_data) {
 Mail.prototype.fetch_mail = function() {
 	var msg_res = new Object();
 	msg_res.mail_list = new Array();
-    for (var value of this.mail_info.mail_map.values()) {
-  	    msg_res.mail_list.push(value);
-    }
+	this.mail_info.mail_map.forEach(function(value, key, map) {
+		msg_res.mail_list.push(value);
+	});
     this.game_player.send_success_msg(Msg.RES_MAIL_INFO, msg_res);
 }
 
