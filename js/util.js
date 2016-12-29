@@ -22,7 +22,7 @@ util.now_msec = function(date) {
 }
 
 //获取当前时间到指定定时时间的间隔(每日)
-util.get_next_day_tick = function(hour, min = 0, sec = 0) {
+util.get_next_day_tick = function(hour, min, sec) {
 	var now = util.now_sec();
 	var date = new Date();
 	date.setHours(hour);
