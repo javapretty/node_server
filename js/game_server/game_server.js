@@ -142,7 +142,7 @@ function process_game_client_msg(msg) {
 	
 	switch(msg.msg_id) {
 		case Msg.REQ_ROLE_INFO:
-			game_player.fetch_role_info(msg);
+			game_player.fetch_role_info();
 			break;
 	    case Msg.REQ_MAIL_INFO:
 		    game_player.mail.fetch_mail_info();

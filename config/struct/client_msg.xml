@@ -49,7 +49,6 @@
   </s2c_7>
 
   <c2s_8 msg_id="8" msg_name="REQ_ROLE_INFO">
-    <arg type="int64" name="role_id"/>
   </c2s_8>
   <s2c_8 msg_id="8" msg_name="RES_ROLE_INFO">
     <arg type="int64" name="role_id"/>

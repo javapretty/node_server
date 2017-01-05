@@ -127,11 +127,9 @@ Game_Player.prototype.set_guild_info = function(msg) {
 	this.role_info.guild_id = msg.guild_id;
 	this.role_info.guild_name = msg.guild_name;
 	this.data_change = true;
-	log_info('set_guild_info, role_id:', this.role_info.role_id, " role_name:", this.role_info.role_name, 
-	" guild_id:", this.role_info.guild_id, " guild_name:", this.role_info.guild_name);
 }
 
-Game_Player.prototype.fetch_role_info = function(msg) {
+Game_Player.prototype.fetch_role_info = function() {
 	var msg = new Object();
 	msg.role_id = this.role_info.role_id;
     msg.role_name = this.role_info.role_name;
