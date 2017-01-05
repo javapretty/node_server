@@ -18,7 +18,7 @@ Mail.prototype.save_data = function(player_data) {
 	player_data.mail_info = this.mail_info;
 }
 
-Mail.prototype.fetch_mail = function() {
+Mail.prototype.fetch_mail_info = function() {
 	var msg_res = new Object();
 	msg_res.mail_list = new Array();
 	this.mail_info.mail_map.forEach(function(value, key, map) {
@@ -78,12 +78,12 @@ Mail.prototype.delete_mail = function(msg) {
 }
 
 Mail.prototype.pickup_item_money = function(mail_detail) {	
-	var result = this.game_player.bag.bag_insert_item(mail_detail.item_info);
+	var result = this.game_player.bag.bag_insert_item(mail_detail.item_list);
 	if (result != 0) {
 		return result;
 	}
 	
-	result = this.game_player.bag.bag_add_money(mail_detail.copper, mail_detail.gold);
+	result = this.game_player.bag.bag_add_money(mail_detail.gold, mail_detail.diamond);
 	if (result != 0) {
 		return result;
 	}

@@ -8,29 +8,28 @@ if (typeof Error_Code == "undefined") {
 	var Error_Code = {};
 
 	Error_Code.RET_OK				= 0;	//成功返回	
-	Error_Code.NEED_CREATE_ROLE		= 1;	//需要创建角色
-	Error_Code.DISCONNECT_SELF 		= 2;	//服务主动关闭
-	Error_Code.DISCONNECT_RELOGIN	= 3;	//账号重登录
-	Error_Code.DISCONNECT_NOLOGIN 	= 4;	//账号没有登录
-	Error_Code.TOKEN_ERROR			= 5;	//token错误
-	Error_Code.TOKEN_TIMEOUT		= 6;	//token到期
-	Error_Code.CLIENT_PARAM_ERROR 	= 7;	//客户端参数错误
-	Error_Code.CONFIG_ERROR 		= 8;	//配置文件错误
-	Error_Code.GENERATE_ID_ERROR 	= 9;	//生成id错误
-	Error_Code.PLAYER_DATA_ERROR	= 10;	//玩家数据错误
-	Error_Code.PLAYER_NOT_EXIST 	= 11;	//玩家不存在
-	Error_Code.PLAYER_KICK_OFF 		= 12;	//玩家被踢下线
-	Error_Code.PLAYER_OFFLINE 		= 13;	//玩家已离线
-	Error_Code.LEVEL_NOT_ENOUGH 	= 14;	//角色等级不足
+	Error_Code.DISCONNECT_SELF 		= 1;	//服务主动关闭
+	Error_Code.DISCONNECT_RELOGIN	= 2;	//账号重登录
+	Error_Code.DISCONNECT_NOLOGIN 	= 3;	//账号没有登录
+	Error_Code.TOKEN_ERROR			= 4;	//token错误
+	Error_Code.TOKEN_TIMEOUT		= 5;	//token到期
+	Error_Code.CLIENT_PARAM_ERROR 	= 6;	//客户端参数错误
+	Error_Code.CONFIG_ERROR 		= 7;	//配置文件错误
+	Error_Code.GENERATE_ID_ERROR 	= 8;	//生成id错误
+	Error_Code.PLAYER_DATA_ERROR	= 9;	//玩家数据错误
+	Error_Code.ROLE_NOT_EXIST 		= 10;	//角色不存在
+	Error_Code.ROLE_HAS_EXIST 		= 11;	//角色已存在
+	Error_Code.ROLE_OFFLINE 		= 12;	//角色已离线
+	Error_Code.LEVEL_NOT_ENOUGH 	= 13;	//角色等级不足
 	
-	Error_Code.BAG_FULL				= 15;	//背包已满
-	Error_Code.ITEM_NOT_EXIST		= 16;	//物品不存在
-	Error_Code.ITEM_NOT_ENOUGH		= 17;	//物品不足
-	Error_Code.COPPER_NOT_ENOUGH	= 18;	//铜钱不足
-	Error_Code.GOLD_NOT_ENOUGH		= 19;	//元宝不足
+	Error_Code.BAG_FULL				= 14;	//背包已满
+	Error_Code.ITEM_NOT_EXIST		= 15;	//物品不存在
+	Error_Code.ITEM_NOT_ENOUGH		= 16;	//物品不足
+	Error_Code.GOLD_NOT_ENOUGH		= 17;	//金币不足
+	Error_Code.DIAMOND_NOT_ENOUGH	= 18;	//钻石不足
 	
-	Error_Code.GUILD_HAS_EXIST		= 20;	//公会已存在
-	Error_Code.GUILD_NOT_EXIST		= 21;	//公会不存在
+	Error_Code.GUILD_HAS_EXIST		= 19;	//公会已存在
+	Error_Code.GUILD_NOT_EXIST		= 20;	//公会不存在
 }
 
 if (typeof Msg_Type == "undefined") {
@@ -104,14 +103,16 @@ if (typeof Select_Data_Type == "undefined") {
     var Select_Data_Type = {};
     Select_Data_Type.INT64 = 1;     //查询int64类型值
     Select_Data_Type.STRING = 2;    //查询string类型值
+    Select_Data_Type.ACCOUNT = 3;   //查询帐号信息
 }
 
 if (typeof DB_Data_Type == "undefined") {
 	var DB_Data_Type = {};
-	DB_Data_Type.PLAYER		= 1;    //玩家数据
-	DB_Data_Type.GUILD		= 2;    //公会数据
-	DB_Data_Type.RANK 		= 3;    //排行榜数据
-	DB_Data_Type.LOGOUT 	= 4;    //离线日志数据
+	DB_Data_Type.ACCOUNT	= 1;    //账号数据
+	DB_Data_Type.PLAYER		= 2;    //玩家数据
+	DB_Data_Type.GUILD		= 3;    //公会数据
+	DB_Data_Type.RANK 		= 4;    //排行榜数据
+	DB_Data_Type.LOGOUT 	= 5;    //离线日志数据
 }
 
 if (typeof DB_Id == "undefined") {

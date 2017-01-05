@@ -5,6 +5,7 @@
 */
 
 require("js/game_server/game_player.js");
+require("js/game_server/login.js");
 require("js/game_server/bag.js");
 require("js/game_server/mail.js");
 require("js/game_server/entity.js");
@@ -42,7 +43,12 @@ function on_drop_cid(cid) { }
 
 function on_msg(msg) {
 	if (msg.msg_type == Msg_Type.NODE_C2S) {
-		process_game_client_msg(msg);
+		if (msg.msg_id >= Msg.REQ_ROLE_LIST && msg.msg_id <= Msg.REQ_DEL_ROLE) {
+			process_game_login_msg(msg);
+		}
+		else {
+			process_game_client_msg(msg);	
+		}
 	} 
 	else if (msg.msg_type == Msg_Type.NODE_S2C) {
 	    var game_player = global.sid_game_player_map.get(msg.sid);
@@ -76,10 +82,11 @@ function send_msg_to_public(msg_id, sid, msg) {
 
 function on_add_session(sid, gate_nid) {
     log_info('game add_session, sid:', sid, ' gate_nid:', gate_nid);
-	var gate_eid = gate_nid % 10000 + 4;
-	global.sid_gate_eid_map.set(sid, gate_eid);
+	var login_data = new Login();
+	login_data.gate_eid = gate_nid % 10000 + 4;
+	global.sid_login_map.set(sid, login_data);
     //增加session时候通知gate，gate可以通知client成功建立session
-	send_msg(gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, {});
+	send_msg(login_data.gate_eid, 0, Msg.SYNC_GATE_GAME_ADD_SESSION, Msg_Type.NODE_MSG, sid, {});
 }
 
 function on_remove_session(sid, error_code) {
@@ -89,8 +96,9 @@ function on_remove_session(sid, error_code) {
 	if (game_player) {
 		gate_eid = game_player.gate_eid;
 	} else {
-	    gate_eid = global.sid_gate_eid_map.get(sid);
-	    global.sid_gate_eid_map.delete(sid);
+		var login_data = global.sid_login_map.get(sid);
+	    gate_eid = login_data.gate_eid;
+	    global.sid_login_map.delete(sid);
 	}
 	//移除session时候通知gate清理session
 	var msg = new Object();
@@ -98,23 +106,46 @@ function on_remove_session(sid, error_code) {
 	send_msg(gate_eid, 0, Msg.SYNC_GAME_GATE_LOGOUT, Msg_Type.NODE_MSG, sid, msg);
 }
 
-function process_game_client_msg(msg) {
-	if (msg.msg_id == Msg.REQ_FETCH_ROLE) {
-		return fetch_role(msg);
-	} else if (msg.msg_id == Msg.REQ_CREATE_ROLE) { 
-		return create_role(msg);
+function process_game_login_msg(msg) {
+	var login_data = global.sid_login_map.get(msg.sid);
+	if (!login_data) {
+	    log_error('process_game_login_msg login_data not exist sid:', msg.sid, ' gate_cid:', msg.cid, ' msg_id:', msg.msg_id);
+	    on_remove_session(msg.sid, Error_Code.DISCONNECT_NOLOGIN);
+	    return;
 	}
 
+	switch(msg.msg_id) {
+		case Msg.REQ_ROLE_LIST:
+			login_data.fetch_role_list(msg);
+			break;
+	    case Msg.REQ_ENTER_GAME:
+		    login_data.enter_game(msg);
+		    break;
+	    case Msg.REQ_CREATE_ROLE:
+		    login_data.create_role(msg);
+		    break;
+	    case Msg.RES_DEL_ROLE:
+		    login_data.delete_role(msg);
+		    break;
+	    default:
+		    break;
+	}
+}
+
+function process_game_client_msg(msg) {
 	var game_player = global.sid_game_player_map.get(msg.sid);
 	if (!game_player) {
 	    log_error('process_game_client_msg game_player not exist sid:', msg.sid, ' gate_cid:', msg.cid, ' msg_id:', msg.msg_id);
-	    on_remove_session(msg.sid, Error_Code.PLAYER_NOT_EXIST);
+	    on_remove_session(msg.sid, Error_Code.ROLE_NOT_EXIST);
 	    return;
 	}
 	
 	switch(msg.msg_id) {
-	    case Msg.REQ_FETCH_MAIL:
-		    game_player.mail.fetch_mail();
+		case Msg.REQ_ROLE_INFO:
+			game_player.fetch_role_info(msg);
+			break;
+	    case Msg.REQ_MAIL_INFO:
+		    game_player.mail.fetch_mail_info();
 		    break;
 	    case Msg.REQ_PICKUP_MAIL:
 		    game_player.mail.pickup_mail(msg);
@@ -122,11 +153,6 @@ function process_game_client_msg(msg) {
 	    case Msg.REQ_DEL_MAIL:
 		    game_player.mail.delete_mail(msg);
 		    break;
-		case Msg.REQ_MOVE:
-			break;
-	    case Msg.REQ_TEST_ARG:
-	        test_arg(msg, game_player);
-	        break;
 	    case Msg.REQ_TEST_SWITCH:
 	        test_switch(msg, game_player);
 	        break;
@@ -160,8 +186,8 @@ function process_game_node_msg(msg) {
 	    case Msg.SYNC_SAVE_DB_DATA: {
             //加载数据成功，登陆游戏
 	        var game_player = new Game_Player();
-	        var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-	        game_player.login(gate_eid, msg.sid, msg.player_data);
+	        var login_data = global.sid_login_map.get(msg.sid);
+	        game_player.login(login_data.gate_eid, msg.sid, msg.player_data);
 		    break;	
 	    }
 	    case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {
@@ -180,20 +206,34 @@ function process_game_node_msg(msg) {
 function process_db_ret_code(msg) {
     switch (msg.opt_msg_id) {
         case Msg.SYNC_SELECT_DB_DATA: {
-            if (msg.ret_code == DB_Ret_Code.DATA_NOT_EXIST && msg.query_name == "role_id") {
-                var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-                var msg_res = new Object();
-                msg_res.error_code = Error_Code.NEED_CREATE_ROLE;
-                send_msg(gate_eid, 0, Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
-            }
-            else if (msg.ret_code == DB_Ret_Code.OPT_FAIL) {
-                on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
-            }
+        	switch(msg.ret_code) {
+        		case DB_Ret_Code.OPT_FAIL: {
+        			on_remove_session(msg.sid, Error_Code.PLAYER_DATA_ERROR);
+        			break;
+        		}
+        		case DB_Ret_Code.DATA_NOT_EXIST: {
+        			if (msg.struct_name == "Account_Info") {
+        				var login_data = global.sid_login_map.get(msg.sid);
+        				login_data.account_info.role_list = new Array();
+
+        				var msg_res = new Object();
+						msg_res.role_list = login_data.account_info.role_list;
+						send_msg(login_data.gate_eid, 0 , Msg.RES_ROLE_LIST, Msg_Type.NODE_S2C, msg.sid, msg_res);
+        			} 
+        			else if (msg.struct_name == "Role_Info") {
+        				//角色名称不存在，就创建角色
+        				var msg_res = new Object();
+						msg_res.type = "role_id";
+						send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
+        			}
+        			break;
+        		}
+        	}
             break;
         }
         case Msg.SYNC_SAVE_DB_DATA: {
             if (msg.struct_name == "Player_Data") {
-                global.logout_map.delete(msg.sid);
+                global.sid_logout_map.delete(msg.sid);
             }
             break;
         }
@@ -202,113 +242,41 @@ function process_db_ret_code(msg) {
 	}
 }
 
-function fetch_role(msg) {
-    if (global.sid_game_player_map.get(msg.sid) || global.logout_map.get(msg.sid)) {
-		log_error('relogin account:', msg.account);
-		return on_remove_session(msg.sid, Error_Code.DISCONNECT_RELOGIN);
-	}
-
-	var msg_res = new Object();
-	msg_res.db_id = DB_Id.GAME;
-	msg_res.struct_name = "Role_Info";
-	msg_res.condition_name = "account";
-	msg_res.condition_value = msg.account;
-	msg_res.query_name = "role_id";
-	msg_res.query_type = "int64";
-	msg_res.data_type = Select_Data_Type.INT64;
-	send_msg_to_db(Msg.SYNC_SELECT_DB_DATA, msg.sid, msg_res);
-}
-
 function res_select_db_data(msg) {
     switch(msg.data_type) {
-        case Select_Data_Type.INT64: {
-            if (msg.query_name == "role_id" && msg.query_value > 0) {
-                log_info('query role_id success sid:', msg.sid, ' role_id:', msg.query_value);
-                var msg_res = new Object();
-                msg_res.db_id = DB_Id.GAME;
-                msg_res.key_index = msg.query_value;
-                msg_res.struct_name = "Player_Data";
-                msg_res.data_type = DB_Data_Type.PLAYER;
-                send_msg_to_db(Msg.SYNC_LOAD_DB_DATA, msg.sid, msg_res);
-            }
-            break;
+        case Select_Data_Type.ACCOUNT: {
+        	log_warn("res_select_db_data, account:", msg.account_info.account);
+        	//返回玩家角色列表
+        	var login_data = global.sid_login_map.get(msg.sid);
+        	login_data.account_info = msg.account_info;
+
+    	    var msg_res = new Object();
+			msg_res.role_list = login_data.account_info.role_list;
+			send_msg(login_data.gate_eid, 0 , Msg.RES_ROLE_LIST, Msg_Type.NODE_S2C, msg.sid, msg_res);
+        	break;
+        }
+		case Select_Data_Type.INT64: {
+			//创建角色时候，根据role_name查询，返回正常数据，说明role_name已经存在
+			if(msg.query_name == "role_id" && msg.query_value > 0) {
+				var msg_res = new Object();
+				msg_res.error_code = Error_Code.ROLE_HAS_EXIST;
+				var login_data = global.sid_login_map.get(msg.sid);
+				send_msg(login_data.gate_eid, 0 , Msg.RES_ERROR_CODE, Msg_Type.NODE_S2C, msg.sid, msg_res);
+			}
+        	break;
         }
         default:
             break;
     }
 }
 
-function create_role(msg) {
-    if (msg.role_info.account.length <= 0 || msg.role_info.role_name.length <= 0 || global.logout_map.get(msg.sid)) {
-		log_error('create_role parameter invalid, account:', msg.role_info.account, ' role_name:', msg.role_info.role_name);
-		return on_remove_session(msg.sid, Error_Code.CLIENT_PARAM_ERROR);
-	}
-	
-    log_info('create_role, account:', msg.role_info.account, ' gate_cid:', msg.cid, ' sid:', msg.sid);
-	//将创建角色信息保存起来，等待从db生成role_id后，将角色信息保存到db
-	global.sid_create_role_map.set(msg.sid, msg.role_info);
-	var msg_res = new Object();
-	msg_res.type = "role_id";
-	send_msg_to_db(Msg.SYNC_GENERATE_ID, msg.sid, msg_res);
-}
-
 function res_generate_id(msg) {
     if (msg.id <= 0) {
         on_remove_session(msg.sid, Error_Code.GENERATE_ID_ERROR);
     } else {
-		//创建角色时候，既保存到缓存，又保存到db
-		var msg_res = new Object();
-		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
-		msg_res.vector_data = false;
-		msg_res.db_id = DB_Id.GAME;
-		msg_res.struct_name = "Player_Data";
-		msg_res.data_type = DB_Data_Type.PLAYER;
-		//初始化玩家数据
-		var role_info = global.sid_create_role_map.get(msg.sid);
-		msg_res.player_data = new Object();
-		msg_res.player_data.role_info = new Object();
-		msg_res.player_data.role_info.role_id = msg.id;
-		msg_res.player_data.role_info.account = role_info.account;
-		msg_res.player_data.role_info.role_name = role_info.role_name;
-		msg_res.player_data.role_info.level = 1;
-		msg_res.player_data.role_info.exp = 0;
-		msg_res.player_data.role_info.gender = role_info.gender;
-		msg_res.player_data.role_info.career = role_info.career;
-		msg_res.player_data.role_info.create_time = util.now_sec();
-		msg_res.player_data.role_info.login_time = msg_res.player_data.role_info.create_time;
-		msg_res.player_data.role_info.logout_time = 0;
-		msg_res.player_data.role_info.guild_id = 0;
-		msg_res.player_data.role_info.guild_name = "";
-		msg_res.player_data.role_info.speed = 120;
-		msg_res.player_data.role_info.last_scene = 1001;
-		msg_res.player_data.role_info.last_x = 0;
-		msg_res.player_data.role_info.last_y = 0;
-		//初始化背包数据
-		msg_res.player_data.bag_info = new Object();
-		msg_res.player_data.bag_info.role_id = msg.id;
-		msg_res.player_data.bag_info.copper = 0;
-		msg_res.player_data.bag_info.gold = 0;
-		msg_res.player_data.bag_info.item_map = new Map();
-		//初始化邮件数据
-		msg_res.player_data.mail_info = new Object();
-		msg_res.player_data.mail_info.role_id = msg.id;
-		msg_res.player_data.mail_info.total_count = 0;
-		msg_res.player_data.mail_info.mail_map = new Map();
-		send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg_res);
-		
-		//创建角色时候，玩家成功登陆游戏
-		var game_player = new Game_Player();
-		var gate_eid = global.sid_gate_eid_map.get(msg.sid);
-		game_player.login(gate_eid, msg.sid, msg_res.player_data);
+    	var login_data = global.sid_login_map.get(msg.sid);
+    	login_data.db_create_role(msg);
 	}
-}
-
-function test_arg(msg, player) {
-	var msg_res = new Object();
-    msg_res.int4_arg = msg.int4_arg;
-    msg_res.uint8_arg = msg.uint8_arg;
-    msg_res.uint4_arg = msg.uint4_arg;
-    player.send_success_msg(Msg.RES_TEST_ARG, msg_res);
 }
 
 function test_switch(msg, player) {

@@ -18,28 +18,28 @@ Bag.prototype.save_data = function(player_data) {
 	player_data.bag_info = this.bag_info;
 }
 	
-Bag.prototype.bag_add_money = function(copper, gold) {
-    if(typeof copper != "number" || typeof gold != "number") {
+Bag.prototype.bag_add_money = function(gold, diamond) {
+    if(typeof gold != "number" || typeof diamond != "number") {
         return Error_Code.CLIENT_PARAM_ERROR;
     }
-	this.bag_info.copper += copper;
 	this.bag_info.gold += gold;
+	this.bag_info.diamond += diamond;
 	this.bag_active_money();
 	return 0;
 }
 	
-Bag.prototype.bag_sub_money = function(copper, gold) {
-    if(typeof copper != "number" || typeof gold != "number") {
+Bag.prototype.bag_sub_money = function(gold, diamond) {
+    if(typeof gold != "number" || typeof diamond != "number") {
         return Error_Code.CLIENT_PARAM_ERROR;
     }
-	if (this.bag_info.copper < copper) {
+	if (this.bag_info.gold < gold) {
 		return Error_Code.COPPER_NOT_ENOUGH;
 	}
-	if (this.bag_info.gold < gold) {
+	if (this.bag_info.diamond < diamond) {
 		return Error_Code.GOLD_NOT_ENOUGH;
 	}
-	this.bag_info.copper -= copper;
 	this.bag_info.gold -= gold;
+	this.bag_info.diamond -= diamond;
 	this.bag_active_money();
 	return 0;
 }

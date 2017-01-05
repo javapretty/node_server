@@ -21,10 +21,39 @@ CREATE TABLE `mail` (
 DROP TABLE IF EXISTS `bag`;
 CREATE TABLE `bag` (
 	role_id bigint(20) NOT NULL default '0',
-	copper int(11) NOT NULL default '0',
 	gold int(11) NOT NULL default '0',
+	diamond int(11) NOT NULL default '0',
 	item_map text NOT NULL,
 	PRIMARY KEY (role_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `role`;
+CREATE TABLE `role` (
+	role_id bigint(20) NOT NULL default '0',
+	role_name varchar(120) NOT NULL default '',
+	account varchar(120) NOT NULL default '',
+	gender int(11) NOT NULL default '0',
+	career int(11) NOT NULL default '0',
+	level int(11) NOT NULL default '0',
+	exp int(11) NOT NULL default '0',
+	combat int(11) NOT NULL default '0',
+	create_time int(11) NOT NULL default '0',
+	login_time int(11) NOT NULL default '0',
+	logout_time int(11) NOT NULL default '0',
+	guild_id bigint(20) NOT NULL default '0',
+	guild_name varchar(120) NOT NULL default '',
+	speed int(11) NOT NULL default '0',
+	last_scene int(11) NOT NULL default '0',
+	last_x int(11) NOT NULL default '0',
+	last_y int(11) NOT NULL default '0',
+	PRIMARY KEY (role_id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `account`;
+CREATE TABLE `account` (
+	account varchar(120) NOT NULL default '',
+	role_list text NOT NULL,
+	PRIMARY KEY (account)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `idx`;
@@ -42,25 +71,4 @@ CREATE TABLE `guild` (
 	create_time int(11) NOT NULL default '0',
 	member_list text NOT NULL,
 	PRIMARY KEY (guild_id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `role`;
-CREATE TABLE `role` (
-	role_id bigint(20) NOT NULL default '0',
-	role_name varchar(120) NOT NULL default '',
-	account varchar(120) NOT NULL default '',
-	level int(11) NOT NULL default '0',
-	exp int(11) NOT NULL default '0',
-	gender int(11) NOT NULL default '0',
-	career int(11) NOT NULL default '0',
-	create_time int(11) NOT NULL default '0',
-	login_time int(11) NOT NULL default '0',
-	logout_time int(11) NOT NULL default '0',
-	guild_id bigint(20) NOT NULL default '0',
-	guild_name varchar(120) NOT NULL default '',
-	speed int(11) NOT NULL default '0',
-	last_scene int(11) NOT NULL default '0',
-	last_x int(11) NOT NULL default '0',
-	last_y int(11) NOT NULL default '0',
-	PRIMARY KEY (role_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;

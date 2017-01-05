@@ -54,12 +54,10 @@ global.sid_session_map = new Map();
 global.account_session_map = new Map();
 
 ///////////////////game_server±‰¡ø////////////////////////
-//sid--gate_endpoint_id
-global.sid_gate_eid_map = new Map();
 //sid--Create_Role_Info
-global.sid_create_role_map = new Map();
+global.sid_login_map = new Map();
 //sid--logout_time
-global.logout_map = new Map();
+global.sid_logout_map = new Map();
 //sid----game_player
 global.sid_game_player_map = new Map();
 //role_id---game_player

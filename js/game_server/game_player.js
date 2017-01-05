@@ -38,12 +38,12 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 Game_Player.prototype.logout = function () {
     log_info("game_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name," gate_eid:",this.gate_eid);
 	this.role_info.logout_time = util.now_sec();
-	global.logout_map.set(this.sid, this.role_info.logout_time);
+	global.sid_logout_map.set(this.sid, this.role_info.logout_time);
 
 	this.sync_player_data_to_db(true);
 	this.sync_logout_to_log();
 	this.sync_login_logout_to_public(false);
-	global.sid_gate_eid_map.delete(this.sid);
+	global.sid_login_map.delete(this.sid);
 	global.sid_game_player_map.delete(this.sid);
 	global.role_id_game_player_map.delete(this.role_info.role_id);
 	global.role_name_game_player_map.delete(this.role_info.role_name);
@@ -71,8 +71,8 @@ Game_Player.prototype.send_error_msg = function(error_code) {
 
 Game_Player.prototype.sync_login_to_client = function() {
 	var msg = new Object();
-	msg.role_info = this.role_info;
-	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
+	msg.role_id = this.role_info.role_id;
+	this.send_success_msg(Msg.RES_ENTER_GAME, msg);
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
@@ -113,10 +113,10 @@ Game_Player.prototype.sync_logout_to_log = function() {
     msg.logout_info.role_id = this.role_info.role_id;
     msg.logout_info.role_name = this.role_info.role_name;
     msg.logout_info.account = this.role_info.account;
-    msg.logout_info.level = this.role_info.level;
-    msg.logout_info.exp = this.role_info.exp;
     msg.logout_info.gender = this.role_info.gender;
     msg.logout_info.career = this.role_info.career;
+    msg.logout_info.level = this.role_info.level;
+    msg.logout_info.exp = this.role_info.exp;
     msg.logout_info.create_time = this.role_info.create_time;
     msg.logout_info.login_time = this.role_info.login_time;
     msg.logout_info.logout_time = this.role_info.logout_time;
@@ -131,3 +131,15 @@ Game_Player.prototype.set_guild_info = function(msg) {
 	" guild_id:", this.role_info.guild_id, " guild_name:", this.role_info.guild_name);
 }
 
+Game_Player.prototype.fetch_role_info = function(msg) {
+	var msg = new Object();
+	msg.role_id = this.role_info.role_id;
+    msg.role_name = this.role_info.role_name;
+    msg.gender = this.role_info.gender;
+    msg.career = this.role_info.career;
+    msg.level = this.role_info.level;
+    msg.exp = this.role_info.exp;
+    msg.gold = this.bag.bag_info.gold;
+    msg.diamond = this.bag.bag_info.diamond;
+	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
+}

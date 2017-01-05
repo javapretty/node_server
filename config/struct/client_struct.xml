@@ -4,31 +4,21 @@
 		<arg type="uint" bit="16" name="y"/>
 	</Position>
 
+    <Account_Role_Info>
+        <arg type="int64" name="role_id"/>
+        <arg type="string" name="role_name"/>
+        <arg type="uint" bit="1" name="gender"/>
+        <arg type="uint" bit="2" name="career"/>
+        <arg type="uint" bit="8" name="level"/>
+        <arg type="uint" bit="32" name="combat"/>
+    </Account_Role_Info>
+
 	<Create_Role_Info>
 		<arg type="string" name="account"/>
     	<arg type="string" name="role_name"/>
     	<arg type="uint" bit="1" name="gender"/>
     	<arg type="uint" bit="2" name="career"/>
 	</Create_Role_Info>
-	
-	<Role_Info table_name="game.role" index_name="role_id" index_type="int64">
-		<arg type="int64" name="role_id"/>
-		<arg type="string" name="role_name"/>
-		<arg type="string" name="account"/>
-		<arg type="uint" bit="8" name="level"/>
-		<arg type="uint" bit="32" name="exp"/>
-		<arg type="uint" bit="1" name="gender"/>
-		<arg type="uint" bit="2" name="career"/>
-		<arg type="int" bit="32" name="create_time"/>
-		<arg type="int" bit="32" name="login_time"/>
-		<arg type="int" bit="32" name="logout_time"/>
-		<arg type="int64" name="guild_id"/>
-		<arg type="string" name="guild_name"/>
-		<arg type="uint" bit="16" name="speed"/>
-		<arg type="uint" bit="16" name="last_scene"/>
-		<arg type="uint" bit="16" name="last_x"/>
-		<arg type="uint" bit="16" name="last_y"/>
-	</Role_Info>
 
 	<Guild_Info table_name="game.guild" index_name="guild_id" index_type="int64">
 		<arg type="int64" name="guild_id"/>
@@ -59,9 +49,9 @@
 		<arg type="string" name="sender_name"/>
 		<arg type="string" name="mail_title"/>
 		<arg type="string" name="mail_content"/>
-		<arg type="int" bit="32" name="copper"/>
-		<arg type="int" bit="32" name="gold"/>
-		<vector vbit="4" type="Item_Info" name="item_info"/>
+		<arg type="uint" bit="32" name="gold"/>
+		<arg type="uint" bit="32" name="diamond"/>
+		<vector vbit="4" type="Item_Info" name="item_list"/>
 	</Mail_Detail>
 	
 </root>

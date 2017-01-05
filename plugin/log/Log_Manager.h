@@ -17,8 +17,8 @@
 #include "Node_Define.h"
 
 enum Msg_Id {
-	SYNC_NODE_INFO = 2,
-	SYNC_SAVE_DB_DATA = 251,
+	SYNC_NODE_INFO = 1,
+	SYNC_SAVE_DB_DATA = 250,
 };
 
 class Log_Manager: public Thread {
