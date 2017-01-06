@@ -86,8 +86,7 @@ Login.prototype.db_create_role = function(msg) {
 	msg_res.struct_name = "Player_Data";
 	msg_res.data_type = DB_Data_Type.PLAYER;
 	//初始化玩家数据
-	msg_res.player_data = new Object();
-	msg_res.player_data.role_info = new Object();
+	msg_res.player_data = new Player_Data();
 	msg_res.player_data.role_info.role_id = msg.id;
 	msg_res.player_data.role_info.account = this.create_role_info.account;
 	msg_res.player_data.role_info.role_name = this.create_role_info.role_name;
@@ -95,27 +94,15 @@ Login.prototype.db_create_role = function(msg) {
 	msg_res.player_data.role_info.career = this.create_role_info.career;
 	msg_res.player_data.role_info.level = 1;
 	msg_res.player_data.role_info.exp = 0;
-	msg_res.player_data.role_info.combat = 0;
+	msg_res.player_data.role_info.combat = 100;
 	msg_res.player_data.role_info.create_time = util.now_sec();
 	msg_res.player_data.role_info.login_time = msg_res.player_data.role_info.create_time;
-	msg_res.player_data.role_info.logout_time = 0;
-	msg_res.player_data.role_info.guild_id = 0;
-	msg_res.player_data.role_info.guild_name = "";
 	msg_res.player_data.role_info.speed = 120;
 	msg_res.player_data.role_info.last_scene = 1001;
-	msg_res.player_data.role_info.last_x = 0;
-	msg_res.player_data.role_info.last_y = 0;
 	//初始化背包数据
-	msg_res.player_data.bag_info = new Object();
 	msg_res.player_data.bag_info.role_id = msg.id;
-	msg_res.player_data.bag_info.gold = 0;
-	msg_res.player_data.bag_info.diamond = 0;
-	msg_res.player_data.bag_info.item_map = new Map();
 	//初始化邮件数据
-	msg_res.player_data.mail_info = new Object();
 	msg_res.player_data.mail_info.role_id = msg.id;
-	msg_res.player_data.mail_info.total_count = 0;
-	msg_res.player_data.mail_info.mail_map = new Map();
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, msg.sid, msg_res);
 
 	//创建角色时候，玩家成功登陆游戏

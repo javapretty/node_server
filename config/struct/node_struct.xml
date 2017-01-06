@@ -1,5 +1,31 @@
 <root>
 
+	<Msg_Count>
+		<arg type="int" bit="32" name="msg_id"/>
+		<arg type="int" bit="32" name="msg_count"/>
+	</Msg_Count>
+
+	<Node_Status>
+		<arg type="int" bit="32" name="node_type"/>
+		<arg type="int" bit="32" name="node_id"/>
+		<arg type="string" name="node_name"/>
+		<arg type="int" bit="32" name="start_time"/>
+		<arg type="int64" name="total_send"/>
+		<arg type="int64" name="total_recv"/>
+		<arg type="int" bit="32" name="send_per_sec"/>
+		<arg type="int" bit="32" name="recv_per_sec"/>
+		<arg type="int" bit="32" name="task_count"/>
+		<vector vbit="16" type="Msg_Count" name="msg_list"/>
+		<arg type="int" bit="32" name="session_count"/>
+		<arg type="float" name="cpu_percent"/>
+		<arg type="int" bit="32" name="vm_size"/>
+		<arg type="int" bit="32" name="vm_rss"/>
+		<arg type="int" bit="32" name="vm_data"/>
+		<arg type="int" bit="32" name="heap_total"/>
+		<arg type="int" bit="32" name="heap_used"/>
+		<arg type="int" bit="32" name="external_mem"/>
+	</Node_Status>
+  
 	<Endpoint_Info>
 		<arg type="int" bit="32" name="endpoint_type"/>
 		<arg type="int" bit="32" name="endpoint_gid"/>

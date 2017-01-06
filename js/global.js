@@ -6,6 +6,7 @@
 
 require("js/enum.js");
 require("js/message.js");
+require("js/struct.js");
 require("js/config.js");
 require("js/util.js");
 require("js/timer.js");

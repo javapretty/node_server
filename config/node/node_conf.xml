@@ -6,10 +6,7 @@
     <folder path="config/"></folder>
   </hotupdate>
   <struct log_trace="0" agent_num="1" server_num="1">
-    <base_struct path="config/struct/client_msg.xml"></base_struct>
     <base_struct path="config/struct/client_struct.xml"></base_struct>
-    <base_struct path="config/struct/http_msg.xml"></base_struct>
-    <base_struct path="config/struct/node_msg.xml"></base_struct>
     <base_struct path="config/struct/node_struct.xml"></base_struct>
     <msg_struct path="config/struct/client_msg.xml"></msg_struct>
     <msg_struct path="config/struct/client_struct.xml"></msg_struct>

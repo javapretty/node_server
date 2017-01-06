@@ -180,12 +180,11 @@ function res_generate_id(msg) {
 		player.send_error_msg(Error_Code.GENERATE_ID_ERROR);
 	} else {
 		//创建公会时候，既保存到缓存，又保存到db
-		var guild_info = new Object();
+		var guild_info = new Guild_Info();
 		guild_info.guild_id = msg.id;
 		guild_info.guild_name = player.role_info.guild_name;
 		guild_info.chief_id = player.role_info.role_id;
 		guild_info.create_time = util.now_sec();
-		guild_info.member_list = new Array();
 		
 		var msg_res = new Object();
 		msg_res.save_type = Save_Type.SAVE_DB_AND_CACHE;
