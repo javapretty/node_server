@@ -245,7 +245,6 @@ function process_db_ret_code(msg) {
 function res_select_db_data(msg) {
     switch(msg.data_type) {
         case Select_Data_Type.ACCOUNT: {
-        	log_warn("res_select_db_data, account:", msg.account_info.account);
         	//返回玩家角色列表
         	var login_data = global.sid_login_map.get(msg.sid);
         	login_data.account_info = msg.account_info;
