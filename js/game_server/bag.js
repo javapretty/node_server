@@ -18,32 +18,6 @@ Bag.prototype.save_data = function(player_data) {
 	player_data.bag_info = this.bag_info;
 }
 	
-Bag.prototype.bag_add_money = function(gold, diamond) {
-    if(typeof gold != "number" || typeof diamond != "number") {
-        return Error_Code.CLIENT_PARAM_ERROR;
-    }
-	this.bag_info.gold += gold;
-	this.bag_info.diamond += diamond;
-	this.bag_active_money();
-	return 0;
-}
-	
-Bag.prototype.bag_sub_money = function(gold, diamond) {
-    if(typeof gold != "number" || typeof diamond != "number") {
-        return Error_Code.CLIENT_PARAM_ERROR;
-    }
-	if (this.bag_info.gold < gold) {
-		return Error_Code.COPPER_NOT_ENOUGH;
-	}
-	if (this.bag_info.diamond < diamond) {
-		return Error_Code.GOLD_NOT_ENOUGH;
-	}
-	this.bag_info.gold -= gold;
-	this.bag_info.diamond -= diamond;
-	this.bag_active_money();
-	return 0;
-}
-	
 Bag.prototype.bag_insert_item = function(item_array) {
 	if (this.bag_info.item_map.size + item_array.length > 1000) {
 		return this.game_player.send_error_msg(Error_Code.BAG_FULL);
@@ -86,7 +60,4 @@ Bag.prototype.bag_erase_item = function(item_array) {
 }
 	
 Bag.prototype.bag_active_item = function() {
-}
-
-Bag.prototype.bag_active_money = function() {
 }

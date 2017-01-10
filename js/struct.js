@@ -27,8 +27,6 @@ function Mail_Info() {
 
 function Bag_Info() {
 	this.role_id = 0;
-	this.gold = 0;
-	this.diamond = 0;
 	this.item_map = new Map();
 }
 
@@ -44,6 +42,8 @@ function Role_Info() {
 	this.create_time = 0;
 	this.login_time = 0;
 	this.logout_time = 0;
+	this.gold = 0;
+	this.diamond = 0;
 	this.guild_id = 0;
 	this.guild_name = "";
 	this.speed = 0;

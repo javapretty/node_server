@@ -137,7 +137,31 @@ Game_Player.prototype.fetch_role_info = function() {
     msg.career = this.role_info.career;
     msg.level = this.role_info.level;
     msg.exp = this.role_info.exp;
-    msg.gold = this.bag.bag_info.gold;
-    msg.diamond = this.bag.bag_info.diamond;
+    msg.gold = this.role_info.gold;
+    msg.diamond = this.role_info.diamond;
 	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
+}
+
+Game_Player.prototype.add_money = function (gold, diamond) {
+    if (typeof gold != "number" || typeof diamond != "number") {
+        return Error_Code.CLIENT_PARAM_ERROR;
+    }
+    this.role_info.gold += gold;
+    this.role_info.diamond += diamond;
+    return 0;
+}
+
+Game_Player.prototype.sub_money = function (gold, diamond) {
+    if (typeof gold != "number" || typeof diamond != "number") {
+        return Error_Code.CLIENT_PARAM_ERROR;
+    }
+    if (this.role_info.gold < gold) {
+        return Error_Code.COPPER_NOT_ENOUGH;
+    }
+    if (this.role_info.diamond < diamond) {
+        return Error_Code.GOLD_NOT_ENOUGH;
+    }
+    this.role_info.gold -= gold;
+    this.role_info.diamond -= diamond;
+    return 0;
 }

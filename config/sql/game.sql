@@ -21,8 +21,6 @@ CREATE TABLE `mail` (
 DROP TABLE IF EXISTS `bag`;
 CREATE TABLE `bag` (
 	role_id bigint(20) NOT NULL default '0',
-	gold int(11) NOT NULL default '0',
-	diamond int(11) NOT NULL default '0',
 	item_map text NOT NULL,
 	PRIMARY KEY (role_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -40,6 +38,8 @@ CREATE TABLE `role` (
 	create_time int(11) NOT NULL default '0',
 	login_time int(11) NOT NULL default '0',
 	logout_time int(11) NOT NULL default '0',
+	gold int(11) NOT NULL default '0',
+	diamond int(11) NOT NULL default '0',
 	guild_id bigint(20) NOT NULL default '0',
 	guild_name varchar(120) NOT NULL default '',
 	speed int(11) NOT NULL default '0',

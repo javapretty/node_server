@@ -83,7 +83,7 @@ Mail.prototype.pickup_item_money = function(mail_detail) {
 		return result;
 	}
 	
-	result = this.game_player.bag.bag_add_money(mail_detail.gold, mail_detail.diamond);
+	result = this.game_player.add_money(mail_detail.gold, mail_detail.diamond);
 	if (result != 0) {
 		return result;
 	}
