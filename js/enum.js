@@ -30,6 +30,8 @@ if (typeof Error_Code == "undefined") {
 	
 	Error_Code.GUILD_HAS_EXIST		= 19;	//公会已存在
 	Error_Code.GUILD_NOT_EXIST		= 20;	//公会不存在
+
+	Error_Code.AWARD_GET_ALREADY	= 21;	//奖励已经领取
 }
 
 if (typeof Msg_Type == "undefined") {

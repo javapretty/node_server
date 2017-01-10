@@ -5,8 +5,11 @@
 */
 
 function Config() {
+	this.general = null;
+
 	this.init = function() {
 	    try {
+	    	this.general = read_xml("config/xml/general.xml");
 		} catch (err) {
 			log_error(err.message);
 		}

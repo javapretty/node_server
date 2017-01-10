@@ -36,7 +36,7 @@
 	
 	<Item_Info>
 		<arg type="int" bit="32" name="item_id"/>
-		<arg type="int" bit="32" name="amount"/>
+		<arg type="uint" bit="14" name="amount"/>
 		<arg type="uint" bit="2" name="bind_type"/>
 	</Item_Info>
 	

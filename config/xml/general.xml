@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<general>
+    <seven_day_award>
+        <item id="10001" amount="1"/>
+        <item id="10002" amount="1"/>
+        <item id="10003" amount="1"/>
+        <item id="10004" amount="1"/>
+        <item id="10005" amount="1"/>
+        <item id="10006" amount="1"/>
+        <item id="10007" amount="1"/>
+    </seven_day_award>
+</general>

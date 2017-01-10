@@ -100,8 +100,14 @@ Login.prototype.db_create_role = function(msg) {
 	msg_res.player_data.role_info.speed = 120;
 	msg_res.player_data.role_info.last_scene = 1001;
 	//初始化背包数据
+	msg_res.player_data.activity_info.role_id = msg.id;
+	for(var i = 0; i < 7; ++i) {
+		msg_res.player_data.activity_info.seven_day_award_status.push(false);
+	}
+	for(var i = 0; i < 31; ++i) {
+		msg_res.player_data.activity_info.sign_in_award_status.push(false);
+	}
 	msg_res.player_data.bag_info.role_id = msg.id;
-	//初始化邮件数据
 	msg_res.player_data.mail_info.role_id = msg.id;
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, msg.sid, msg_res);
 

@@ -6,6 +6,7 @@
 
 require("js/game_server/game_player.js");
 require("js/game_server/login.js");
+require("js/game_server/activity.js");
 require("js/game_server/bag.js");
 require("js/game_server/mail.js");
 require("js/game_server/entity.js");
@@ -152,6 +153,18 @@ function process_game_client_msg(msg) {
 		    break;
 	    case Msg.REQ_DEL_MAIL:
 		    game_player.mail.delete_mail(msg);
+		    break;
+		case Msg.REQ_SEVEN_DAY_AWARD:
+		    game_player.activity.seven_day_award(msg);
+		    break;
+		case Msg.REQ_SIGN_IN:
+		    game_player.activity.sign_in(msg);
+		    break;
+		case Msg.REQ_RESIGN_IN:
+		    game_player.activity.resign_in(msg);
+		    break;
+		case Msg.REQ_BUY_MONTH_CARD:
+		    game_player.activity.buy_month_card(msg);
 		    break;
 	    case Msg.REQ_TEST_SWITCH:
 	        test_switch(msg, game_player);

@@ -12,6 +12,7 @@ function Game_Player() {
 
 	this.role_info = null;
 	this.entity = new Entity();
+	this.activity = new Activity();
 	this.mail = new Mail();
 	this.bag = new Bag();
 }
@@ -24,6 +25,7 @@ Game_Player.prototype.login = function(gate_eid, sid, player_data) {
 	this.role_info = player_data.role_info;
 	this.role_info.login_time = util.now_sec();
 	//this.entity.load_data(this, player_data);
+	this.activity.load_data(this, player_data);
 	this.mail.load_data(this, player_data);
 	this.bag.load_data(this, player_data);
 
@@ -97,6 +99,7 @@ Game_Player.prototype.sync_player_data_to_db = function (logout) {
 	msg.player_data = new Object();
 	msg.player_data.role_info = this.role_info;
 	//this.entity.save_data(msg.player_data, logout);
+	this.activity.save_data(msg.player_data);
 	this.mail.save_data(msg.player_data);
 	this.bag.save_data(msg.player_data);
 	send_msg_to_db(Msg.SYNC_SAVE_DB_DATA, this.sid, msg);

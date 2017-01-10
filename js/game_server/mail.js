@@ -78,7 +78,7 @@ Mail.prototype.delete_mail = function(msg) {
 }
 
 Mail.prototype.pickup_item_money = function(mail_detail) {	
-	var result = this.game_player.bag.bag_insert_item(mail_detail.item_list);
+	var result = this.game_player.bag.insert_item_list(mail_detail.item_list);
 	if (result != 0) {
 		return result;
 	}
