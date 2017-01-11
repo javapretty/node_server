@@ -35,7 +35,6 @@ function Activity_Info() {
 	this.seven_day_start_time = 0;
 	this.seven_day_award_status = new Array();
 	this.sign_in_award_status = new Array();
-	this.month_card = 0;
 }
 
 function Role_Info() {

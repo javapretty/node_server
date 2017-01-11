@@ -163,9 +163,6 @@ function process_game_client_msg(msg) {
 		case Msg.REQ_RESIGN_IN:
 		    game_player.activity.resign_in(msg);
 		    break;
-		case Msg.REQ_BUY_MONTH_CARD:
-		    game_player.activity.buy_month_card(msg);
-		    break;
 	    case Msg.REQ_TEST_SWITCH:
 	        test_switch(msg, game_player);
 	        break;

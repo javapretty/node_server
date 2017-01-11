@@ -103,7 +103,6 @@
 		<arg type="int" bit="32" name="seven_day_start_time"/>
 		<vector vbit="3" type="bool" name="seven_day_award_status"/>
 		<vector vbit="5" type="bool" name="sign_in_award_status"/>
-		<arg type="uint" bit="2" name="month_card"/>
 	</Activity_Info>
   
 	<Bag_Info table_name="game.bag" index_name="role_id" index_type="int64">

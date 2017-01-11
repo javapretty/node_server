@@ -55,7 +55,3 @@ Activity.prototype.sign_in = function(msg) {
 Activity.prototype.resign_in = function(msg) {
 	
 }
-
-Activity.prototype.buy_month_card = function(msg) {
-	
-}

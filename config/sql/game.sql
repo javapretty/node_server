@@ -31,7 +31,6 @@ CREATE TABLE `activity` (
 	seven_day_start_time int(11) NOT NULL default '0',
 	seven_day_award_status text NOT NULL,
 	sign_in_award_status text NOT NULL,
-	month_card int(11) NOT NULL default '0',
 	PRIMARY KEY (role_id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

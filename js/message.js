@@ -34,8 +34,6 @@ if (typeof Msg == "undefined") {
 	Msg.REQ_DISSOVE_GUILD = 202;
 	Msg.RES_CREATE_GUILD = 201;
 	Msg.REQ_CREATE_GUILD = 201;
-	Msg.RES_BUY_MONTH_CARD = 15;
-	Msg.REQ_BUY_MONTH_CARD = 15;
 	Msg.RES_RESIGN_IN = 14;
 	Msg.REQ_RESIGN_IN = 14;
 	Msg.RES_SIGN_IN = 13;
