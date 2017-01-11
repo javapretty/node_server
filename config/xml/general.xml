@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <general>
+	<!--七天登录奖励-->
     <seven_day_award>
         <item id="10001" amount="1"/>
         <item id="10002" amount="1"/>
@@ -10,5 +11,72 @@
         <item id="10006" amount="1"/>
         <item id="10007" amount="1"/>
     </seven_day_award>
+
+	<!--签到奖励-->
+    <sign_in_award>
+    	<month>
+    		<item id="10001" amount="1" resign="10"/>
+    		<item id="10002" amount="1" resign="10"/>
+    		<item id="10003" amount="1" resign="10"/>
+    		<item id="10004" amount="1" resign="10"/>
+    		<item id="10005" amount="1" resign="10"/>
+    		<item id="10006" amount="1" resign="10"/>
+    		<item id="10007" amount="1" resign="10"/>
+    		<item id="10008" amount="1" resign="10"/>
+    		<item id="10009" amount="1" resign="10"/>
+    		<item id="10010" amount="1" resign="10"/>
+    		<item id="10011" amount="1" resign="10"/>
+    		<item id="10012" amount="1" resign="10"/>
+    		<item id="10013" amount="1" resign="10"/>
+    		<item id="10014" amount="1" resign="10"/>
+    		<item id="10015" amount="1" resign="10"/>
+    		<item id="10016" amount="1" resign="10"/>
+    		<item id="10017" amount="1" resign="10"/>
+    		<item id="10018" amount="1" resign="10"/>
+    		<item id="10019" amount="1" resign="10"/>
+    		<item id="10020" amount="1" resign="10"/>
+    		<item id="10021" amount="1" resign="10"/>
+    		<item id="10022" amount="1" resign="10"/>
+    		<item id="10023" amount="1" resign="10"/>
+    		<item id="10024" amount="1" resign="10"/>
+    		<item id="10025" amount="1" resign="10"/>
+    		<item id="10026" amount="1" resign="10"/>
+    		<item id="10027" amount="1" resign="10"/>
+    		<item id="10028" amount="1" resign="10"/>
+    		<item id="10029" amount="1" resign="10"/>
+    		<item id="10030" amount="1" resign="10"/>
+    		<item id="10031" amount="1" resign="10"/>
+    	</month>
+    	<month>
+    		<item id="10001" amount="1" resign="10"/>
+    		<item id="10002" amount="1" resign="10"/>
+    		<item id="10003" amount="1" resign="10"/>
+    		<item id="10004" amount="1" resign="10"/>
+    		<item id="10005" amount="1" resign="10"/>
+    		<item id="10006" amount="1" resign="10"/>
+    		<item id="10007" amount="1" resign="10"/>
+    		<item id="10008" amount="1" resign="10"/>
+    		<item id="10009" amount="1" resign="10"/>
+    		<item id="10010" amount="1" resign="10"/>
+    		<item id="10011" amount="1" resign="10"/>
+    		<item id="10012" amount="1" resign="10"/>
+    		<item id="10013" amount="1" resign="10"/>
+    		<item id="10014" amount="1" resign="10"/>
+    		<item id="10015" amount="1" resign="10"/>
+    		<item id="10016" amount="1" resign="10"/>
+    		<item id="10017" amount="1" resign="10"/>
+    		<item id="10018" amount="1" resign="10"/>
+    		<item id="10019" amount="1" resign="10"/>
+    		<item id="10020" amount="1" resign="10"/>
+    		<item id="10021" amount="1" resign="10"/>
+    		<item id="10022" amount="1" resign="10"/>
+    		<item id="10023" amount="1" resign="10"/>
+    		<item id="10024" amount="1" resign="10"/>
+    		<item id="10025" amount="1" resign="10"/>
+    		<item id="10026" amount="1" resign="10"/>
+    		<item id="10027" amount="1" resign="10"/>
+    		<item id="10028" amount="1" resign="10"/>
+    	</month>
+    </sign_in_award>
     
 </general>

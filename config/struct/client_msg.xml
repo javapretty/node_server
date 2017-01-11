@@ -89,10 +89,8 @@
   </s2c_12>
 
   <c2s_13 msg_id="13" msg_name="REQ_SIGN_IN">
-    <arg type="uint" bit="5" name="day_index"/>
   </c2s_13>
   <s2c_13 msg_id="13" msg_name="RES_SIGN_IN">
-    <arg type="uint" bit="5" name="day_index"/>
   </s2c_13>
 
   <c2s_14 msg_id="14" msg_name="REQ_RESIGN_IN">

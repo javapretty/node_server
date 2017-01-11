@@ -159,10 +159,10 @@ Game_Player.prototype.sub_money = function (gold, diamond) {
         return Error_Code.CLIENT_PARAM_ERROR;
     }
     if (this.role_info.gold < gold) {
-        return Error_Code.COPPER_NOT_ENOUGH;
+        return Error_Code.GOLD_NOT_ENOUGH;
     }
     if (this.role_info.diamond < diamond) {
-        return Error_Code.GOLD_NOT_ENOUGH;
+        return Error_Code.DIAMOND_NOT_ENOUGH;
     }
     this.role_info.gold -= gold;
     this.role_info.diamond -= diamond;
