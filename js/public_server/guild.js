@@ -104,7 +104,7 @@ Guild_Manager.prototype.db_create_guild = function(player, guild_info) {
 	
 	var msg_res = new Object();
 	msg_res.guild_info = guild_info;
-	player.send_success_msg(Msg.RES_CREATE_GUILD, msg_res);
+	player.send_msg(Msg.RES_CREATE_GUILD, msg_res);
 }
 
 Guild_Manager.prototype.dissove_guild = function(player, msg) {
@@ -125,5 +125,5 @@ Guild_Manager.prototype.dissove_guild = function(player, msg) {
 	
 	var msg_res = new Object();
 	msg_res.guild_id = player.role_info.guild_id;
-	player.send_success_msg(Msg.RES_DISSOVE_GUILD, msg_res);
+	player.send_msg(Msg.RES_DISSOVE_GUILD, msg_res);
 }

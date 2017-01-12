@@ -71,6 +71,8 @@ global.role_name_game_player_map = new Map();
 global.sid_public_player_map = new Map();
 //role_id---public_player
 global.role_id_public_player_map = new Map();
+//role_name---public_player
+global.role_name_public_player_map = new Map();
 //公会管理器
 global.guild_manager = new Guild_Manager();
 //排行榜管理器

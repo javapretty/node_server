@@ -46,11 +46,20 @@
 	<node_8 msg_id="8" msg_name="SYNC_GATE_CENTER_REMOVE_SESSION">
 	</node_8>
 
-  <node_9 msg_id="9" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
+  <node_9 msg_id="9" msg_name="SYNC_HOT_UPDATE">
+    <arg type="string" name="file_path"/>
+  </node_9>
+
+  <node_10 msg_id="10" msg_name="SYNC_SEND_MAIL">
+    <arg type="string" name="role_name"/>
+    <struct type="Mail_Detail" name="mail_detail"/>
+  </node_10>
+
+  <node_11 msg_id="11" msg_name="SYNC_PUBLIC_GAME_GUILD_INFO">
     <arg type="int64" name="role_id"/>
     <arg type="int64" name="guild_id"/>
     <arg type="string" name="guild_name"/>
-  </node_9>
+  </node_11>
 
   <node_244 msg_id="244" msg_name="SYNC_DB_RET_CODE">
     <arg type="uint" bit="8" name="opt_msg_id"/>

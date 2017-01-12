@@ -184,6 +184,23 @@ function process_game_node_msg(msg) {
 		    }
 		    break;	
 	    }
+	  	case Msg.SYNC_HOT_UPDATE:
+	  		hot_update(msg);
+	  		break;
+	    case Msg.SYNC_SEND_MAIL: {
+	    	var player = global.role_name_game_player_map.get(msg.role_name);
+			if(player) {
+				player.mail.receive_mail(msg.mail_detail);
+			}
+            break;
+	    }
+        case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {
+	        var game_player = global.role_id_game_player_map.get(msg.role_id);
+		    if (game_player) {
+			    game_player.set_guild_info(msg);
+		    }
+		    break;
+	    }
 	    case Msg.SYNC_DB_RET_CODE:
 	        process_db_ret_code(msg);
 	        break;
@@ -200,17 +217,15 @@ function process_game_node_msg(msg) {
 	        game_player.login(login_data.gate_eid, msg.sid, msg.player_data);
 		    break;	
 	    }
-	    case Msg.SYNC_PUBLIC_GAME_GUILD_INFO: {
-	        var game_player = global.role_id_game_player_map.get(msg.role_id);
-		    if (game_player) {
-			    game_player.set_guild_info(msg);
-		    }
-		    break;
-	    }
 	    default:
 		    log_error('process_game_node_msg, msg_id not exist:', msg.msg_id);
 		    break;
 	}
+}
+
+//后台手动热更新
+function hot_update(msg) {
+
 }
 
 function process_db_ret_code(msg) {
@@ -310,5 +325,5 @@ function test_switch(msg, player) {
             break;
         }
     }
-    player.send_success_msg(Msg.RES_TEST_SWITCH, msg_res);
+    player.send_msg(Msg.RES_TEST_SWITCH, msg_res);
 }

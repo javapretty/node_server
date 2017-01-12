@@ -61,7 +61,7 @@ Game_Player.prototype.tick = function(now) {
 	//this.entity.on_move(now);
 }
 
-Game_Player.prototype.send_success_msg = function(msg_id, msg) {
+Game_Player.prototype.send_msg = function(msg_id, msg) {
 	send_msg(this.gate_eid, 0 , msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }
 
@@ -74,7 +74,7 @@ Game_Player.prototype.send_error_msg = function(error_code) {
 Game_Player.prototype.sync_login_to_client = function() {
 	var msg = new Object();
 	msg.role_id = this.role_info.role_id;
-	this.send_success_msg(Msg.RES_ENTER_GAME, msg);
+	this.send_msg(Msg.RES_ENTER_GAME, msg);
 }
 
 Game_Player.prototype.sync_login_logout_to_public = function(login) {
@@ -142,7 +142,7 @@ Game_Player.prototype.fetch_role_info = function() {
     msg.exp = this.role_info.exp;
     msg.gold = this.role_info.gold;
     msg.diamond = this.role_info.diamond;
-	this.send_success_msg(Msg.RES_ROLE_INFO, msg);
+	this.send_msg(Msg.RES_ROLE_INFO, msg);
 }
 
 Game_Player.prototype.add_money = function (gold, diamond) {

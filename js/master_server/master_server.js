@@ -73,10 +73,18 @@ function process_master_http_msg(msg) {
 	        //curl -d "{\"msg_id\":3,\"node_id\":70001}" "http://127.0.0.1:8080"
 	        req_stack_info(msg);
 	        break;
-	    case Msg.HTTP_HOT_UPDATE:
-	        //curl -d "{\"msg_id\":4,\"node_id\":70001,\"file_path\":\"js/game_server/game_player.js\"}" "http://127.0.0.1:8080"
-	        hot_update(msg);
-	        break;
+	    case Msg.HTTP_HOT_UPDATE: {
+            //curl -d "{\"msg_id\":4,\"node_id\":70001,\"file_path\":\"js/game_server/game_player.js\"}" "http://127.0.0.1:8080"
+            var cid = global.node_cid_map.get(msg.node_id);
+            send_msg(Endpoint.MASTER_SERVER, cid, Msg.SYNC_HOT_UPDATE, Msg_Type.NODE_MSG, 0, msg);
+            break;
+        }
+        case Msg.HTTP_SEND_MAIL: {
+            //获取public_server通信cid
+            var cid = global.node_cid_map.get(msg.node_id);
+            send_msg(Endpoint.MASTER_SERVER, cid, Msg.SYNC_SEND_MAIL, Msg_Type.NODE_MSG, 0, msg);
+            break;
+        }
 	    default:
 		    log_error('process_master_http_msg, msg_id not exist:', msg.msg_id);
 		    break;
@@ -127,14 +135,8 @@ function req_stack_info(msg) {
 
 function hot_update(msg) {
     if (msg.file_path == "global.js") {
-        close_client(Endpoint.MASTER_HTTP_SERVER, msg.cid);
-        return;
+        return close_client(Endpoint.MASTER_HTTP_SERVER, msg.cid);
     }
 
-    if (msg.file_path.indexOf(".js")) {
-        require(msg.file_path);
-    }
-    else if (msg.file_path.indexOf(".xml")) {
-
-    }
+    var cid = global.node_cid_map.get(msg.node_id);
 }

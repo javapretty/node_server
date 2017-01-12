@@ -45,7 +45,7 @@ Activity.prototype.seven_day_award = function(msg) {
 
 	var msg_res = new Object();
 	msg_res.day_index = msg.day_index;
-    this.game_player.send_success_msg(Msg.RES_SEVEN_DAY_AWARD, msg_res);
+    this.game_player.send_msg(Msg.RES_SEVEN_DAY_AWARD, msg_res);
 }
 
 Activity.prototype.sign_in = function(msg) {
@@ -80,7 +80,7 @@ Activity.prototype.sign_in = function(msg) {
 	this.activity_info.sign_in_award_status[day-1] = true;
 	this.game_player.data_change = true;
 
-    this.game_player.send_success_msg(Msg.RES_SIGN_IN, new Object());
+    this.game_player.send_msg(Msg.RES_SIGN_IN, new Object());
 }
 
 Activity.prototype.resign_in = function(msg) {
@@ -122,5 +122,5 @@ Activity.prototype.resign_in = function(msg) {
 
 	var msg_res = new Object();
 	msg_res.day_index = msg.day_index;
-    this.game_player.send_success_msg(Msg.RES_RESIGN_IN, msg_res);
+    this.game_player.send_msg(Msg.RES_RESIGN_IN, msg_res);
 }

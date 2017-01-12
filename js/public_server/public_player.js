@@ -18,6 +18,7 @@ Public_Player.prototype.login = function (game_cid, sid, role_info) {
 	this.role_info = role_info;
 	global.sid_public_player_map.set(this.sid, this);
 	global.role_id_public_player_map.set(this.role_info.role_id, this);
+	global.role_name_public_player_map.set(this.role_info.role_name, this);
 	
 	global.rank_manager.update_rank(Rank_Type.LEVEL_RANK, this);
 }
@@ -27,9 +28,10 @@ Public_Player.prototype.logout = function () {
     log_info("public_player logout, sid:", this.sid, " role_id:", this.role_info.role_id, " role_name:", this.role_info.role_name, " game_cid:", this.game_cid);
 	global.sid_public_player_map.delete(this.sid);
 	global.role_id_public_player_map.delete(this.role_info.role_id);
+	global.role_name_public_player_map.delete(this.role_info.role_name);
 }
 
-Public_Player.prototype.send_success_msg = function(msg_id, msg) {
+Public_Player.prototype.send_msg = function(msg_id, msg) {
     send_msg(Endpoint.PUBLIC_SERVER, this.game_cid, msg_id, Msg_Type.NODE_S2C, this.sid, msg);
 }
 

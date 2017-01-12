@@ -24,7 +24,7 @@ Mail.prototype.fetch_mail_info = function() {
 	this.mail_info.mail_map.forEach(function(value, key, map) {
 		msg_res.mail_list.push(value);
 	});
-    this.game_player.send_success_msg(Msg.RES_MAIL_INFO, msg_res);
+    this.game_player.send_msg(Msg.RES_MAIL_INFO, msg_res);
 }
 
 Mail.prototype.pickup_mail = function(msg) {
@@ -48,7 +48,7 @@ Mail.prototype.pickup_mail = function(msg) {
 		    msg_res.mail_id_list.push(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_PICKUP_MAIL, msg_res);
+	this.game_player.send_msg(Msg.RES_PICKUP_MAIL, msg_res);
 }
 
 Mail.prototype.delete_mail = function(msg) {
@@ -74,7 +74,13 @@ Mail.prototype.delete_mail = function(msg) {
 			this.mail_info.mail_map.delete(msg.mail_id);
 		}
 	}
-	this.game_player.send_success_msg(Msg.RES_DEL_MAIL, msg_res);
+	this.game_player.send_msg(Msg.RES_DEL_MAIL, msg_res);
+}
+
+Mail.prototype.receive_mail = function(mail_detail) {
+	this.mail_info.total_count++;
+	mail_detail.mail_id = 1000000 + total_count;
+	this.mail_info.mail_map.set(mail_detail.mail_id, mail_detail);
 }
 
 Mail.prototype.pickup_item_money = function(mail_detail) {	

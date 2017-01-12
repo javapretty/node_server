@@ -96,6 +96,16 @@ function process_public_node_msg(msg) {
     switch (msg.msg_id) {
     	case Msg.SYNC_NODE_INFO:
             break;
+        case Msg.SYNC_HOT_UPDATE:
+	  		hot_update(msg);
+	  		break;
+        case Msg.SYNC_SEND_MAIL: {
+        	var player = global.role_name_public_player_map.get(msg.role_name);
+        	if(player) {
+        		player.send_msg(msg.msg_id, msg);
+        	}
+        	break;
+        }
         case Msg.SYNC_DB_RET_CODE:
             process_db_ret_code(msg);
             break;
@@ -139,6 +149,11 @@ function process_public_node_msg(msg) {
 		    log_error('proceess_public_node_msg, msg_id not exist:', msg.msg_id);
 		    break;
 	}
+}
+
+//后台手动热更新
+function hot_update(msg) {
+
 }
 
 function process_db_ret_code(msg) {

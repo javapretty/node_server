@@ -19,6 +19,12 @@
     <arg type="string" name="file_path"/>
   </http_4>
 
+  <http_5 msg_id="5" msg_name="HTTP_SEND_MAIL">
+    <arg type="int" bit="32" name="node_id"/>
+    <arg type="string" name="role_name"/>
+    <struct type="Mail_Detail" name="mail_detail"/>
+  </http_5>
+
   <http_201 msg_id="201" msg_name="HTTP_RES_NODE_STATUS">
     <vector vbit="8" type="Node_Status" name="node_list"/>
   </http_201>

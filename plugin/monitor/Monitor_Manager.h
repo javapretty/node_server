@@ -13,7 +13,7 @@
 #include "Node_Define.h"
 
 enum Msg_Id {
-	SYNC_NODE_STACK_INFO = 4,
+	SYNC_NODE_STACK_INFO = 3,
 };
 
 class Monitor_Manager: public Thread {
