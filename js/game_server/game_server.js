@@ -188,9 +188,9 @@ function process_game_node_msg(msg) {
 	  		hot_update(msg);
 	  		break;
 	    case Msg.SYNC_SEND_MAIL: {
-	    	var player = global.role_name_game_player_map.get(msg.role_name);
-			if(player) {
-				player.mail.receive_mail(msg.mail_detail);
+	    	var game_player = global.role_name_game_player_map.get(msg.role_name);
+			if(game_player) {
+				game_player.mail.receive_mail(msg.mail_detail);
 			}
             break;
 	    }

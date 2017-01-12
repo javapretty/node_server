@@ -100,9 +100,9 @@ function process_public_node_msg(msg) {
 	  		hot_update(msg);
 	  		break;
         case Msg.SYNC_SEND_MAIL: {
-        	var player = global.role_name_public_player_map.get(msg.role_name);
-        	if(player) {
-        		player.send_msg(msg.msg_id, msg);
+        	var public_player = global.role_name_public_player_map.get(msg.role_name);
+        	if(public_player) {
+        		public_player.send_msg(msg.msg_id, msg);
         	}
         	break;
         }
