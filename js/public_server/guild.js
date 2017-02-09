@@ -48,7 +48,7 @@ Guild_Manager.prototype.delete_guild = function(){
 	msg.db_id = DB_Id.GAME;
 	msg.struct_name = "Guild_Info";
 	msg.index_list = this.delete_list;
-	send_msg_to_db(Msg.SYNC_PUBLIC_DB_DELETE_DATA, 0, msg);
+	send_msg_to_db(Msg.SYNC_DELETE_DB_DATA, 0, msg);
 	this.delete_list.length = 0;
 }
 

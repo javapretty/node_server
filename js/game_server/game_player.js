@@ -53,7 +53,7 @@ Game_Player.prototype.logout = function () {
 
 Game_Player.prototype.tick = function(now) {
 	//同步数据到数据库
-    if (this.data_change && now - this.save_data_tick >= 30000) {
+    if (this.data_change && now - this.save_data_tick >= 30) {
         this.sync_player_data_to_db(false);
         this.save_data_tick = now;
         this.data_change = false;

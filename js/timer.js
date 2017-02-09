@@ -95,7 +95,7 @@ function Timer() {
 	}
 	
 	this.game_player_handler = function() {
-		var now = util.now_msec();
+		var now = util.now_sec();
 		global.role_id_game_player_map.forEach(function(value, key, map) {
 			value.tick(now);
 		});
