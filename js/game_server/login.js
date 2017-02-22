@@ -55,7 +55,7 @@ Login.prototype.create_role = function(msg) {
 	msg_res.condition_value = msg.role_info.role_name;
 	msg_res.query_name = "role_id";
 	msg_res.query_type = "int64";
-	msg_res.data_type = Select_Data_Type.STRING;
+	msg_res.data_type = Select_Data_Type.INT64;
 	send_msg_to_db(Msg.SYNC_SELECT_DB_DATA, msg.sid, msg_res);
 }
 
